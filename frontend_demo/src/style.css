@@ -1,0 +1,89 @@
+h1 {
+  color: black;
+  font-family: arial;
+  font-weight: bold;
+  font-size: 30px;
+  text-align: center;
+}
+
+/* Hide scrollbar*/
+body {
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+greetingBig {
+	font-size: 25px;
+	text-align:left;
+}
+
+.dynamic {
+	font-size: 15px;
+	text-align:left;
+}
+
+.noGap {
+	white-space: nowrap;
+}
+
+hr {
+    border: none;
+    color: black; /* old IE */
+    background-color: black; /* Modern Browsers */
+}
+
+@media screen and (min-width: 715px) {
+  greetingBig {
+    font-size: 3.5vw;
+  }
+  .dynamic {
+	font-size: 2.1vw;
+	text-align:left;
+	white-space: nowrap;
+}
+}
+@media screen and (min-width: 1169px) {
+  greetingBig {
+    font-size: 41px;
+  }
+  .dynamic {
+	font-size: 24.5px;
+	text-align:left;
+	white-space: nowrap;
+}
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.Row {
+        margin-left: 0;
+        margin-right: 0;
+		padding-left: 0;
+        padding-right: 0;
+    }
+
+.Col {
+        padding-left: 0;
+        padding-right: 0;
+    }
+	
+/*Covering both caps*/
+
+
+.row {
+        margin-left: 0;
+        margin-right: 0;
+		padding-left: 0;
+        padding-right: 0;
+    }
+
+.col {
+        padding-left: 0;
+        padding-right: 0;
+    }
