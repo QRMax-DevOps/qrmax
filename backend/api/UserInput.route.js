@@ -1,12 +1,11 @@
-import express from "express";
-import UserInputController from "./UserInputController.js"
+const express = require("express");
+const UserInputController = require("./UserInputController.js");
 
 const router = express.Router();
-
 
 router
     .route("/")
     .get(UserInputController.apiGetUserInput)
     //.post(UserInputController.apiPostUserInput)
 
-export default router;
+module.exports = router;
