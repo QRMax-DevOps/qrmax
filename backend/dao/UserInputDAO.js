@@ -1,6 +1,6 @@
 let UserInput;
 
-export default class UserInputDAO {
+class UserInputDAO {
   static async injectDB(conn) {
     if (UserInput) {
       return;
@@ -73,3 +73,5 @@ export default class UserInputDAO {
 
   
 }
+
+module.exports = UserInputDAO;
