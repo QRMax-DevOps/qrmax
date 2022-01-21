@@ -14,6 +14,7 @@ class UserInputDAO {
     }
   }
 
+  /*
   static async getUserInput({
     filters = null,
     page = 0,
@@ -55,7 +56,7 @@ class UserInputDAO {
         )
         return {userInputList: [], totalNumberOfUserInputs: 0}
     }
-  }
+  }*/
 
   static async postUserInput(UserIdentifier, URL, TimeOfInput){
     try{
@@ -71,6 +72,29 @@ class UserInputDAO {
     }
   }
 
+  static async validate(cleanURL) {
+    return true; //stub
+  }
+
+  static async checkLastVote(cleanIdentifier) {
+    try {
+      console.log(await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}}));
+      if (await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}})>0) {
+        return false;
+      }
+      else {
+        return true;
+      }
+    } 
+    catch(e) {
+      res.json({ status: "fail", cause: e });
+      return false;
+    }
+  }
+
+  static async geoLocate(cleanIdentifier) {
+    return true; //stub
+  }
   
 }
 
