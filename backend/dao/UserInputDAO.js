@@ -14,50 +14,6 @@ class UserInputDAO {
     }
   }
 
-  /*
-  static async getUserInput({
-    filters = null,
-    page = 0,
-    InputsPerPage = 20,
-  } = {}) {
-    let query;
-    if (filters) {
-      if ("URL" in filters) {
-        query = { URL: { $eq: filters["URL"] } };
-      } else if ("UserIdentifier" in filters) {
-        query = { UserIdentifier: { $eq: filters["UserIdentifier"] } };
-      } else if ("TimeOfInput" in filters) {
-        query = { TimeOfInput: { $eq: filters["TimeOfInput"] } };
-      }
-    }
-
-    let cursor
-
-    try{
-        cursor = await UserInput
-            .find(query)
-    }
-    catch (e) {
-        console.error('unable to issue find command, ${e}')
-        return { userInputList: [], totalNumberOfUserInputs: 0 }
-    }
-
-    const displayCursor = cursor.limit(InputsPerPage).skip(InputsPerPage*page)
-
-    try{
-        const userInputList = await displayCursor.toArray()
-        const totalNumberOfUserInputs = await UserInput.countDocuments(query)
-
-        return {userInputList, totalNumberOfUserInputs}
-    }
-    catch (e) {
-        console.error(
-            'unable to convert cursor to array or problem counting documents, ${e}',
-        )
-        return {userInputList: [], totalNumberOfUserInputs: 0}
-    }
-  }*/
-
   static async postUserInput(UserIdentifier, URL, TimeOfInput){
     try{
       const UserInputDoc = {
