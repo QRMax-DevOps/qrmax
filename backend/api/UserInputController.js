@@ -21,8 +21,7 @@ class UserInputController {
             cleanIdentifier+=identifierArray[i];
           }
         }
-        //console.log(cleanIdentifier);
-        const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/', '');
+        const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/qr/', '');
         const cleanTimeOfInput = DOMPurify.sanitize(dirtyTimeOfInput);
         
         /*Regex*/
