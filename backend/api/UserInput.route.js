@@ -6,6 +6,5 @@ const router = express.Router();
 router
     .route("/")
     .get(UserInputController.apiGetUserInput)
-    //.post(UserInputController.apiPostUserInput)
 
 module.exports = router;
