@@ -78,7 +78,7 @@ class UserInputDAO {
 
   static async checkLastVote(cleanIdentifier) {
     try {
-      console.log(await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}}));
+      //console.log(await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}}));
       if (await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}})>0) {
         return false;
       }

@@ -13,25 +13,15 @@ class UserInputController {
         const dirtyIdentifier = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
         const dirtyURL = req.originalUrl;
         const dirtyTimeOfInput = Date.now();
-        const cleanIdentifier = DOMPurify.sanitize(dirtyIdentifier).replace(':','');
-        /*
-        while (true) {
-          if (cleanIdentifier.search('f')==-1) {
-            break;
-          }
-          else {
-            cleanIdentifier.replace('f', '');
+        const sanitisedIdentifier = DOMPurify.sanitize(dirtyIdentifier);
+        const identifierArray = sanitisedIdentifier.split('');
+        let cleanIdentifier = "";
+        for (let i = 0; i < identifierArray.length; i++) {
+          if (identifierArray[i]!="f" && identifierArray[i]!=":") {
+            cleanIdentifier+=identifierArray[i];
           }
         }
-        while (true) {
-          if (cleanIdentifier.search(':')==-1) {
-            break;
-          }
-          else {
-            cleanIdentifier.replace(':', '');
-          }
-        }*/
-        console.log(cleanIdentifier);
+        //console.log(cleanIdentifier);
         const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/', '');
         const cleanTimeOfInput = DOMPurify.sanitize(dirtyTimeOfInput);
         
