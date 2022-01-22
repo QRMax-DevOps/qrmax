@@ -33,6 +33,7 @@ class UserInputDAO {
   }
 
   static async checkLastVote(cleanIdentifier) {
+    /*
     try {
       //console.log(await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}}));
       if (await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}})>0) {
@@ -45,7 +46,8 @@ class UserInputDAO {
     catch(e) {
       res.json({ status: "fail", cause: e });
       return false;
-    }
+    }*/
+    return true;
   }
 
   static async geoLocate(cleanIdentifier) {
