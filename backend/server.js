@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/QR/*", UserInput);
-//app.use("*", (req, res) => res.status(404).json({ error: "not found" }));
+app.use("api/v1/QR/*", UserInput);
+app.use("*", (req, res) => res.status(404).json({ error: "not found" }));
 
 module.exports = app;
