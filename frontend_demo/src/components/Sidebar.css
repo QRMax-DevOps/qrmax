@@ -4,7 +4,6 @@
     justify-content: center;
     height: 100%;
     width: 250px;
-
 }
 
 .NavButton {
@@ -20,6 +19,7 @@
 
 .SidebarList {
     list-style-type: none;
+    justify-content: center;
 }
 
 .ListContainer {
@@ -31,10 +31,14 @@
     font-size: 5pt;
 }
 
+.SidebarList {
+    display: list-item;
+
+}
+
 .SidebarList #row {
-    width: 40%;
+    width: auto;
     text-align: center;
-    padding: 5px;
 }
 
 .SidebarList #row:hover {

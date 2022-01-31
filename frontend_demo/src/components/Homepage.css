@@ -2,5 +2,23 @@
     background-color: white;
     height: 100vh;
     width: 100vw;
+    display: flex;
 }
 
+.MainContainer {
+    margin-left: 0 auto;
+    height: 100%;
+    width: 100%;
+    padding: 5%;
+    background-color: white;
+    display: flex;
+    position: relative;
+    padding: 10px;
+}
+
+.DisplayContainer {
+    background-color: rgb(223, 222, 222);
+    margin-left: 0 auto;
+    height: 100%;
+    width: 100%;
+}

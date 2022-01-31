@@ -9,12 +9,12 @@ export const SidebarData = [
     {
         title: "Display Preview",
         icon: <DesktopWindowsIcon/>,
-        link: "/Homepage"
+        link: "/homepage"
     },
     {
         title: "Display Management",
         icon: <DisplaySettingsIcon/>,
-        link: "/Homepage"
+        link: "/homepage"
     },
     {
         title: "QR Settings",
@@ -24,7 +24,7 @@ export const SidebarData = [
     {
         title: "Interactions",
         icon: <QueryStatsIcon/>,
-        link: "/Homepage"
+        link: "/homepage"
     },
     {
         title: "Exit",

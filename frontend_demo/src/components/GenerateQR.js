@@ -9,8 +9,7 @@ class GenerateQR extends Component {
         return (
             <div class="background">
                 <div>
-
-                <Sidebar/>
+                    <Sidebar/>
                 </div>
                 <div id="mainContainer">
                     <div id="buttonContainer">
