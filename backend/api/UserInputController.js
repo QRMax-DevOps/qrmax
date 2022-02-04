@@ -21,7 +21,7 @@ class UserInputController {
             cleanIdentifier+=identifierArray[i];
           }
         }
-        const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/qr/', '');
+        const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/api/v1/QR/', '');
         const cleanTimeOfInput = DOMPurify.sanitize(dirtyTimeOfInput);
         
         /*Regex*/
@@ -42,7 +42,7 @@ class UserInputController {
         throw "Sanitisation failed";
       }
 
-      res.json({ status: "success" });
+      res.json({ status: "success", cause:"" });
     } catch (e) {
       res.json({ status: "fail", cause: e });
     }
