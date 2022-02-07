@@ -4,8 +4,7 @@ const UserInputController = require("./UserInputController.js");
 const router = express.Router();
 
 router
-    .route("/QR/")
+    .route("/")
     .post(UserInputController.apiPostUserInput)
 
 module.exports = router;
-
