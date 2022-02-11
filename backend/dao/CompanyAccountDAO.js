@@ -9,3 +9,4 @@ class CompanyAccountDAO {
 }
 
 module.exports = CompanyAccountDAO;
+

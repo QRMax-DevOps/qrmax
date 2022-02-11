@@ -12,46 +12,200 @@ body {
   overflow-x: hidden; /* Hide horizontal scrollbar */
 }
 
-greetingBig {
-	font-size: 25px;
-	text-align:left;
+#background {
+	background: url('graphics/background.jpg');
+    height:100vh;
+	width:100hw;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-.dynamic {
-	font-size: 15px;
-	text-align:left;
+#passwordInput {
+	background-color: #fff0;
+	color: #fff6;
+	padding-left:0;
+	
+	border-radius: 0px;
+	border-width: 2px;
+	border-style: none none solid none;
+	border-color: white;
+	
+	transition: 0.2s color ease-in-out;
 }
 
-.noGap {
-	white-space: nowrap;
+#wrapperPad {
+	margin-top:10px;
 }
 
-hr {
-    border: none;
-    color: black; /* old IE */
-    background-color: black; /* Modern Browsers */
+#submitButton {
+	outline: none;
+	background-color: #fff;
+	transition: box-shadow 0.2s ease-in-out;
 }
 
-@media screen and (min-width: 715px) {
-  greetingBig {
-    font-size: 3.5vw;
-  }
-  .dynamic {
-	font-size: 2.1vw;
-	text-align:left;
-	white-space: nowrap;
+#submitButton:hover {
+	outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 15px #9ecaed;
 }
+
+#submitButton:focus{
+	background-color:#fff9;
 }
-@media screen and (min-width: 1169px) {
-  greetingBig {
-    font-size: 41px;
-  }
-  .dynamic {
-	font-size: 24.5px;
-	text-align:left;
-	white-space: nowrap;
+
+#forgotPasswordButton {
+	margin:0;
+	padding:0;
+	height:100%;
+	width:40px;
+	
+	font-size: 20px;
+	font-weight: 500;
+	color: rgb(51, 142, 240);
+	
+	transition: 0.2s box-shadow ease-in-out;
+	
+	border-style: none;
+	border-radius: 10px;
+	background-color: #fff;
 }
+
+#forgotPasswordButton:hover {
+	outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 15px #9ecaed;
 }
+
+#forgotPasswordButton:active{
+	background-color:#fff9;
+}
+
+#rememberMeCheck {
+	border-style: none;
+	border-radius: 3px;
+	background-color: #fff;
+	color: white;
+	padding-top: 10px;
+	transition: 0.2s box-shadow ease-in-out;
+}
+
+#rememberMeCheck:hover {
+	outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 15px #9ecaed;
+}
+
+#rememberMeCheck:checked {
+	background-image:url('graphics/checkboxTick.png');
+}
+
+
+#emailInput {
+	background-color: #fff0;
+	color: #fff6;
+	padding-left:0;
+	
+	transition: 0.2s color ease-in-out;
+	
+	border-radius: 0px;
+	border-width: 2px;
+	border-style: none none solid none;
+	border-color: white;
+	
+}
+
+#emailInput:focus {
+  color: white;
+  box-shadow: none;
+  caret-color: #fff;
+}
+
+#passwordInput::placeholder {
+	color: #fff6;
+	caret-color: #fff;
+}
+
+
+#emailInput::placeholder {
+	color: #fff6;
+	caret-color: #fff;
+}
+
+
+#passwordInput:focus {
+  color: white;
+  box-shadow: none;
+  caret-color: #fff;
+}
+
+#leftbox {
+	margin-left: auto;
+    margin-right: auto;
+	position: relative;
+	
+	width:50%;
+	height:600px;
+	background-color: white;
+	
+	display: flex;
+    align-items: center;
+}
+#rightbox {
+	margin-left: auto;
+    margin-right: auto;
+	position: relative;
+	box-shadow: inset 30px 0px 30px -30px rgba(0, 0, 0, 0.3);
+	
+	width:50%;
+	height:600px;
+	background-color: rgb(51, 142, 240);
+	
+	display: flex;
+    align-items: center;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+#footer p {
+	color: #fff9;
+}
+
+#title {
+	font-size:28px;
+	font-weight:bold;
+	color: rgb(51, 142, 240);
+}
+
+#subtitle {
+	font-size:18px;
+	font-weight:normal;
+	color: rgb(150,150,150);
+}
+
+p {
+	text-align: center;
+}
+
+.alignmentCheck {
+	float:left;
+}
+
+#mainbox {
+	width: 50%;
+	min-width: 400px;
+	max-width: 1500px;
+}
+
+#innerbox {
+	padding:10%;
+	width:100%
+}
+
+#logo { max-height:250px; width: 100%;  object-fit: contain;}
 
 .center {
   margin: 0;
@@ -60,30 +214,3 @@ hr {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-
-.Row {
-        margin-left: 0;
-        margin-right: 0;
-		padding-left: 0;
-        padding-right: 0;
-    }
-
-.Col {
-        padding-left: 0;
-        padding-right: 0;
-    }
-	
-/*Covering both caps*/
-
-
-.row {
-        margin-left: 0;
-        margin-right: 0;
-		padding-left: 0;
-        padding-right: 0;
-    }
-
-.col {
-        padding-left: 0;
-        padding-right: 0;
-    }

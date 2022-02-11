@@ -1,64 +1,87 @@
-import React from 'react';
-import {Container, Row, Col, Form} from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstrap';
 import Image from 'react-bootstrap/Image'
 import Img1 from '../graphics/test_logo 2.png'
 import '../style.css';
+import Button from "./Custom_Button.js"
 
-class Login extends React.Component {
-	render() {
-		return (
-			<div class="loginView DivSize">
-				<Container style={{margin: 0, position: "absolute", width:"60%", top: "50%", left: "50%", transform: "translate(-50%, -50%)",  minWidth:"430px", maxWidth:"700px"}}>
-				  <Row>
-					<Col className="border border-dark text-center">
-						<Row style={{justifyContent:'center', alignItems:'center', paddingTop:"10%", paddingBottom:"20px", paddingLeft:"20px", paddingRight:"20px"}}>
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
+
+/*
+function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}
+*/
+
+export default function Load_LoginScreen() {
+	return (
+			<div id="background">
+			
+				<div id="mainbox" className="center" >
+
+					<div id="leftbox" className="alignmentCheck">
+						<div id="innerbox">
+							<img id="logo" src={Img1}/>
 							<br/>
-							<Image style={{maxWidth: "400px"}} src={Img1}/>
-							<greetingBig style={{textAlign:"center"}}>Prototype</greetingBig>
-							<br/><br/><hr/>
-							<p className="dynamic noGap" style={{textAlign:"center"}}>This interface is<br/>not representative<br/>of the final design.</p>
-						</Row>
-					</Col>
-					
-
-					<Col className="border border-dark text-center d-flex flex-column justify-content-around" style={{paddingTop:"20px", paddingBottom:"20px", paddingLeft:"20px", paddingRight:"20px"}}>
-					
-						<Row className="border border-primary " style={{alignItems:'flex-start' }}>
-							<greetingBig>Login</greetingBig>
-							<greetingSmall className="dynamic">G'day, let's get started</greetingSmall>
-						</Row>
-						
-						<Row className="border border-warning" style={{alignItems:'center'}}>
+							<p id="title">
+								Pre-alpha Prototype
+							</p>
+							<p id="subtitle">
+								This prototype is not an accurate<br/>
+								representation of the final product<br/>
+								and is subject to frequent change.
+							</p>
+						</div>
+					</div>
+					<div id="rightbox" className="alignmentCheck">
+						<div id="innerbox">
+							<p style={{margin:0, textAlign:"left", fontSize:"30px", fontWeight:"500", color:"white"}}>Login</p>
+							<p style={{textAlign:"left", fontSize:"20px", color:"#fff9"}}>G'day, let's get started</p>
 							
-							<Row className="border border-danger">
-								<Form.Group className="mb-0 p-0" controlId="formBasicEmail">
-									<Form.Control className="dynamic" type="email" placeholder="Enter your username" />
-								</Form.Group>
-							</Row>
-								
-							<Row className="border border-danger flex-nowrap">
-								<Col className="border border-danger p-0" xs={8}  style={{}}>
-								<Form.Group className="mb-0" controlId="formBasicPassword" style={{width:"100%"}}>
-									<Form.Control className="dynamic" type="password" placeholder="*************" />
-								</Form.Group>
-								</Col>
-
-								<Col className="border border-danger" style={{display:'flex', justifyContent:'right'}}>
-									<button className="dynamic" style={{width:"60%", textAlign:"center"}}> ? </button>
-								</Col>
-							</Row>
-						</Row>
-						
-						<Row className="border border-success" style={{alignItems:'flex-end'}}>
-							<button className="dynamic" style={{textAlign: 'center', height:"55px"}} >Submit</button>
-						</Row>
-					</Col>
-					
-				  </Row>
-				</Container>
+							  <form action="/homepage">
+							  <div style={{paddingTop:"60px", paddingBottom:"60px"}}>
+								  <div class="form-group" style={{paddingBottom:"20px"}} >
+									<input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp" placeholder="Enter email" autocomplete="off"/>
+									<small id="emailHelp" class="form-text" style={{color:"white"}}>This address will never  be spammed or shared.</small>
+								  </div>
+								  <div class="form-group row">
+										<div class="col">
+											<input type="password" class="form-control" id="passwordInput" placeholder="Password"/>
+										</div>
+										<div class="col-auto">
+											<button type="button" id="forgotPasswordButton">?</button>
+										</div>
+								  </div>
+								  <div class="form-check" id="wrapperPad">
+									<input type="checkbox" class="form-check-input" id="rememberMeCheck"/>
+									<label class="form-check-label" for="exampleCheck1" style={{color:"white"}}>Remember me</label>
+								  </div>
+							  </div>
+							  <button type="submit" class="btn" id="submitButton" style={{color:"rgb(51, 142, 240)", fontWeight:"bold", width:"100%"}}>Submit</button>
+							</form>
+						</div>
+					</div>
+				  </div>
+				<div id="footer">
+					<p>We acknowledge the traditional custodians of the land, and pay respects to their elders past and present.</p>
+				</div>
 			</div>
 		);
-	}
-}
- 
- export default Login;
+};

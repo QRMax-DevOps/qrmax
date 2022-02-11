@@ -1,17 +1,19 @@
 import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
 import RedCrossImage from '../graphics/cross.png'
+import Button from "./Custom_Button.js";
 
 class ResponseBad extends React.Component {
 	
  render() {
          return (
              <div>
-				<Container className="border border-dark" style={{margin: 0, position: "absolute", height:"90%", width:"70%", top: "50%", left: "50%", transform: "translate(-50%, -50%)",  minWidth:"500px", minHeight:"1025px"}}>
-					<Col className="text-center d-flex flex-column justify-content-between" style={{height:"100%", padding:"10px"}}>
-						<Row className="border border-primary text-center" style={{alignItems:'flex-start', padding:"10px"}}>
-							<div className="border border-primary text-center" style={{marginTop:"100px"}}>
-								<Image src={RedCrossImage} style={{width:"50%", display:"block", marginLeft:"auto", marginRight:"auto"}}/>
+				<Container id="MainBox_Out" style={{margin: 0, position: "absolute", height:"100%", width:"70%", top: "50%", left: "50%", transform: "translate(-50%, -50%)",  minWidth:"500px", minHeight:"775px"}}>
+					<Col id="MainBox_In" className="text-center d-flex flex-column justify-content-between" style={{height:"100%", padding:"10px"}}>
+					
+						<Row id="Top" className="text-center" style={{alignItems:'flex-start', margin:"0"}}>
+							<div id="TopRow" style={{marginTop:"50px"}}>
+								<Image src={RedCrossImage} style={{width:"300px", display:"block", marginLeft:"auto", marginRight:"auto"}}/>
 								<p style={{fontSize:"70px", fontWeight:"bold", color:"red"}}>
 								Oops!
 								</p>
@@ -21,22 +23,26 @@ class ResponseBad extends React.Component {
 							</div>
 						</Row>
 						
-						<Row className="border border-warning text-center" style={{alignItems:'center'}}>
-							<div className="border border-warning text-center" style={{marginTop:"100px"}}>
-								<p style={{fontSize:"20px", fontWeight:"bold", color:"gray"}}>
-									Please forward some<br/>information to us so we<br/>can fix this problem!
+						<Row id="Middle" style={{alignItems:'center'}}>
+							<div className="text-center">
+								<p style={{fontSize:"20px", fontWeight:"500", color:"gray"}}>
+									With some of your data,<br/>
+									we could diagnose and<br/>
+									hopefully fix this issue.
 								</p>
+								<br/>
+								<Button id="GiveDataButton" style={{height:"70px", width:"250px"}}>Forward Data</Button>
 							</div>
-							<button style={{height:"70px"}}>Send Data</button>
 						</Row>
 						
-						<Row className="border border-success text-center" style={{alignItems:'flex-end'}}>
-							<div className="border border-success text-center" style={{marginTop:"100px"}}>
-								<p style={{color:"grey"}}>
+						<Row id="Bottom" style={{alignItems:'flex-end'}}>
+							<div className="text-center" style={{paddingBottom:"10px", width:"100%", margin:"auto"}}>
+								<p style={{color:"grey", fontWeight:"500", fontSize:"15px"}}>
 									We acknowledge the Traditional Custodians of the Land, and pay respects to their Elders past and present.
 								</p>
 							</div>
 						</Row>
+						
 					</Col>
 				</Container>
              </div>
