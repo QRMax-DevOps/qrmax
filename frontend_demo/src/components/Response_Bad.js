@@ -13,7 +13,7 @@ class ResponseBad extends React.Component {
 					
 						<Row id="Top" className="text-center" style={{alignItems:'flex-start', margin:"0"}}>
 							<div id="TopRow" style={{marginTop:"50px"}}>
-								<Image src={RedCrossImage} style={{width:"50%", display:"block", marginLeft:"auto", marginRight:"auto"}}/>
+								<Image src={RedCrossImage} style={{width:"300px", display:"block", marginLeft:"auto", marginRight:"auto"}}/>
 								<p style={{fontSize:"70px", fontWeight:"bold", color:"red"}}>
 								Oops!
 								</p>
@@ -36,8 +36,8 @@ class ResponseBad extends React.Component {
 						</Row>
 						
 						<Row id="Bottom" style={{alignItems:'flex-end'}}>
-							<div className="text-center" style={{marginTop:"0", width:"350px", margin:"auto"}}>
-								<p style={{color:"grey", fontWeight:"500"}}>
+							<div className="text-center" style={{paddingBottom:"10px", width:"100%", margin:"auto"}}>
+								<p style={{color:"grey", fontWeight:"500", fontSize:"15px"}}>
 									We acknowledge the Traditional Custodians of the Land, and pay respects to their Elders past and present.
 								</p>
 							</div>

@@ -4,12 +4,12 @@ const {JSDOM} = require("jsdom");
 const e = require("express");
 
 class UserInputController {
-  static async apiGetUserInput(req, res) {
+  static async apiPostUserInput(req, res) {
     try {
       const windowEmulator = new JSDOM('').window;
       const DOMPurify = createDOMPurify(windowEmulator);
       if (DOMPurify.isSupported) {
-        /*Sanitisation*/
+        //Sanitisation
         const dirtyIdentifier = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
         const dirtyURL = req.originalUrl;
         const dirtyTimeOfInput = Date.now();
@@ -24,9 +24,9 @@ class UserInputController {
         const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/api/v1/QR/', '');
         const cleanTimeOfInput = DOMPurify.sanitize(dirtyTimeOfInput);
         
-        /*Regex*/
+        //Regex
         if (/[a-f0-9]{20}$/i.exec(cleanURL) && cleanURL.length == 20) {
-          /* Validation */
+          //Validation
           if (await UserInputDAO.validate(cleanURL) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
             await UserInputDAO.postUserInput(cleanIdentifier,cleanURL,cleanTimeOfInput);
           }

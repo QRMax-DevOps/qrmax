@@ -55,7 +55,7 @@ export default function Load_LoginScreen() {
 							<p style={{margin:0, textAlign:"left", fontSize:"30px", fontWeight:"500", color:"white"}}>Login</p>
 							<p style={{textAlign:"left", fontSize:"20px", color:"#fff9"}}>G'day, let's get started</p>
 							
-							  <form>
+							  <form action="/homepage">
 							  <div style={{paddingTop:"60px", paddingBottom:"60px"}}>
 								  <div class="form-group" style={{paddingBottom:"20px"}} >
 									<input type="email" class="form-control" id="emailInput" aria-describedby="emailHelp" placeholder="Enter email" autocomplete="off"/>
