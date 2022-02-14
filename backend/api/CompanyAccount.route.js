@@ -8,6 +8,5 @@ router
     .post(CompanyAccountController.login)
     .put(CompanyAccountController.register)
     .patch(CompanyAccountController.patch)
-    .delete(CompanyAccountController.delete)
 
 module.exports = router;
