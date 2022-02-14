@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use(bodyParser.urlencoded({
     extended: true
-}));
+  }));
 
 app.use("/api/v1/QR/*", UserInput);
 app.use("/api/v1/Company/Account", CompanyAccount);

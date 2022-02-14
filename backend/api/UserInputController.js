@@ -28,7 +28,7 @@ class UserInputController {
         if (/[a-f0-9]{20}$/i.exec(cleanURL) && cleanURL.length == 20) {
           /* Validation */
           if (await UserInputDAO.validate(cleanURL) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
-            await UserInputDAO.postUserInput(cleanIdentifier,cleanURL,cleanTimeOfInput);
+            const UserInputResponse = await UserInputDAO.postUserInput(cleanIdentifier,cleanURL,cleanTimeOfInput);
           }
           else {
             throw "Validation failed";
