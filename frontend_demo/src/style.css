@@ -50,6 +50,12 @@ body {
 }
 
 #submitButton:focus{
+	outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 15px #9ecaed;
+}
+
+#submitButton:active{
 	background-color:#fff9;
 }
 

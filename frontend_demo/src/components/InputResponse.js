@@ -7,6 +7,7 @@ import ResponseGood from './Response_Good';
 import ResponseBad from './Response_Bad';
 
 import './test.css';
+import './login_style.css';
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -23,14 +24,6 @@ function useInterval(callback, delay) {
     }, delay);
     return () => clearInterval(id);
   }, [delay]);
-}
-
-function status(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 async function fetchAPI(code, requestOptions) {

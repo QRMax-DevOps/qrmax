@@ -15,7 +15,7 @@ function App() {
 	return (
 		<Routes>
 			<Route exact path="/" element={<Home/>}/>
-			<Route path="/login" element={Load_LoginScreen()}/>
+			<Route path="/login" element={<Load_LoginScreen/>}/>
 			<Route path="/inputresponse" element={<InputResponse/>}/>
 			<Route path="/gen_qr" element={<GenerateQR/>}/>
 			<Route path="/homepage" element={<Homepage/>}/>
