@@ -15,10 +15,16 @@ class Interactions extends Component {
                 </div>
                 <div class="MainContainer">
                     <div class="DisplayContainer">
-                        <p id="InteractionDisplayOne">Display Interactions here.</p>
-                        <p id="InteractionDisplayTwo">Display Interactions here.</p>
-                        <p id="InteractionDisplayThree">Display Interactions here.</p>
-                        <p id="InteractionDisplayFour">Display Interactions here.</p>
+                        <div id="InteractionDisplayOne">
+                            <p id="InteractionNames">East Wing Interactions</p>
+                        </div>
+                        <div id="InteractionDisplayTwo">
+                        <p id="InteractionNames">West Wing Interactions</p>
+                        </div>
+                        <div id="InteractionDisplayThree">
+                        <p id="InteractionNames">A Wing Wing Interactions</p>
+                        </div>
+                        <div id="InteractionDisplayFour">B Wing Interactions</div>
                     </div>
                 </div>
             </div>
