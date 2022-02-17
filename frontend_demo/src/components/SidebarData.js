@@ -24,7 +24,7 @@ export const SidebarData = [
     {
         title: "Interactions",
         icon: <QueryStatsIcon/>,
-        link: "/homepage"
+        link: "/interactions"
     },
     {
         title: "Exit",
