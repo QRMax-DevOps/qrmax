@@ -4,6 +4,9 @@ import './Homepage.css';
 import '../App.css';
 import Card from 'react-bootstrap/Card';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import GenerateQR from "./GenerateQR";
+import Login from "./Login";
 
 class Homepage extends Component {
     render() {
@@ -12,7 +15,18 @@ class Homepage extends Component {
             <div class="background">
 
                 <div>
+                    <Router>
+
                     <Sidebar/>
+                    <Routes>
+                        <Route path="/homepage" exact component={Homepage}/>
+                        <Route path="/homepage" exact component={Homepage}/>
+                        <Route path="/gen_qr" exact component={GenerateQR}/>
+                        <Route path="/homepage" exact component={Homepage}/>
+                        <Route path="/login" exact component={Login}/>
+                    </Routes>
+
+                    </Router>
                 </div>
                 <div class="MainContainer">
                     <div class="DisplayContainer">
