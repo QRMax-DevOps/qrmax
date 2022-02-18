@@ -47,15 +47,18 @@ class CompanyAccountController {
     //TOKEN INSTEAD OF CHECK COMPANY WILL JUST CHECK TOKEN AND EXECUTE ON CORRECT COMPANY
     static async patch(req, res) {
         const company = req.body.companyName;
-        const field = req.body.field;
-        const value = req.body.value;
+        const fields = req.body.fields;
+        const values = req.body.values;
+
+        const farray = fields.split(',');
+        const varray = values.split(',');
         //check if account exists
         if(await CompanyAccountDao.checkAccount(company)){
-            //check if field exists
-            if(await CompanyAccountDao.checkField(company, field)){
+            //check if fields exists
+            if(await CompanyAccountDao.checkFields(company, farray)){
                 //update field with value
-                const rjson = await CompanyAccountDao.patch(company, field, value);
-                res.json(rjson);
+                await CompanyAccountDao.patch(company, farray, varray);
+                res.json({status:"success"});
             }
             else{
                 res.json({status:"failure", cause:'no field exists'});
