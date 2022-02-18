@@ -22,7 +22,7 @@ class CompanyAccountDAO {
     static async register(uname, salt, hash){
         try{
             const registerDoc = {
-              username: uname,
+              companyName: uname,
               salt: salt,
               password: hash
             }
@@ -34,7 +34,7 @@ class CompanyAccountDAO {
     }
 
     static async getSalt(uname){
-        const result = await CompanyAccount.findOne({username:uname});
+        const result = await CompanyAccount.findOne({companyName:uname});
         if (!result){
             return {status:'failure', cause:'no such account'}
         }
@@ -42,7 +42,7 @@ class CompanyAccountDAO {
     }
 
     static async checkLogin(uname, hash){
-        let result = await CompanyAccount.findOne({username:uname, password:hash});
+        let result = await CompanyAccount.findOne({companyName:uname, password:hash});
         if (result){
             return {status:'success'};
         }
@@ -50,47 +50,53 @@ class CompanyAccountDAO {
     }
 
     static async checkAccount(company){
-        let result = await CompanyAccount.findOne({username:company});
+        let result = await CompanyAccount.findOne({companyName:company});
         if (result){
             return true;
         }
         return false;
     }
 
-    static async checkField(company, field){
-        let result = await CompanyAccount.findOne({username:company}, {[field]:{$exists:true}});
-        if (result){
-            return true;
-        }
-        return false;
-    }
-
-    static async patch(Company, field, value){
-        if(field === 'username'){
-            if(await this.checkAccount(value)){
-                return {status:'failure', cause:'username not avaliable'};
+    static async checkFields(company, fields){
+        let check = true;
+        for (let field of fields){
+            let result = await CompanyAccount.findOne({companyName:company}, {[field]:{$exists:true}});
+            if (!result){
+                check = false;
             }
-            await CompanyAccount.updateOne({username:Company}, {$set:{[field]:value}}, {upsert:true})
-            return {status:'success'};
         }
-        else if(field === 'password'){
-            // generate salt
-            const salt = uuidv4();
-            // hash password
-            const hash = pbkdf2 (value, salt, 80000, 32).toString('hex');
-            // store username salt and hash
-            await CompanyAccount.updateOne({username:Company}, {$set:{[field]:hash, salt:salt}}, {upsert:true})
-            // call login function
-            return {status:'success'};
-        }
-        else{
-            await CompanyAccount.updateOne({username:Company}, {$set:{[field]:value}}, {upsert:true})
-            return {status:'success'};
+        return check;
+    }
+
+    static async patch(Company, fields, values){
+        let i = -1;
+        console.log(fields);
+        console.log(values);
+        
+        for (let field of fields){
+            i++;
+            const value = values[i];
+            if(field === 'companyName'){
+                await CompanyAccount.updateOne({companyName:Company}, {$set:{companyName:value}}, {upsert:false})
+                Company = value;
+                //update all stores with new company name
+            }
+            else if(field === 'password'){
+                // generate salt
+                const salt = uuidv4();
+                // hash password
+                const hash = pbkdf2 (value, salt, 80000, 32).toString('hex');
+                // store companyName salt and hash
+                await CompanyAccount.updateOne({companyName:Company}, {$set:{[field]:hash, salt:salt}}, {upsert:false})
+            }
+            else{
+                await CompanyAccount.updateOne({companyName:Company}, {$set:{[field]:value}}, {upsert:false})
+            }
         }
     }
 
     static async delete(Company){
-        await CompanyAccount.deleteOne({username:Company})
+        await CompanyAccount.deleteOne({companyName:Company})
     }   
 
 }
