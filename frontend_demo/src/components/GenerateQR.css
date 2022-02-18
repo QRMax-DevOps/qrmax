@@ -1,16 +1,39 @@
-.mainContainer {
+.background {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+}
+
+#mainContainer {
     height:100%;
-    width: 30%;
+    width: auto;
+    
+}
+
+.SectionDivider {
     display: inline-block;
+}
+
+.mediaStack {
+    display: inline-flex;
     justify-content: center;
-    align-items: center;
-    margin-left: 500px;
+    text-align: center;
 }
 
-#QRDisplay {
-    height: 250px;
-    width: 250px;
+.mediaBackgorundSquare {
+    display: inline-flex;
     background-color: silver;
-    margin: auto;
 }
 
+#SelectDisplay {
+    display: inline;
+}
+
+.CodeTitle {
+    text-align: center;
+    width: auto;
+}
+
+.browseButton {
+    width: 30%;
+}
