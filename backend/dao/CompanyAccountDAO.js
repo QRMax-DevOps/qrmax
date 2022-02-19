@@ -1,10 +1,3 @@
-const { json } = require("express");
-const { v4: uuidv4 } = require('uuid');
-const pbkdf2  = require('pbkdf2-sha256');
-
-
-let CompanyAccount;
-
 class CompanyAccountDAO {
     static async injectDB(conn) {
         if (CompanyAccount) {
@@ -102,4 +95,3 @@ class CompanyAccountDAO {
 }
 
 module.exports = CompanyAccountDAO;
-

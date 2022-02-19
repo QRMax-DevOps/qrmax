@@ -11,8 +11,7 @@ class UserInputController {
       if (DOMPurify.isSupported) {
         //Sanitisation
         const dirtyIdentifier = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-        const dirtyURL = req.originalUrl;
-        const dirtyTimeOfInput = Date.now();
+        const dirtyURL = req.body.qrid;
         const sanitisedIdentifier = DOMPurify.sanitize(dirtyIdentifier);
         const identifierArray = sanitisedIdentifier.split('');
         let cleanIdentifier = "";
@@ -22,13 +21,12 @@ class UserInputController {
           }
         }
         const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/api/v1/QR/', '');
-        const cleanTimeOfInput = DOMPurify.sanitize(dirtyTimeOfInput);
         
         //Regex
         if (/[a-f0-9]{20}$/i.exec(cleanURL) && cleanURL.length == 20) {
           //Validation
           if (await UserInputDAO.validate(cleanURL) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
-            await UserInputDAO.postUserInput(cleanIdentifier,cleanURL,cleanTimeOfInput);
+            const UserInputResponse = await UserInputDAO.postUserInput(cleanIdentifier,cleanURL);
           }
           else {
             throw "Validation failed";
@@ -42,9 +40,9 @@ class UserInputController {
         throw "Sanitisation failed";
       }
 
-      res.json({ status: "success", cause:"" });
+      res.json({ status: "success"});
     } catch (e) {
-      res.json({ status: "fail", cause: e });
+      res.json({ status: "fail", cause: e});
     }
   }
 }

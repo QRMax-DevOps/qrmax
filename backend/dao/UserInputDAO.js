@@ -14,12 +14,12 @@ class UserInputDAO {
     }
   }
 
-  static async postUserInput(UserIdentifier, URL, TimeOfInput){
+  static async postUserInput(UserIdentifier, URL){
     try{
       const UserInputDoc = {
         UserIdentifier: UserIdentifier,
         URL: URL,
-        TimeOfInput: TimeOfInput
+		TimeOfInput: new Date(Date.now())
       }
       return await UserInput.insertOne(UserInputDoc)
     }
