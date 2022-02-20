@@ -70,8 +70,8 @@ class CompanyDAO {
 
     static async deleteStore(company, store){
       //find store to deletes ID and set ID to it
-      let ID = await Company.findOne({company:company}, {_id:0, storeCount:1});
-      ID = ID.storeCount;
+      let result = await Company.findOne({company:company}, {projection:{_id:0, stores:1}});
+      console.log(result.length);
       //delete store
       await Company.updateOne({company:company}, {stores:{$pull:{store:store}}})
       //for all ID greater than lower ID by 1

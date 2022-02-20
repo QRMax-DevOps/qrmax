@@ -12,7 +12,7 @@ class CompanyAccountController {
         //get salt from DAO using matching username
         let salt = await CompanyAccountDao.getSalt(company)
         let hash;
-        if (salt !== ""){
+        if (salt.status !== "failure"){
             // Hash password using salt
             // PBKDF2 with HMAC-SHA-256 as core hash run 80,000 iterations
             hash = pbkdf2 (req.body.password, salt, 80000, 32).toString('hex');
