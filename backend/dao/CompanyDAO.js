@@ -78,7 +78,7 @@ class CompanyDAO {
         }
       }
       //delete store
-      await Company.updateOne({company:company}, {$pull:{stores:{store:store}}}, {upsert:true})
+      await Company.updateOne({company:company}, {$pull:{stores:{store:store}}}, {upsert:false})
       //for all ID greater than ID
       result = await Company.findOne({company:company});
       //loop through and increment ID

@@ -1,5 +1,5 @@
-const StoreAccountDao = require("../dao/StoreAccountDAO.js");
-const CompanyDAO = require("../dao/CompanyDAO.js");
+const storeAccountDAO = require("../dao/StoreAccountDAO.js");
+const companyDAO = require("../dao/CompanyDAO.js");
 const pbkdf2  = require('pbkdf2-sha256')
 const { v4: uuidv4 } = require('uuid');
 
@@ -10,11 +10,11 @@ class StoreAccountController {
         const pword = req.body.password;
         const company = req.body.company;
         //check if company exists
-        if (!(await CompanyDAO.checkCompany(company))){
+        if (!(await companyDAO.checkCompany(company))){
             res.json({status:"failure", cause:'company does not exist'});
         }
         //check if account exists
-        if (await StoreAccountDao.checkAccount(company, username)){
+        if (await storeAccountDAO.checkAccount(company, username)){
             res.json({status:"failure", cause:'user already exists'});
         }
         else{
@@ -23,7 +23,7 @@ class StoreAccountController {
             // hash password
             const hash = pbkdf2 (pword, salt, 80000, 32).toString('hex');
             // store username salt and hash
-            StoreAccountDao.register(company, username, salt, hash);
+            storeAccountDAO.register(company, username, salt, hash);
             // call login function
             res.json({status:'success'});
         }
@@ -34,14 +34,14 @@ class StoreAccountController {
         const company = req.body.company
         const username = req.body.username;
         //get salt from DAO using matching username
-        let salt = await StoreAccountDao.getSalt(company, username);
+        let salt = await storeAccountDAO.getSalt(company, username);
         let hash;
         if (salt.status !== "failure"){
             // Hash password using salt
             // PBKDF2 with HMAC-SHA-256 as core hash run 80,000 iterations
             hash = pbkdf2 (req.body.password, salt, 80000, 32).toString('hex');
             //send hashed password to DAO to check if correct
-            const rjson = await StoreAccountDao.checkLogin(company, username, hash)
+            const rjson = await storeAccountDAO.checkLogin(company, username, hash)
             res.json(rjson);
         }
         else{
@@ -58,11 +58,11 @@ class StoreAccountController {
         const farray = fields.split(',');
         const varray = values.split(',');
         //check if account exists
-        if(await StoreAccountDao.checkAccount(company, username)){
+        if(await storeAccountDAO.checkAccount(company, username)){
             //check if fields exists
-            if(await StoreAccountDao.checkFields(company, username, farray)){
+            if(await storeAccountDAO.checkFields(company, username, farray)){
                 //update field with value
-                StoreAccountDao.patch(company, username, farray, varray);
+                storeAccountDAO.patch(company, username, farray, varray);
                 res.json({status:"success"});
             }
             else{
@@ -77,8 +77,8 @@ class StoreAccountController {
     static async delete(req, res) {
         const company = req.body.company;
         const username = req.body.username;
-        if(await StoreAccountDao.checkAccount(company, username)){
-            StoreAccountDao.delete(company, username);
+        if(await storeAccountDAO.checkAccount(company, username)){
+            storeAccountDAO.delete(company, username);
             res.json({status:"success"});
         }
         else{
@@ -86,13 +86,13 @@ class StoreAccountController {
         }     
     }
 
-    static async list(req, res){
+    static async listUsers(req, res){
         //get company name
         const company = req.body.company;
         //check if comapny exists
-        if(await CompanyDAO.checkCompany(company)){
+        if(await companyDAO.checkCompany(company)){
             //get all stores list
-            const rjson = await StoreAccountDao.getList(company);
+            const rjson = await storeAccountDAO.getUserList(company);
             //return list as json
             res.json(rjson);
         }
@@ -101,6 +101,91 @@ class StoreAccountController {
         }
         return res;
     }
+
+    static async listStores(req, res){
+        //get company name
+        const company = req.body.company;
+        const username = req.body.username;
+        //check if comapny exists
+        if(await companyDAO.checkCompany(company)){
+            //get all stores list
+            const rjson = await storeAccountDAO.getStoreList(company, username);
+            //return list as json
+            res.json(rjson);
+        }
+        else{
+            res.json({status:"failure", cause:"no such company"});
+        }
+        return res;
+    }
+
+    static async addStore(req, res){
+        const company = req.body.company;
+        const username = req.body.username;
+        const store = req.body.store;
+        //check company exists
+        if(await companyDAO.checkCompany(company)){
+            //check store exists
+            if(await companyDAO.checkStore(company, store)){
+                //check user exists
+                if(await storeAccountDAO.checkAccount(company, username)){
+                    //check user dosent already have store
+                    if(!(await storeAccountDAO.checkUserStore(company, username, store))){
+                        //add store to account
+                        storeAccountDAO.addUserStore(company, username, store);
+                        res.json({status:"success"})
+                    }
+                    else{
+                        res.json({status:"failure", cause:"user already has store"})
+                    }
+                }
+                else{
+                    res.json({status:"failure", cause:"no such account"})
+                }
+            }
+            else{
+                res.json({status:"failure", cause:"no such store"})
+            }
+        }
+        else{
+            res.json({status:"failure", cause:"no such company"})
+        }
+    }
+
+    static async deleteStore(req, res){
+        const company = req.body.company;
+        const username = req.body.username;
+        const store = req.body.store;
+        //check company exists
+        if(await companyDAO.checkCompany(company)){
+            //check store exists
+            if(await companyDAO.checkStore(company, store)){
+                //check user exists
+                if(await storeAccountDAO.checkAccount(company, username)){
+                    //check user already have store
+                    if(await storeAccountDAO.checkUserStore(company, username, store)){
+                        //add store to account
+                        storeAccountDAO.deleteUserStore(company, username, store);
+                        res.json({status:"success"})
+                    }
+                    else{
+                        res.json({status:"failure", cause:"user dosent have store"})
+                    }
+                }
+                else{
+                    res.json({status:"failure", cause:"no such account"})
+                }
+            }
+            else{
+                res.json({status:"failure", cause:"no such store"})
+            }
+        }
+        else{
+            res.json({status:"failure", cause:"no such company"})
+        }
+    }
+
+
 }
 
 

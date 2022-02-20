@@ -2,7 +2,8 @@ const CompanyAccountDao = require("../dao/CompanyAccountDAO.js");
 const CompanyDAO = require("../dao/CompanyDAO.js");
 const e = require("express");
 const { v4: uuidv4 } = require('uuid');
-const pbkdf2  = require('pbkdf2-sha256')
+const pbkdf2  = require('pbkdf2-sha256');
+const StoreAccountDAO = require("../dao/StoreAccountDAO.js");
 
 
 class CompanyAccountController {
@@ -74,6 +75,7 @@ class CompanyAccountController {
         if(await CompanyAccountDao.checkAccount(company)){
             CompanyAccountDao.delete(company);
             CompanyDAO.delete(company);
+            StoreAccountDAO.deleteAll(company);
             res.json({status:"success"});
         }
         else{

@@ -5,8 +5,6 @@ const router = express.Router();
 
 router
     .route("/")
-    .post(StoreAccountController.listStores)
-    .put(StoreAccountController.addStore)
-    .delete(StoreAccountController.deleteStore)
+    .post(StoreAccountController.listUsers)
 
 module.exports = router;
