@@ -71,16 +71,30 @@ class CompanyDAO {
     static async deleteStore(company, store){
       //find store to deletes ID and set ID to it
       let result = await Company.findOne({company:company}, {projection:{_id:0, stores:1}});
-      console.log(result.length);
+      let ID;
+      for(var i = 0; i < result.stores.length; i++){
+        if(result.stores[i].store === store){
+          ID = result.stores[i].ID;
+        }
+      }
       //delete store
-      await Company.updateOne({company:company}, {stores:{$pull:{store:store}}})
-      //for all ID greater than lower ID by 1
-      await Company.updateMany({company:company, stores:{ID:{$gt:{ID}}}}, {$inc:{ID:-1}});
+      await Company.updateOne({company:company}, {$pull:{stores:{store:store}}}, {upsert:true})
+      //for all ID greater than ID
+      result = await Company.findOne({company:company});
+      //loop through and increment ID
+      for(var i = 0; i < result.stores.length; i++){
+        console.log(result.stores[i].ID);
+        if(result.stores[i].ID > ID){
+          result.stores[i].ID -= 1;
+        }
+      }
       //decrement storeCount
-      await Company.updateOne({company:company}, {$inc:{storeCount: -1}})
+      result.storeCount -= 1;
+      //replace doc
+      await Company.updateOne({company:company}, {$set:{storeCount:result.storeCount, stores:result.stores}})
     }
 
-    static async patchStore(company, store){
+    static async patchStore(company, store, farray, varray){
       
     }
 }
