@@ -39,7 +39,7 @@ class StoreController {
 
     static async patch(req, res){
         const company = req.body.company;
-        const store = req.body.username
+        const store = req.body.store
         const fields = req.body.fields;
         const values = req.body.values;
 

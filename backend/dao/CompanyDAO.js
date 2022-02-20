@@ -56,11 +56,9 @@ class CompanyDAO {
       return false;
     }
 
-
     static async addStore(company, store){
-      await Company.updateOne({company:company}, {$push:{stores:store}})
+      await Company.updateOne({company:company}, {$push:{stores:[ID,store]}})
     }
-
 
     static async deleteStore(company, store){
       await Company.updateOne({company:company}, {stores:{$pull:{store:store}}})
