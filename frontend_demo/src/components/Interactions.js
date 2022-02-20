@@ -3,7 +3,6 @@ import Sidebar from './Sidebar';
 import './Interactions.css';
 import '../App.css';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import Chart from 'chart.js/auto';
 
 
 
@@ -41,9 +40,10 @@ class Interactions extends Component {
                         <div id="InteractionDisplayFour">
                             <p id ="InteractionNames">Code 4 Interactions</p>
                             <br/>
-                            <p>0</p>
+                            <p>110</p>
                         </div>
-                        
+                        <div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -52,4 +52,6 @@ class Interactions extends Component {
     }
 }
  
+
+
 export default Interactions;
