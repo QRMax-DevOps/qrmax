@@ -4,6 +4,7 @@ const UserInput = require("./api/UserInput.route.js");
 const CompanyAccount = require("./api/CompanyAccount.route.js");
 const StoreAccount = require("./api/StoreAccount.route.js");
 const Store = require("./api/Store.route.js");
+const StoreList = require("./api/StoreList.route.js");
 const bodyParser = require('body-parser')
 
 const app = express();
@@ -19,6 +20,7 @@ app.use("/api/v1/QR", UserInput);
 app.use("/api/v1/Company/Account", CompanyAccount);
 app.use("/api/v1/Store/Account", StoreAccount);
 app.use("/api/v1/Company/Store", Store)
+app.use("/api/v1/Store/Account/list", StoreList)
 app.use("*", (req, res) => res.status(404).json({ error: "not found" }));
 
 module.exports = app;

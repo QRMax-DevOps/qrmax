@@ -85,6 +85,22 @@ class StoreAccountController {
             res.json({status:"failure", cause:'no such account'});
         }     
     }
+
+    static async list(req, res){
+        //get company name
+        const company = req.body.company;
+        //check if comapny exists
+        if(await CompanyDAO.checkCompany(company)){
+            //get all stores list
+            const rjson = await StoreAccountDao.getList(company);
+            //return list as json
+            res.json(rjson);
+        }
+        else{
+            res.json({status:"failure", cause:"no such company"});
+        }
+        return res;
+    }
 }
 
 

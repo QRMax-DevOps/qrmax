@@ -102,6 +102,12 @@ class StoreAccountDAO {
             }
         }
     }
+
+    static async getList(company){
+      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1}}).toArray();
+      console.log(result);
+      return result;
+    }
 }
 
 module.exports = StoreAccountDAO;
