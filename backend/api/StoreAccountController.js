@@ -122,17 +122,18 @@ class StoreAccountController {
     static async addStore(req, res){
         const company = req.body.company;
         const username = req.body.username;
-        const store = req.body.store;
+        const stores = req.body.stores;
+        const sarray = stores.split(',');
         //check company exists
         if(await companyDAO.checkCompany(company)){
             //check store exists
-            if(await companyDAO.checkStore(company, store)){
+            if(await companyDAO.checkStores(company, sarray)){
                 //check user exists
                 if(await storeAccountDAO.checkAccount(company, username)){
                     //check user dosent already have store
-                    if(!(await storeAccountDAO.checkUserStore(company, username, store))){
+                    if(!(await storeAccountDAO.checkUserStores(company, username, sarray))){
                         //add store to account
-                        storeAccountDAO.addUserStore(company, username, store);
+                        storeAccountDAO.addUserStore(company, username, sarray);
                         res.json({status:"success"})
                     }
                     else{
@@ -155,17 +156,18 @@ class StoreAccountController {
     static async deleteStore(req, res){
         const company = req.body.company;
         const username = req.body.username;
-        const store = req.body.store;
+        const stores = req.body.stores;
+        const sarray = stores.split(',');
         //check company exists
         if(await companyDAO.checkCompany(company)){
             //check store exists
-            if(await companyDAO.checkStore(company, store)){
+            if(await companyDAO.checkStores(company, sarray)){
                 //check user exists
                 if(await storeAccountDAO.checkAccount(company, username)){
                     //check user already have store
-                    if(await storeAccountDAO.checkUserStore(company, username, store)){
+                    if(await storeAccountDAO.checkUserStores(company, username, sarray)){
                         //add store to account
-                        storeAccountDAO.deleteUserStore(company, username, store);
+                        storeAccountDAO.deleteUserStore(company, username, sarray);
                         res.json({status:"success"})
                     }
                     else{

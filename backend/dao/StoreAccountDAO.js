@@ -70,9 +70,7 @@ class StoreAccountDAO {
     static async checkFields(company, username, fields){
       let check = true;
       for (let field of fields){
-          console.log(field);
           let result = await StoreAccount.findOne({company:company, username:username, [field]:{$exists:true}});
-          console.log(result);
           if (!result){
               check = false;
           }
@@ -114,50 +112,57 @@ class StoreAccountDAO {
       return result;
     }
 
-    static async addUserStore(company, username, store){
-      //get the store count from parent and set ID to it
-      let ID = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, storeCount:1}})
-      ID = ID.storeCount;
-      ID += 1;
-      console.log(ID)
-      //add store
-      StoreAccount.updateOne({company:company, username:username}, {$push:{stores:{ID:ID,store:store}}})
-      //increment storeCount
-      StoreAccount.updateOne({company:company}, {$set:{storeCount:ID}})
-    }
-
-    static async deleteUserStore(company, username, store){
-      //find store to deletes ID and set ID to it
-      let result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, stores:1}});
+    static async addUserStore(company, username, stores){
       let ID;
-      for(var i = 0; i < result.stores.length; i++){
-        if(result.stores[i].store === store){
-          ID = result.stores[i].ID;
-        }
+      for (let s of stores){
+        //get the store count from parent and set ID to it
+        ID = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, storeCount:1}})
+        ID = ID.storeCount;
+        ID += 1;
+        //add store
+        await StoreAccount.updateOne({company:company, username:username}, {$push:{stores:{ID:ID,store:s}}})
+        //increment storeCount
+        await StoreAccount.updateOne({company:company}, {$set:{storeCount:ID}})
       }
-      //delete store
-      await StoreAccount.updateOne({company:company, username:username}, {$pull:{stores:{store:store}}}, {upsert:false})
-      //for all ID greater than ID
-      result = await StoreAccount.findOne({company:company});
-      //loop through and increment ID
-      for(var i = 0; i < result.stores.length; i++){
-        console.log(result.stores[i].ID);
-        if(result.stores[i].ID > ID){
-          result.stores[i].ID -= 1;
-        }
-      }
-      //decrement storeCount
-      result.storeCount -= 1;
-      //replace doc
-      await StoreAccount.updateOne({company:company, username:username}, {$set:{storeCount:result.storeCount, stores:result.stores}})
     }
 
-    static async checkUserStore(company, username, store){
-      let result = await StoreAccount.findOne({company:company, username:username, stores:{$elemMatch:{store:store}}});
-      if (result){
-          return true;
+    static async deleteUserStore(company, username, stores){
+      let result
+      let ID;
+      for (let s of stores){
+        //find store to deletes ID and set ID to it
+        result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, stores:1}});
+        for(var i = 0; i < result.stores.length; i++){
+          if(result.stores[i].store === s){
+            ID = result.stores[i].ID;
+          }
+        }
+        //delete store
+        await StoreAccount.updateOne({company:company, username:username}, {$pull:{stores:{store:s}}}, {upsert:false})
+        //for all ID greater than ID
+        result = await StoreAccount.findOne({company:company});
+        //loop through and increment ID
+        for(var i = 0; i < result.stores.length; i++){
+          if(result.stores[i].ID > ID){
+            result.stores[i].ID -= 1;
+          }
+        }
+        //decrement storeCount
+        result.storeCount -= 1;
+        //replace doc
+        await StoreAccount.updateOne({company:company, username:username}, {$set:{storeCount:result.storeCount, stores:result.stores}})
       }
-      return false;
+    }
+
+    static async checkUserStores(company, username, stores){
+      for (let s of stores){
+        let result = await StoreAccount.findOne({company:company, username:username, stores:{$elemMatch:{store:s}}});
+        if (result){
+          continue;
+        }
+        else return false;
+      }
+      return true;
     }
 
     static async deleteAll(company){

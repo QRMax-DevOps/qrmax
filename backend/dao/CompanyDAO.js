@@ -57,6 +57,16 @@ class CompanyDAO {
       return false;
     }
 
+    static async checkStores(company, sarray){
+      for (let s of sarray){
+        let result = await Company.findOne({company:company, stores:{$elemMatch:{store:s}}});
+        if (!result){
+          return false;
+        }
+      }
+      return true;
+    }
+
     static async addStore(company, store){
       //get the store count from parent and set ID to it
       let ID = await Company.findOne({company:company}, {projection:{_id:0, storeCount:1}})
@@ -83,7 +93,6 @@ class CompanyDAO {
       result = await Company.findOne({company:company});
       //loop through and increment ID
       for(var i = 0; i < result.stores.length; i++){
-        console.log(result.stores[i].ID);
         if(result.stores[i].ID > ID){
           result.stores[i].ID -= 1;
         }
@@ -94,8 +103,12 @@ class CompanyDAO {
       await Company.updateOne({company:company}, {$set:{storeCount:result.storeCount, stores:result.stores}})
     }
 
+    static async checkFields(company, store, farray){
+
+    }
+
     static async patchStore(company, store, farray, varray){
-      
+      //if name patch the 
     }
 }
 
