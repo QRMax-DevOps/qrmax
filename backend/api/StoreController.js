@@ -66,7 +66,7 @@ class StoreController {
         const company = req.body.company;
         const store = req.body.store;
         if(await CompanyDao.checkCompany(company)){
-            //check to ensure store dosent exists
+            //check to ensure store dose exists
             if(await CompanyDao.checkStore(company, store)){
                 CompanyDao.deleteStore(company, store)
                 res.json({status:"success"})

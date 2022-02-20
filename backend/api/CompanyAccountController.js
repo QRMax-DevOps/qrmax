@@ -1,16 +1,16 @@
 const CompanyAccountDao = require("../dao/CompanyAccountDAO.js");
 const CompanyDAO = require("../dao/CompanyDAO.js");
 const e = require("express");
+const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256')
 
 
 class CompanyAccountController {
     static async login(req, res) {
         //get submitted username
-        const uname = req.body.company;
+        const company = req.body.company;
         //get salt from DAO using matching username
-        let salt = "test2" // <-- testing
-        //CompanyAccountDao.getSalt(uname) <-- actual code
+        let salt = await CompanyAccountDao.getSalt(company)
         let hash;
         if (salt !== ""){
             // Hash password using salt
@@ -18,8 +18,7 @@ class CompanyAccountController {
             hash = pbkdf2 (req.body.password, salt, 80000, 32).toString('hex');
         }
         //send hashed password to DAO to check if correct
-        //res.json(CompanyAccountDao.checkLogin(username, hash)); <-- actual code
-        res.json({response:hash}); // <-- testing
+        res.json(await CompanyAccountDao.checkLogin(company, hash));
     } 
 
     static async register(req, res) {

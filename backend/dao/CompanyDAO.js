@@ -26,6 +26,7 @@ class CompanyDAO {
         try{
             const registerDoc = {
               company: company,
+              storeCount:0,
               stores:[]
             }
             return await Company.insertOne(registerDoc)
@@ -44,12 +45,12 @@ class CompanyDAO {
     }
 
     static async getList(company){
-      let result = await Company.findOne({company:company}, {_id:0, company:0});
+      let result = await Company.findOne({company:company}, {projection:{_id:0, storeCount:0, company:0}});
       return result;
     }
 
-    static async checkStore(company, store){
-      let result = await Company.findOne({company:company, stores:store});
+    static async checkStore(company, fstore){
+      let result = await Company.findOne({company:company, stores:{$elemMatch:{store:fstore}}});
       if (result){
           return true;
       }
@@ -57,11 +58,26 @@ class CompanyDAO {
     }
 
     static async addStore(company, store){
-      await Company.updateOne({company:company}, {$push:{stores:[ID,store]}})
+      //get the store count from parent and set ID to it
+      let ID = await Company.findOne({company:company}, {projection:{_id:0, storeCount:1}})
+      ID = ID.storeCount;
+      ID += 1;
+      //add store
+      Company.updateOne({company:company}, {$push:{stores:{ID:ID,store:store}}})
+      //increment storeCount
+      Company.updateOne({company:company}, {$set:{storeCount:ID}})
     }
 
     static async deleteStore(company, store){
+      //find store to deletes ID and set ID to it
+      let ID = await Company.findOne({company:company}, {_id:0, storeCount:1});
+      ID = ID.storeCount;
+      //delete store
       await Company.updateOne({company:company}, {stores:{$pull:{store:store}}})
+      //for all ID greater than lower ID by 1
+      await Company.updateMany({company:company, stores:{ID:{$gt:{ID}}}}, {$inc:{ID:-1}});
+      //decrement storeCount
+      await Company.updateOne({company:company}, {$inc:{storeCount: -1}})
     }
 
     static async patchStore(company, store){
