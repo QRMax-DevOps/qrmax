@@ -7,8 +7,6 @@ const pbkdf2  = require('pbkdf2-sha256')
 class CompanyAccountController {
     static async login(req, res) {
         //get submitted username
-<<<<<<< Updated upstream
-        let uname = req.body.username;
         const uname = req.body.company;
         //get salt from DAO using matching username
         let salt = "test2" // <-- testing
@@ -23,25 +21,6 @@ class CompanyAccountController {
         //res.json(CompanyAccountDao.checkLogin(username, hash)); <-- actual code
         res.json({response:hash}); // <-- testing
     } 
-
-    static async patch(req, res) {
-        //check if valid token
-        //if valid pass to DAO
-        //otherwise return json fail and cause
-        res.json({status:"alive"});
-    } 
-
-    static async updateUsername() {
-        
-    } 
-
-    static async updatePassword() {
-        
-    } 
-
-    static async updateSettings(){
-
-    }
 
     static async register(req, res) {
         // get username and password

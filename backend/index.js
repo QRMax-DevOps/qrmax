@@ -21,7 +21,7 @@ MongoClient.connect(process.env.QRMAX_DB_URI, {
     process.exit(1);
   })
   .then(async (client) => {
-    await UserInputDAO.injectDB(client)
+    await UserInputDAO.injectDB(client);
     await CompanyAccountDAO.injectDB(client);
     await StoreAccountDAO.injectDB(client);
     await CompanyDAO.injectDB(client);

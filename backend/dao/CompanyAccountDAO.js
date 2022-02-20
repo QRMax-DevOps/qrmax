@@ -1,11 +1,3 @@
-class CompanyAccountDAO {
-    static async TStub(){
-        return true;
-    }
-
-    static async FStub(){
-        return false;
-    }
 const { json } = require("express");
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
