@@ -2,6 +2,9 @@ const app = require("./server.js");
 const mongodb = require("mongodb");
 const dotenv = require("dotenv");
 const UserInputDAO = require("./dao/UserInputDAO.js");
+const CompanyAccountDAO = require("./dao/CompanyAccountDAO.js");
+const StoreAccountDAO = require("./dao/StoreAccountDAO.js");
+const CompanyDAO = require("./dao/CompanyDAO.js");
 
 dotenv.config();
 const MongoClient = mongodb.MongoClient;
@@ -19,6 +22,9 @@ MongoClient.connect(process.env.QRMAX_DB_URI, {
   })
   .then(async (client) => {
     await UserInputDAO.injectDB(client)
+    await CompanyAccountDAO.injectDB(client);
+    await StoreAccountDAO.injectDB(client);
+    await CompanyDAO.injectDB(client);
     app.listen(port, () => {
       console.log("listening on port ", port);
     });
