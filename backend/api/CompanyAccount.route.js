@@ -7,5 +7,7 @@ router
     .route("/")
     .post(CompanyAccountController.login)
     .patch(CompanyAccountController.patch)
+    .put(CompanyAccountController.register)
+    .delete(CompanyAccountController.delete)
 
 module.exports = router;
