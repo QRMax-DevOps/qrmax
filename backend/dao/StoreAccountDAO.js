@@ -84,11 +84,15 @@ class StoreAccountDAO {
         
         for (let field of fields){
             i++;
-            const value = values[i];
-            if(field === 'company' || 'salt'){
-                
+            let value = values[i];
+            if(field == 'company' || field == 'salt'){
+                //dont do anyhting lol just return a success anyway
             }
-            else if(field === 'password'){
+            else if(field == 'username'){
+              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
+              username = value;
+            }
+            else if(field == 'password'){
                 // generate salt
                 const salt = uuidv4();
                 // hash password
