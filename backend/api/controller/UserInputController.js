@@ -1,4 +1,4 @@
-const UserInputDAO = require("../dao/UserInputDAO.js");
+const UserInputDAO = require("../../dao/UserInputDAO.js");
 const createDOMPurify = require("dompurify");
 const {JSDOM} = require("jsdom");
 const e = require("express");
