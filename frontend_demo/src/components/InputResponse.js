@@ -6,6 +6,8 @@ import ResponseProcessing from './Response_Processing';
 import ResponseGood from './Response_Good';
 import ResponseBad from './Response_Bad';
 
+import {log, getBetterRejectionReason, fetchAPI, RunFetch2} from '../services/MiddlewareSuite';
+
 import './test.css';
 import './login_style.css';
 
@@ -26,45 +28,6 @@ function useInterval(callback, delay) {
   }, [delay]);
 }
 
-async function fetchAPI(code, requestOptions) {
-    return fetch('http://3.25.134.204/api/v1/QR/'+code, requestOptions)
-        .then(response => {
-            const data = response.json();
-			
-			// get error message from body or default to response statusText
-			const info = (data && data.message) || response.statusText;
-			
-            if (!response.ok) {
-				console.log(" - Log: API Response ... Fail! (response: "+info+")");
-				return false;
-				
-            } else {
-				console.log(" - Log: API Response ... Pass! (response: "+info+")");
-				return true;
-			}
-        })
-        .catch(info => {
-            console.error(' - Log: API Response ... Unexpected error:', info);
-			return false;
-        });
-}
-
-var testGlobal = null;
-
-async function RunFetch(code) {
-	// GET request using fetch with basic error handling
-	console.log(" - Log: Fetching via: \"http://3.25.134.204/api/v1/QR/"+code+"\"");
-	
-	const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-    };
-	const asyncFetch = await fetchAPI(code, requestOptions);
-	
-	testGlobal=asyncFetch;
-}
-
-
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -79,6 +42,8 @@ function checkFormat(data) {
 		return true;
 	}
 }
+
+var GLOBAL = [null,null]
 
 export default function InputResponse() {
 	
@@ -111,7 +76,7 @@ export default function InputResponse() {
 				}
 			} else {
 				//Failure check
-				if(testGlobal!="wait") {
+				if(GLOBAL[1]!="wait") {
 					if(formatState === false || apiResponse === false) {
 						setCheckPassed(false);
 						setCheckComplete(true);
@@ -124,12 +89,12 @@ export default function InputResponse() {
 
 						console.log(" - Log: Check passed.")
 					}
-					else if(formatState === true && testGlobal === null) {
-						RunFetch(qrData);
-						testGlobal = "wait";
+					else if(formatState === true && GLOBAL[0] === null) {
+						RunFetch2(qrData,GLOBAL);
+						GLOBAL[1] = "wait";
 					}
-					else if(formatState === true && (testGlobal === true || testGlobal === false)) {
-						setApiResponse(testGlobal);
+					else if(formatState === true && (GLOBAL[0] === true || GLOBAL[0] === false)) {
+						setApiResponse(GLOBAL[0]);
 					}
 				}
 			}

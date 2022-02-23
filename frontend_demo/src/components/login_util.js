@@ -18,6 +18,3 @@ function useInterval(callback, delay) {
 }
 
 export { useInterval }
-
-//On submit
-// - Disable button
