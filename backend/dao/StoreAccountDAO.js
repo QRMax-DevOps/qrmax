@@ -83,12 +83,15 @@ class StoreAccountDAO {
       let i = -1;
         for (let field of fields){
             i++;
-            const value = values[i];
-            /*
-            if(field === "company" || "salt"){ //check logged in blah blah
-                console.log("Test1");
-            } */
-            if(field === "password"){
+            let value = values[i];
+            if(field == 'company' || field == 'salt'){
+                //dont do anyhting lol just return a success anyway
+            }
+            else if(field == 'username'){
+              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
+              username = value;
+            }
+            else if(field == 'password'){
                 // generate salt
               const salt = uuidv4();
                 // hash password
@@ -115,7 +118,7 @@ class StoreAccountDAO {
     }
 
     static async getUserList(company){
-      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1}}).toArray();
+      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1, stores:1}}).toArray();
       return result;
     }
 
