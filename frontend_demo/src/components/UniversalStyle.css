@@ -1,0 +1,91 @@
+.FloatingContainer {
+	border-radius: 10px;
+	border: 1px solid black;
+	padding: 10px;
+	margin: 10px auto;
+	width:95%;
+	height:100%;
+	
+	display: flex;
+    align-items: center;
+    justify-content: center;
+	flex-direction: column;
+}
+
+button {
+	
+}
+
+nav {width:100%;}
+nav ul{height:250px; padding-left:0px; padding-right:10px; width:100%; background-color: #DEDEDE; list-style-type:none}
+nav ul{overflow:hidden; overflow-y:scroll;}
+
+
+label {
+	color: black;
+}
+
+#ViewerContainer {
+	width:100%;
+}
+
+#SearchContainer {
+	padding:0px;
+	margin-top:0px;
+	margin-bottom: 20px;
+}
+
+#SearchContainer label, input {
+	margin:5px;
+}
+
+#CreateAccountFormContainer {
+	border-radius: 10px;
+	border: 1px solid black;
+	
+	padding:20px;
+	width:100%;
+	
+	display: flex;
+    justify-content: space-around;
+	align-items: center;
+	flex-direction: column;
+}
+
+.SubmitButtonContainer {
+	margin:0px;
+	margin-top:10px;
+	padding:0px;
+	
+	width:100%;
+}
+
+.InputContainer {
+	margin:10px;
+	padding:0px;
+	
+	width:100%;
+	
+	display: flex;
+    justify-content: space-between;
+	align-items: center;
+	flex-direction: row;
+}
+
+.DataField {
+	padding: 5px;
+	margin: 5px;
+	border-radius: 10px;
+	background-color: white;
+}
+
+.InteractButton {
+	width:200px;
+	margin: 5px;
+}
+
+.AccountDisplayButton {
+	width:100%;
+	margin: 5px;
+}
+

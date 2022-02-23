@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
 import GreenTickImage from '../graphics/tick.png'
 import Button from "./Custom_Button.js";
-import './test.css';
 
 class ResponseGood extends React.Component {
 	
  render() {
-		return (
-			 <div>
+         return (
+             <div>
 				<Container id="MainBox_Out" style={{margin: 0, position: "absolute", height:"100%", width:"70%", top: "50%", left: "50%", transform: "translate(-50%, -50%)",  minWidth:"500px", minHeight:"775px"}}>
 					<Col id="MainBox_In" className="text-center d-flex flex-column justify-content-between" style={{height:"100%", padding:"10px"}}>
 					
@@ -27,15 +26,14 @@ class ResponseGood extends React.Component {
 									and will help us improve<br/>
 									this service.
 								</p>
-								
 								<br/>
 								<Button id="FeedbackButton" style={{height:"70px", width:"250px"}}>Give Feedback</Button>
 							</div>
 						</Row>
 						
 						<Row id="Bottom" style={{alignItems:'flex-end'}}>
-							<div className="text-center" style={{marginTop:"0", width:"500px", margin:"auto"}}>
-								<p style={{color:"grey", fontWeight:"500", fontSize:"15px"}}>
+							<div className="text-center" style={{marginTop:"0", width:"350px", margin:"auto"}}>
+								<p style={{color:"grey", fontWeight:"500"}}>
 									We acknowledge the Traditional Custodians of the Land, and pay respects to their Elders past and present.
 								</p>
 							</div>
@@ -43,8 +41,8 @@ class ResponseGood extends React.Component {
 						
 					</Col>
 				</Container>
-			 </div>
-		 );
+             </div>
+         );
      }
  }
  
