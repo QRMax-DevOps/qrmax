@@ -12,24 +12,24 @@ class Homepage extends Component {
     render() {
         
         return (
-            <div class="background">
+            <div className="background">
 
                 <div>
-                    <Router>
+                    {/*<Router>*/}
 
                     <Sidebar/>
-                    <Routes>
+                    {/*<Routes>
                         <Route path="/homepage" exact component={Homepage}/>
                         <Route path="/homepage" exact component={Homepage}/>
                         <Route path="/gen_qr" exact component={GenerateQR}/>
                         <Route path="/homepage" exact component={Homepage}/>
                         <Route path="/login" exact component={Login}/>
-                    </Routes>
+                    </Routes>*/}
 
-                    </Router>
+                    {/*</Router>*/}
                 </div>
-                <div class="MainContainer">
-                    <div class="DisplayContainer">
+                <div className="MainContainer">
+                    <div className="DisplayContainer">
                         
                         <div id="dropContainer">
                             <DropdownButton id="displayDrop" title="Display">
@@ -39,7 +39,7 @@ class Homepage extends Component {
                                 <Dropdown.Item>B Wing</Dropdown.Item>
                             </DropdownButton>
                         </div>
-                        <div class="DisplayContainer">
+                        <div className="DisplayContainer">
                             <Card id="DisplayPreview">
 
                             </Card>

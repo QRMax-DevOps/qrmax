@@ -7,6 +7,7 @@ import InputResponse from './components/InputResponse';
 import GenerateQR from './components/GenerateQR';
 import Homepage from './components/Homepage';
 import Interactions from './components/Interactions';
+import DisplayMngr from './components/DisplayMngr';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -21,6 +22,7 @@ function App() {
 			<Route path="/gen_qr" element={<GenerateQR/>}/>
 			<Route path="/homepage" element={<Homepage/>}/>
 			<Route path="/interactions" element={<Interactions/>}/>
+			<Route path="/display_mngr" element={<DisplayMngr/>}/>
  		</Routes>
 	)
 }

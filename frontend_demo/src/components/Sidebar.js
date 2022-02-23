@@ -8,23 +8,21 @@ import {Link} from 'react-router-dom';
 
 function Sidebar() {
     return(
-        <div class="sidebar">
+        <div className="sidebar">
             <div>
-                <h6 class="SidebarTitle">Dashboard</h6>
+                <h6 className="SidebarTitle">Dashboard</h6>
             </div>
             <br/>
-            <div class="ListContainer">
-                <ul class="SidebarList">
+            <div className="ListContainer">
+                <ul className="SidebarList">
                     {SidebarData.map((val, key) => {
                         return (
-                            <div>
                                 <li id="row" key={key}>
                                     <Link to={val.link}>
-                                        <p class="navIcon">{val.icon}</p>
-                                        <p class="navTitle">{val.title}</p>
+                                        <p className="navIcon">{val.icon}</p>
+                                        <p className="navTitle">{val.title}</p>
                                     </Link>
                                 </li>
-                            </div>
                             );
                     })}
                 </ul>
