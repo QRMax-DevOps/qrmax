@@ -80,7 +80,7 @@ class CompanyDAO {
 
     static async deleteStore(company, store){
       //find store to deletes ID and set ID to it
-      let result = await Company.findOne({company:company}, {projection:{_id:0, stores:1}});
+      let result = await Company.findOne({company:company}, {projection:{_id:0, stores:1, stores:{displays:0}}});
       let ID;
       for(var i = 0; i < result.stores.length; i++){
         if(result.stores[i].store === store){
@@ -108,7 +108,7 @@ class CompanyDAO {
     }
 
     static async patchStore(company, store, farray, varray){
-      //if name patch the 
+      
     }
 }
 

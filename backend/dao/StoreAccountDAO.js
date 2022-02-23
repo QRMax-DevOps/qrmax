@@ -118,12 +118,12 @@ class StoreAccountDAO {
     }
 
     static async getUserList(company){
-      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1, stores:1}}).toArray();
+      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1, stores:1, stores:{displays:0}}}).toArray();
       return result;
     }
 
     static async getStoreList(company, username){
-      let result = await StoreAccount.find({company:company, username:username}, {projection:{_id:0, stores:1}}).toArray();
+      let result = await StoreAccount.find({company:company, username:username}, {projection:{_id:0, stores:1,  stores:{displays:0}}}).toArray();
       return result;
     }
 
@@ -146,7 +146,7 @@ class StoreAccountDAO {
       let ID;
       for (let s of stores){
         //find store to deletes ID and set ID to it
-        result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, stores:1}});
+        result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, stores:1,  stores:{displays:0}}});
         for(var i = 0; i < result.stores.length; i++){
           if(result.stores[i].store === s){
             ID = result.stores[i].ID;
