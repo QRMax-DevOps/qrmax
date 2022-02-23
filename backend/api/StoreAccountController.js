@@ -56,7 +56,23 @@ class StoreAccountController {
         const values = req.body.values;
 
         const farray = fields.split(',');
-        const varray = values.split(',');
+        const varray = [];
+
+        let i = 0;
+        for (let f of farray) {
+            if (f === "stores") {
+                let stores;
+                stores = values.split('[{');
+                stores = stores[1].split('}]');
+                stores = stores[0].split('},{');
+                varray.push(stores);
+            }
+            else {
+                varray.push(values.split(',')[i]);
+                i++;
+            }
+        }
+
         //check if account exists
         if(await storeAccountDAO.checkAccount(company, username)){
             //check if fields exists

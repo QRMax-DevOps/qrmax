@@ -81,23 +81,35 @@ class StoreAccountDAO {
 
     static async patch(Company, username, fields, values){
       let i = -1;
-        
         for (let field of fields){
             i++;
             const value = values[i];
-            if(field === 'company' || 'salt'){
-                
-            }
-            else if(field === 'password'){
+            /*
+            if(field === "company" || "salt"){ //check logged in blah blah
+                console.log("Test1");
+            } */
+            if(field === "password"){
                 // generate salt
-                const salt = uuidv4();
+              const salt = uuidv4();
                 // hash password
-                const hash = pbkdf2 (value, salt, 80000, 32).toString('hex');
+              const hash = pbkdf2 (value, salt, 80000, 32).toString('hex');
                 // store company salt and hash
-                await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:hash, salt:salt}}, {upsert:false})
+              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:hash, salt:salt}}, {upsert:false});
+            }
+            else if(field === "stores") {
+              await StoreAccount.updateOne({company:Company, username:username}, {$pull:{stores:{}}}, {upsert:false});
+              for (let val of values[i]) {
+                let temp = val.split(',');
+                let temp1 = temp[0].split(':');
+                let temp2 = temp[1].split(':');
+                console.log(temp1);
+                console.log(temp2);
+                
+                await StoreAccount.updateOne({company:Company, username:username}, {$push:{stores:{ID:temp1[1], store:temp2[1]}}});
+              }
             }
             else{
-                await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false})
+              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
             }
         }
     }
