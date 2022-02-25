@@ -54,7 +54,79 @@ class DisplayDAO {
       console.log(result)
       return result;
     }
-
+	
+    static async checkQR(company, store, display, QRID){
+      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{QRID:QRID}}});
+      if(result){
+        return true;
+      }
+      return false;
+    }
+	
+    static async addQR(company, store, display, linkedURI){
+      //generate display id
+	  const QRID = uuidv4();
+	  
+	  let cleanQRID = "";
+	  for (let sub of QRID) {
+		  if (sub != '-') {
+			cleanQRID+=sub;
+		  }
+	  }
+	  cleanQRID = cleanQRID.slice(0,20);
+	  
+	  const timeCreated = new Date(Date.now());
+	  
+      let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1}})
+      ID = ID.mediaCount;
+      ID += 1;
+	  try {
+      	//add qr
+      	Display.updateOne({company:company, store:store, display:display}, {$push:{media:{QRID:cleanQRID,timeCreated:timeCreated,linkedURI:linkedURI,voteCount:0}}});
+      	//increment mediaCount
+      	Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
+      }
+      catch(e){
+		  console.error('unable to add new display:' + e);
+      }
+  	}
+	  
+    static async deleteQR(company, store, display, QRID){
+	  //delete QR
+      Display.updateOne({company:company, store:store, display:display},{$pull:{media:{QRID:QRID}}}, {upsert:false});
+      let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1}})
+      ID = ID.mediaCount;
+      ID -= 1;
+      //increment mediaCount
+      Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
+    }
+	
+    static async listQR(company, store, display){
+      var result = await Display.find({company:company, store:store, display:display}, {projection:{_id:0, company:0, store:0, displayID:0, mediaCount:0, media:1, media:{voteCount:0}}}).toArray();
+      return result;
+    }
+	
+    static async patchQR(company, store, display, QRID, fields, values){
+      let i = -1;
+	  console.log(fields);
+	  console.log(values);
+      for (let field of fields){
+        i++;
+        let value = values[i];
+        if(field == 'QRID'){
+          //dont do anyhting lol just return a success anyway
+        }
+        else if (field == 'timeCreated'){
+          await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.timeCreated":new Date(Date.now())}}, {upsert:false});
+        }
+        else if (field == 'linkedURI'){
+          await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.linkedURI":value}}, {upsert:false});
+        }
+		else {
+		  await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":value}}, {upsert:false});
+		}
+      }
+	}
 }
 module.exports = DisplayDAO;
 
