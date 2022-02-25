@@ -13,7 +13,7 @@ class StoreController {
             res.json({status:"failure", cause:"no such store"})
         }
         //check if display already exists
-        else if(await DisplayDAO.checkDisplay(company, store, display)){
+        else if(!await DisplayDAO.checkDisplay(company, store, display)){
             res.json({status:"failure", cause:"no such display"})
         }
         //create display(add to store as callback)
