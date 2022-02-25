@@ -1,5 +1,5 @@
 const express = require("express");
-const UserInputController = require("./UserInputController.js");
+const UserInputController = require("../controller/UserInputController.js");
 
 const router = express.Router();
 

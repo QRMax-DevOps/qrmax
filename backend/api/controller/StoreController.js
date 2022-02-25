@@ -1,4 +1,4 @@
-const CompanyDao = require("../dao/CompanyDAO.js");
+const CompanyDao = require("../../dao/CompanyDAO.js");
 
 class StoreController {
     static async list(req, res){

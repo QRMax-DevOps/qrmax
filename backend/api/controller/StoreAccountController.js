@@ -1,5 +1,5 @@
-const storeAccountDAO = require("../dao/StoreAccountDAO.js");
-const companyDAO = require("../dao/CompanyDAO.js");
+const storeAccountDAO = require("../../dao/StoreAccountDAO.js");
+const companyDAO = require("../../dao/CompanyDAO.js");
 const pbkdf2  = require('pbkdf2-sha256')
 const { v4: uuidv4 } = require('uuid');
 
