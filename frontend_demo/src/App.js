@@ -3,8 +3,8 @@ import { createBrowserHistory } from "history";
 import {Routes, Route} from "react-router-dom";
 
 import Home from './components/Home';
-import LoadLoginScreen from './components/Login';
-import InputResponse from './components/InputResponse';
+import LoadLoginScreen from './components/Login/Login';
+import InputResponse from './components/InputResponse/InputResponse';
 import GenerateQR from './components/GenerateQR';
 import Homepage from './components/Homepage';
 import Interactions from './components/Interactions';

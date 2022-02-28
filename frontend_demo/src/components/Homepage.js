@@ -6,7 +6,7 @@ import Card from 'react-bootstrap/Card';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import GenerateQR from "./GenerateQR";
-import Login from "./Login";
+import Login from "./Login/Login";
 
 class Homepage extends Component {
     render() {
