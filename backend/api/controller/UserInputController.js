@@ -11,7 +11,10 @@ class UserInputController {
       if (DOMPurify.isSupported) {
         //Sanitisation
         const dirtyIdentifier = req.headers["x-forwarded-for"] || req.socket.remoteAddress || null;
-        const dirtyURL = req.body.qrid;
+        const dirtyQRID = req.body.QRID;
+        const company = req.body.company;
+        const store = req.body.store;
+		const display = req.body.display;
         const sanitisedIdentifier = DOMPurify.sanitize(dirtyIdentifier);
         const identifierArray = sanitisedIdentifier.split('');
         let cleanIdentifier = "";
@@ -20,13 +23,13 @@ class UserInputController {
             cleanIdentifier+=identifierArray[i];
           }
         }
-        const cleanURL = DOMPurify.sanitize(dirtyURL).replace('/api/v1/QR/', '');
-        
+        const QRID = DOMPurify.sanitize(dirtyQRID);
         //Regex
-        if (/[a-f0-9]{20}$/i.exec(cleanURL) && cleanURL.length == 20) {
+        if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
           //Validation
-          if (await UserInputDAO.validate(cleanURL) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
-            const UserInputResponse = await UserInputDAO.postUserInput(cleanIdentifier,cleanURL);
+          if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
+            UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
+			res.json({status:"success"});
           }
           else {
             throw "Validation failed";
@@ -39,8 +42,6 @@ class UserInputController {
       else {
         throw "Sanitisation failed";
       }
-
-      res.json({ status: "success"});
     } catch (e) {
       res.json({ status: "fail", cause: e});
     }
