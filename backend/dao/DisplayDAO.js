@@ -51,7 +51,6 @@ class DisplayDAO {
 
     static async listDisplays(company, store){
       var result = await Display.find({company:company, store:store}, {projection:{_id:0, company:0, store:0, displayID:0, mediaCount:0}}).toArray();
-      console.log(result)
       return result;
     }
 	
@@ -102,14 +101,12 @@ class DisplayDAO {
     }
 	
     static async listQR(company, store, display){
-      var result = await Display.find({company:company, store:store, display:display}, {projection:{_id:0, company:0, store:0, displayID:0, mediaCount:0, media:1, media:{voteCount:0}}}).toArray();
+      var result = await Display.find({company:company, store:store, display:display}, {projection:{_id:0, company:0, store:0, displayID:0, mediaCount:0}}).toArray();
       return result;
     }
 	
     static async patchQR(company, store, display, QRID, fields, values){
       let i = -1;
-	  console.log(fields);
-	  console.log(values);
       for (let field of fields){
         i++;
         let value = values[i];
@@ -123,9 +120,23 @@ class DisplayDAO {
           await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.linkedURI":value}}, {upsert:false});
         }
 		else {
-		  await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":value}}, {upsert:false});
+		  await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(value)}}, {upsert:false});
 		}
       }
+	}
+	
+	static async addVote(company, store, display, QRID) {
+      var result = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0}});
+	  let voteCount;
+	  for(var i = 0; i < result.media.length; i++){
+        if(result.media[i].QRID === QRID){
+          voteCount = result.media[i].voteCount;
+        }
+	  }
+      voteCount += 1;
+      //increment voteCount
+      await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(voteCount)}}, {upsert:false});
+	  return true;
 	}
 }
 module.exports = DisplayDAO;
