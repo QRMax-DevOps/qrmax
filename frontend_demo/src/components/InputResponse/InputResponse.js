@@ -6,10 +6,10 @@ import ResponseProcessing from './Response_Processing';
 import ResponseGood from './Response_Good';
 import ResponseBad from './Response_Bad';
 
-import {log, getBetterRejectionReason, fetchAPI, RunFetch2} from '../services/MiddlewareSuite';
+import {log, getBetterRejectionReason, fetchAPI, RunFetch2} from '../../services/middleware_core';
 
-import './test.css';
-import './login_style.css';
+import '../test.css';
+import '../Login/login_style.css';
 
 function useInterval(callback, delay) {
   const savedCallback = useRef();

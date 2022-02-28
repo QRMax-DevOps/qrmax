@@ -20,13 +20,15 @@ class ListItem_Account extends Component {
 		this.buildAccountComponent = this.buildAccountComponent.bind(this);
 		
 		console.log('Constructing ACCOUNT object from data: ',this.account);
-		this.state = {selected:false, account:this.account, bgColor:'#E7E7E7'};
-		this.state.stores = this.getStoresString();
 		
+		this.state = {selected:false, account:this.account, bgColor:'#E7E7E7'};
 	}
 	
-	getStoresString() {
-		var json = this.account.stores;
+	getStoresString(stores) {
+		var json = stores;
+		
+		console.log("generating stores string from: ",json);
+		
 		var toReturn ='';
 		
 		if(json && json.length>0) {
@@ -51,9 +53,10 @@ class ListItem_Account extends Component {
 	}
 	
 	buildAccountComponent() {
+		this.state.account=this.props.account;
 		
-		
-		var account = this.state.account;
+		var account = this.props.account;
+		var stores = this.getStoresString(account.stores);
 		
 		console.log('account===',account);
 		
@@ -64,11 +67,11 @@ class ListItem_Account extends Component {
 			return (
 				<button		
 					style={{backgroundColor: this.state.bgColor }}
-					onClick={() => this.setState({selected:this.UpdateCurrentSelectedAccount(this.account,this.state.selected)})}
+					onClick={() => this.setState({selected:this.UpdateCurrentSelectedAccount(this.state.account,this.state.selected)})}
 					className="AccountDisplayButton">
 					
 					<label id="usernameField" className="DataField">{account.username}</label>
-					<label id="storeIdField" className="DataField"> {this.state.stores} </label>
+					<label id="storeIdField" className="DataField"> {stores} </label>
 				</button>
 			);
 		}
@@ -160,6 +163,8 @@ export class Viewer extends Component {
 	
 	BuildListItem(type, data) {
 		
+		console.log("BUILDING ITEM FROM: ",type,data)
+		
 		if(this.type==='accounts') {
 			return  <li key={data.username}>
 			<ListItem_Account UpdateCurrentSelectedAccount={this.UpdateCurrentSelectedAccount.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} account={data}/>
@@ -182,6 +187,9 @@ export class Viewer extends Component {
 				this.SoftRefresh(this.STORESLIST);
 			}
 			else if(this.type === 'accounts') {
+				
+				console.log('THIS ACCOUNTSLIST === ',this.ACCOUNTSLIST)
+				
 				this.SoftRefresh(this.ACCOUNTSLIST);
 			}
 			
@@ -203,8 +211,6 @@ export class Viewer extends Component {
 	}
 	
 	SoftRefresh(target) {
-		
-
 		if(IsJsonString(target)) {		
 			if(this.getParentState('toDo') != 'createaccount' && this.getParentState('toDo') != null) {
 				this.setParentState('toDo',null);

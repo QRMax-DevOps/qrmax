@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
-import {log, fetchAPI} from './MiddlewareSuite';
+import {log, fetchAPI} from './middleware_core';
 
 
 

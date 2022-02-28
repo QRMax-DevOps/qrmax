@@ -1,7 +1,7 @@
 import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
-import RedCrossImage from '../graphics/cross.png'
-import Button from "./Custom_Button.js";
+import RedCrossImage from '../../graphics/cross.png'
+import Button from "../Custom_Button.js";
 
 class ResponseBad extends React.Component {
 	

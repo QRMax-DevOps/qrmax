@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'react-bootstrap/Image'
-import '../style.css';
-import Button from "./Custom_Button.js"
+import Button from "../Custom_Button.js"
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstrap';
-import {log, getBetterRejectionReason, fetchAPI, RunFetch} from '../services/MiddlewareSuite';
+import {log, getBetterRejectionReason, fetchAPI, RunFetch} from '../../services/middleware_core';
 
-import Img1 from '../graphics/test_logo 2.png'
-import Homepage from './Homepage';
+import Img1 from '../../graphics/test_logo 2.png'
+import Homepage from '../Homepage';
 
-import '../style.css';
+import '../../style.css';
 import './login_style.css'
 
-import LoadingGif from '../graphics/loading_login.gif'
+import LoadingGif from '../../graphics/loading_login.gif'
 
 var GLOBAL = [null,null];
 

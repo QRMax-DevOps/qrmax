@@ -8,8 +8,8 @@
 */
 
 import React, { useState, Component } from 'react';
-import {log, RunFetch_GetStores, RunFetch_GetAccounts} from '../../services/am_middleware';
-import {getApiURL} from '../../services/MiddlewareSuite';
+import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/am_middleware';
+import {getApiURL} from './../../services/middleware_core';
 import {useLocation} from "react-router-dom";
 
 import {ListItem, Viewer} from './am_viewer';
@@ -64,6 +64,7 @@ function IsJsonString(str) {
     try {
         JSON.parse(str);
     } catch (e) {
+		console.log(e);
         return false;
     }
     return true;
@@ -140,13 +141,12 @@ class AccountsManagement extends Component {
 						for(var i = 0; i < json.length; i++) {
 							json[i].type = 'storeaccount';
 							
-							var storesValid=IsJsonString(json[i].stores);
+							var storesValid=IsJsonString(JSON.stringify(json[i].stores));
+							
 							
 							if(!storesValid) {
 								json[i].stores=null;
 							}
-							
-							console.log(json[i]);
 						}
 						
 						

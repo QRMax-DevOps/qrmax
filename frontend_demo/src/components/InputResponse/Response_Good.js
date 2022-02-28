@@ -1,7 +1,7 @@
 import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
-import GreenTickImage from '../graphics/tick.png'
-import Button from "./Custom_Button.js";
+import GreenTickImage from '../../graphics/tick.png'
+import Button from "../Custom_Button.js";
 
 class ResponseGood extends React.Component {
 	

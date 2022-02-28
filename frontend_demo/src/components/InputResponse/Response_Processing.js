@@ -1,7 +1,7 @@
 import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
-import LoadingGif from '../graphics/loading.gif'
-import Button from "./Custom_Button.js";
+import LoadingGif from '../../graphics/loading.gif'
+import Button from "../Custom_Button.js";
 
 export default function InputResponse(curState) {
          return (
