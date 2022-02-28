@@ -81,7 +81,8 @@ class StoreAccountDAO {
 
     static async patch(Company, username, fields, values){
       let i = -1;
-        for (let field of fields){
+	  let user = username;
+        for (let field of fields) {
             i++;
             let value = values[i];
             if(field == 'company' || field == 'salt'){
@@ -89,7 +90,7 @@ class StoreAccountDAO {
             }
             else if(field == 'username'){
               await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
-              username = value;
+              user = value;
             }
             else if(field == 'password'){
                 // generate salt
@@ -97,22 +98,20 @@ class StoreAccountDAO {
                 // hash password
               const hash = pbkdf2 (value, salt, 80000, 32).toString('hex');
                 // store company salt and hash
-              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:hash, salt:salt}}, {upsert:false});
+              await StoreAccount.updateOne({company:Company, username:user}, {$set:{[field]:hash, salt:salt}}, {upsert:false});
             }
             else if(field === "stores") {
-              await StoreAccount.updateOne({company:Company, username:username}, {$pull:{stores:{}}}, {upsert:false});
+              await StoreAccount.updateOne({company:Company, username:user}, {$pull:{stores:{}}}, {upsert:false});
               for (let val of values[i]) {
                 let temp = val.split(',');
                 let temp1 = temp[0].split(':');
                 let temp2 = temp[1].split(':');
-                console.log(temp1);
-                console.log(temp2);
                 
-                await StoreAccount.updateOne({company:Company, username:username}, {$push:{stores:{ID:temp1[1], store:temp2[1]}}});
+                await StoreAccount.updateOne({company:Company, username:user}, {$push:{stores:{ID:temp1[1], store:temp2[1]}}});
               }
             }
             else{
-              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
+              await StoreAccount.updateOne({company:Company, username:user}, {$set:{[field]:value}}, {upsert:false});
             }
         }
     }
