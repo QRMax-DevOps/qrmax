@@ -118,12 +118,12 @@ class StoreAccountDAO {
     }
 
     static async getUserList(company){
-      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1, stores:1, stores:{displays:0}}}).toArray();
-      return result;
+	  var result = await StoreAccount.find({company:company}, {projection:{_id:0, company:0, salt:0, password:0, storeCount:0, stores:0}}).toArray();
+	  return result;
     }
 
     static async getStoreList(company, username){
-      let result = await StoreAccount.find({company:company, username:username}, {projection:{_id:0, stores:1,  stores:{displays:0}}}).toArray();
+      let result = await StoreAccount.find({company:company, username:username}, {projection:{_id:0,stores:1, stores:{displays:0}}}).toArray();
       return result;
     }
 
