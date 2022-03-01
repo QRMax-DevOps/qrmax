@@ -6,7 +6,7 @@ import { Route , withRouter} from 'react-router-dom';
 import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstrap';
 import {log, getBetterRejectionReason, fetchAPI, RunFetch} from '../../services/middleware_core';
 
-import Img1 from '../../graphics/test_logo 2.png'
+import Img1 from '../../graphics/updated_logo.PNG'
 import Homepage from '../Homepage';
 
 import '../../style.css';
@@ -141,10 +141,7 @@ export default class Page extends React.Component {
 					<div id="leftbox" className="alignmentCheck">
 						<div id="innerbox">
 							<img id="logo" src={Img1}/>
-							<br/>
-							<p id="title">
-								Pre-alpha Prototype
-							</p>
+							<br/><br/>
 							<p id="subtitle">
 								This prototype is not an accurate<br/>
 								representation of the final product<br/>

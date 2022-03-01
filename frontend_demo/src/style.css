@@ -13,7 +13,7 @@ body {
 }
 
 #background {
-	background: url('graphics/background.jpg');
+	background: url('graphics/background_updated.jpg');
     height:100vh;
 	width:100hw;
     background-size: cover;
@@ -164,7 +164,7 @@ body {
 	
 	width:50%;
 	height:600px;
-	background-color: rgb(51, 142, 240);
+	background-color: #1b5cab;
 	
 	display: flex;
     align-items: center;
