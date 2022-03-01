@@ -20,19 +20,6 @@ body {
     background-repeat: no-repeat;
 }
 
-#passwordInput {
-	background-color: #fff0;
-	color: #fff6;
-	padding-left:0;
-	
-	border-radius: 0px;
-	border-width: 2px;
-	border-style: none none solid none;
-	border-color: white;
-	
-	transition: 0.2s color ease-in-out;
-}
-
 #wrapperPad {
 	margin-top:10px;
 }
@@ -106,42 +93,29 @@ body {
 }
 
 
-#emailInput {
+#companyInput, #usernameInput, #passwordInput {
 	background-color: #fff0;
 	color: #fff6;
 	padding-left:0;
-	
-	transition: 0.2s color ease-in-out;
 	
 	border-radius: 0px;
 	border-width: 2px;
 	border-style: none none solid none;
 	border-color: white;
 	
+	transition: 0.2s color ease-in-out;
+	
 }
 
-#emailInput:focus {
+#companyInput:focus, #usernameInput:focus, #passwordInput:focus {
   color: white;
   box-shadow: none;
   caret-color: #fff;
 }
 
-#passwordInput::placeholder {
+#companyInput::placeholder, #usernameInput::placeholder, #passwordInput::placeholder {
 	color: #fff6;
 	caret-color: #fff;
-}
-
-
-#emailInput::placeholder {
-	color: #fff6;
-	caret-color: #fff;
-}
-
-
-#passwordInput:focus {
-  color: white;
-  box-shadow: none;
-  caret-color: #fff;
 }
 
 #leftbox {

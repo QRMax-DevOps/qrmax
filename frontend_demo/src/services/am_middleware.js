@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
-import {log, fetchAPI} from './middleware_core';
+import {log, fetchAPI, getApiURL} from './middleware_core';
 
 
 
@@ -16,33 +16,38 @@ import {log, fetchAPI} from './middleware_core';
  *
  *
  */
- export async function RunFetch_GetStores(isCompany, url, id, global) {
-	 
-	 console.log(isCompany, url, id);
-	 
-		if(isCompany) {
-			var input = JSON.stringify({company:id});
-			
-			const endpoint = url+'api/v1/Company/Store';
-			
-			//create new account
-			const requestOptions = {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: input
-			};
-			
-			// GET request using fetch with basic error handling
-			log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+input);
-			const asyncFetch = await fetchAPI(endpoint,requestOptions);
-		
-			
-			global[0] = asyncFetch[0];
-			global[1] = asyncFetch[1];
-		}
+ export async function RunFetch_GetStores(isCompany, url, id, companyName, global) {
+	
+	var endpoint = '';
+	var input = '';
+ 
+	if(isCompany) {
+		endpoint = url+'api/v1/Company/Store';
+		input = JSON.stringify({company:id});
+		console.log("yes, by all means. It equals: ",endpoint);
+	}
+	else {
+		endpoint = url+'api/v1/Store/Account/storesList';
+		input = JSON.stringify({company:companyName,username:id});
+	}
+
+	const requestOptions = {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: input
+	};
+	
+	// GET request using fetch with basic error handling
+	log("Attempting a really cool POST:\n    > At: "+endpoint+"\n    > With body: "+input);
+	const asyncFetch = await fetchAPI(endpoint,requestOptions);
+
+	
+	global[0] = asyncFetch[0];
+	global[1] = asyncFetch[1];
+	
 }
 
- export async function RunFetch_GetAccounts(isCompany, url, id, global) {
+ export async function RunFetch_GetAccounts(isCompany, url, id, companyName, global) {
 	
 	console.log(isCompany, url, id);
 	
@@ -69,6 +74,11 @@ import {log, fetchAPI} from './middleware_core';
 		
 		global[0] = asyncFetch[0];
 		global[1] = asyncFetch[1];
+	}
+	else {
+		global[0] = false;
+		log("\"RunFetch_GetAccounts\" failed conditions: You must be logged in as a company account to access accounts management.");
+		global[1] = "You must be logged in as a company account to access accounts management.";
 	}
 }
 
@@ -111,21 +121,25 @@ export async function RunFetch_CreateStoreAccount(url, isCompany, user, companyN
 	return RunFetch_CreateAccount(url, isCompany, body, 'storeAccount', global);
 }
 
-export async function RunFetch_CreateStore(url, isCompany, user, company, store, global) {
-	console.log("creating store w/ ",company,store)
+//{company, store}
+
+
+export async function RunFetch_CreateStore(url, isCompany, userID, data, global) {
+	console.log("creating store w/ ",data.company,data.store)
 	
 	var body = null;
 	
 	if(isCompany) {
 		body = JSON.stringify ({	
-			company		: user,
-			store		: store
+			company		: data.companyName,
+			store		: data.store
 		});
 	}
 	else {
 		body = JSON.stringify ({	
-			company		: user,
-			username	: store
+			company		: data.companyName,
+			username	: userID,
+			stores		: ('[{ID:'+data.ID+',store:'+data.store+'}]')
 		});
 	}
 	
@@ -202,22 +216,25 @@ export async function RunFetch_DeleteStoreAccount( url, isCompany, user, company
 
 //url, user, data.company, data.store, response
 
-export async function RunFetch_DeleteStore( url, isCompany, user, company, store, global) {
+export async function RunFetch_DeleteStore( url, isCompany, userID, data, global) {
 	
-	console.log('RunFetch_DeleteStore',  url, isCompany, company, store);
+	console.log('RunFetch_DeleteStore',  url, isCompany, userID, data);
+	
+	console.log('Global is:',global);
 	
 	var body = null;
 	
-	if(isCompany) {
+	if(isCompany===true) {
 		body = JSON.stringify ({	
-			company		: user,
-			store		: store
+			company		: data.company,
+			store		: data.store
 		});
 	}
 	else {
 		body = JSON.stringify ({	
-			company		: user,
-			username	: store
+			company		: data.company,
+			username	: userID,
+			stores		: ('[{ID:'+data.ID+',store:'+data.store+'}]')
 		});
 	}
 	
@@ -245,7 +262,7 @@ export async function RunFetch_DeleteAccount(url, isCompany, type, bod, global) 
 				if(isCompany) {
 					endpoint=url+'api/v1/Company/Store';
 				} else {
-					endpoint=url+'api/v1/Store/Account/StoresList';
+					endpoint=url+'api/v1/Store/Account/storesList';
 				}
 				break;
 	}
@@ -257,7 +274,7 @@ export async function RunFetch_DeleteAccount(url, isCompany, type, bod, global) 
 	}
 			
 	// GET request using fetch with basic error handling
-	log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+bod);
+	log("Attempting "+meth+":\n    > At: "+endpoint+"\n    > With body: "+bod);
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 	global[0] = asyncFetch[0];
@@ -286,6 +303,7 @@ export async function RunFetch_UpdateCompanyAccount(oldAccount, newAccount, glob
 
 function generateStoresList(stores) {
 	var result = '[';
+	
 	
 	for (var i = 0; i < stores.length; i++) {
         result = result+('{ID:'+stores[i].ID+',store:'+stores[i].store+'}');
@@ -323,9 +341,9 @@ export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAcco
 }
 
 
-
+//Not yet supported by the API.
 export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newStore, global) {
-	
+		/*
 		console.log('RunFetch_UpdateStore ',url,isCompany,user,oldStore,newStore);
 		
 		var body=null;
@@ -349,6 +367,7 @@ export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newS
 		
 		
 		return RunFetch_UpdateAccount(url, 'store',body,global);
+		*/
 }
 
 

@@ -223,11 +223,21 @@ export class Viewer extends Component {
 			let results = [];
 			var json =  JSON.parse(target);
 			
+			console.log(json)
+			
 			if(json) {
 				if(this.type === 'stores' && !json.status) {
-					json.stores.forEach((element) => {
+					//Safe guarding.  The API will sometimes return an object in an array instead of a single object.
+					if(Array.isArray(json)) {
+						json[0].stores.forEach((element) => {
 							results.push(element)
-					});
+						});
+					}
+					else {
+						json.stores.forEach((element) => {
+							results.push(element)
+						});
+					}
 				}
 				else if(this.type === 'accounts' && !json.status) {
 					json.forEach((element) => {
@@ -266,9 +276,9 @@ export class Viewer extends Component {
 			<div id="ViewerContainer">
 				<div id="SearchContainer">
 					<label htmlFor="searchaccount">Search</label>
-					<input onChange={(e) => this.SearchAccounts(e.target.value)} type="text" id="searchaccount" name="searchaccount"/>
+					<input disabled={true} onChange={(e) => this.SearchAccounts(e.target.value)} type="text" id="searchaccount" name="searchaccount"/>
 					
-					<button onClick={() => this.HardRefresh()} style={{marginLeft:"10px"}}>Refresh</button>
+					<button onClick={() => this.HardRefresh()} style={{marginLeft:"10px", marginTop:"10px"}}>Refresh</button>
 					
 				</div>
 				<nav>

@@ -49,14 +49,17 @@ function HandleAccount(type, global, data) {
 	
 }
 
+
+//export async function RunFetch_DeleteStore( url, isCompany, data, global) {
+
 function HandleStore(type, global, data) {
 	
-	//console.log("HandleStore", type, global.apiURL, global.isCompany, global.userID, data);
+	console.log("HandleStore", type, global.apiURL, global.isCompany, global.userID, data);
 	
 	var response = [null,null];
 	switch(type.toLowerCase()) {
-		case 'create': RunFetch_CreateStore(global.apiURL, global.isCompany, global.userID, data.company, data.store, response); break;
-		case 'delete': RunFetch_DeleteStore(global.apiURL, global.isCompany, global.userID, data.company, data.store, response); break;
+		case 'create': RunFetch_CreateStore(global.apiURL, global.isCompany, global.userID, data, response); break;
+		case 'delete': RunFetch_DeleteStore(global.apiURL, global.isCompany, global.userID, data, response); break;
 		case 'modify':
 			//RunFetch_UpdateStore(global.apiURL, global.isCompany, global.userID, data.oldStore, data.newStore, response);
 			alert("Rejection: Store modification is currently unsupported by the API.\n\nInstead, please delete the store and re-create it with the desired data.");
@@ -69,15 +72,15 @@ function HandleStore(type, global, data) {
 export function ModifyStoreForm(props) {
 	const global = props.global;
 
-	const oldStore = {ID:props.store.ID,store:props.store.store,company:global.userID}
+	const oldStore = {ID:props.store.ID,store:props.store.store,company:global.companyName}
 	
 	const id = oldStore.ID;
-	const [companyName, setCompany] = useState(global.userID);
+	const [companyName, setCompany] = useState(global.companyName);
 	const [storeName, setStore] = useState(oldStore.store);
 	const [password, setPassword] = useState('');
 	
 	return (
-		
+		<form style={{height:"100%"}}>
 		<div id="CreateAccountFormContainer">
 			<div className="InputContainer">
 				<label>UID</label>
@@ -94,6 +97,8 @@ export function ModifyStoreForm(props) {
 					type="text" 
 					value={companyName}
 					onChange={(e) => setCompany(e.target.value)}
+					readOnly
+					disabled={true}
 				/>
 			</div>
 			
@@ -105,21 +110,12 @@ export function ModifyStoreForm(props) {
 					onChange={(e) => setStore(e.target.value)}
 				/>
 			</div>
-			
-			<div className="InputContainer">
-				<label>New Password</label>
-				<input
-					type="text"
-					value={password}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-			</div>
 			<div className="SubmitButtonContainer">
 				<button type="button" onClick={()=>HandleStore('modify', global, {oldStore, newStore:{ID:id, store:storeName, company:companyName}})}>Submit Changes</button>
-				<button type="button" style={{marginLeft:"10px"}} onClick={()=>HandleStore('delete', global, {company:oldStore.company, store:oldStore.store})}>Delete Store</button>
+				<button type="button" style={{marginLeft:"10px"}} onClick={()=>HandleStore('delete', global, oldStore)}>Delete Store</button>
 			</div>
 		</div>
-
+		</form>
 	)
 }
 
@@ -127,20 +123,35 @@ export function CreateStoreForm(props) {
 	const global = props.global;
 	
 	
+	console.log(global);
+	
+	const [id, setId] = useState(""); 
 	const [store, setStoreName] = useState("");
-	const [company, setCompany] = useState("");
+	const [company, setCompany] = useState(global.companyName);
 	
 	
 	return (
 		
-		<form style={{width:"100%"}}>
-		<div id="CreateAccountFormContainer" style={{width:"100%"}}>
+		<form style={{height:"100%"}}>
+		<div id="CreateAccountFormContainer">
+			{ !global.isCompany &&
+			<div className="InputContainer">
+				<label>ID</label>
+				<input
+					type="text" 
+					value={id}
+					onChange={(e) => setId(e.target.value)}
+				/>
+			</div>
+			}
 			<div className="InputContainer">
 				<label>Company</label>
 				<input
 					type="text" 
 					value={company}
 					onChange={(e) => setCompany(e.target.value)}
+					readOnly
+					disabled={true}
 				/>
 			</div>
 			<div className="InputContainer">
@@ -152,7 +163,7 @@ export function CreateStoreForm(props) {
 				/>
 			</div>
 			<div className="SubmitButtonContainer">
-				<button type="button" onClick={()=>HandleStore('create', global, {company, store})}>Submit</button>
+				<button type="button" onClick={()=>HandleStore('create', global, {ID:id, companyName:global.companyName, store})}>Submit</button>
 			</div>
 		</div>
 
@@ -175,6 +186,7 @@ export function ModifyAccountForm(props) {
 	
 	const oldAccount = {company:global.userID, username:props.account.username, stores:JSON.stringify(props.account.stores)}
 
+	const [company, setCompany] = useState(global.companyName);
 	const [username, setUsername] = useState(oldAccount.username);
 	const [stores, setStores] = useState(oldAccount.stores);
 	const [password, setPassword] = useState("");
@@ -182,8 +194,18 @@ export function ModifyAccountForm(props) {
 	console.log(props);
 	
 	return (
-		
+		<form style={{height:"100%"}}>
 		<div id="CreateAccountFormContainer">
+			<div className="InputContainer">
+				<label>Company</label>
+				<input
+					type="text" 
+					value={company}
+					onChange={(e) => setCompany(e.target.value)}
+					disabled={true}
+					readOnly
+				/>
+			</div>
 			<div className="InputContainer">
 				<label>Username</label>
 				<input
@@ -216,6 +238,7 @@ export function ModifyAccountForm(props) {
 				<button type="button" style={{marginLeft:"10px"}} onClick={()=>HandleAccount('delete', global, {company:oldAccount.company, username:oldAccount.username})}>Delete account</button>
 			</div>
 		</div>
+		</form>
 
 	)
 }
@@ -223,7 +246,9 @@ export function ModifyAccountForm(props) {
 export function CreateAccountForm(props) {
 	const global = props.global;
 	
-	const [company, setCompany] = useState("");
+	//const [company, setCompany] = useState(global.companyName);
+	
+	const [company, setCompany] = useState(global.companyName);
 	const [username, setUsername] = useState("");
 	const [stores, setStores] = useState("");
 	const [password, setPassword] = useState("");
@@ -238,6 +263,8 @@ export function CreateAccountForm(props) {
 					type="text" 
 					value={company}
 					onChange={(e) => setCompany(e.target.value)}
+					disabled={true}
+					readOnly
 				/>
 			</div>
 

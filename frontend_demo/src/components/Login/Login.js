@@ -4,7 +4,9 @@ import Button from "../Custom_Button.js"
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstrap';
-import {log, getBetterRejectionReason, fetchAPI, RunFetch} from '../../services/middleware_core';
+
+import {log, getApiURL} from '../../services/middleware_core';
+import {RunFetch_Login} from '../../services/login_middleware';
 
 import Img1 from '../../graphics/updated_logo.PNG'
 import Homepage from '../Homepage';
@@ -16,13 +18,18 @@ import LoadingGif from '../../graphics/loading_login.gif'
 
 var GLOBAL = [null,null];
 
-function checkDetails(companyName, passCode) {
+function checkDetails(isCompany, companyName, userName, passCode) {
 	let valid = true;
 		
 	if(!companyName) {
 		valid = false;
-		log('Login Error: Invalid USERNAME (provided: \''+companyName+'\')');
-		GLOBAL = [false, "Please provide an email address or username."];
+		log('Login Error: Invalid COMPANY (provided: \''+companyName+'\')');
+		GLOBAL = [false, "Please provide a company name."];
+	}
+	if(!userName && !isCompany) {
+		valid = false;
+		log('Login Error: Invalid USERNAME (provided: \''+userName+'\')');
+		GLOBAL = [false, "Please provide a username."];
 	}
 	if(!passCode) {
 		valid = false;
@@ -37,6 +44,18 @@ function resetGlobal() { GLOBAL = [null,null]; }
 
 
 
+
+/*
+
+if (typeof window !== 'undefined') {
+    var path = location.protocol + '//' + location.host + '/someting'; // (or whatever)
+  } else {
+    // work out what you want to do server-side...
+  }
+
+*/
+
+
 export default class Page extends React.Component {
 	constructor(props) {
 		super(props);
@@ -45,6 +64,7 @@ export default class Page extends React.Component {
 		this.state = {
 			loading : false,
 			passwordBox : '',
+			companyBox : '',
 			usernameBox : '',
 			companyAccount : false,
 			localhost : false,
@@ -57,13 +77,22 @@ export default class Page extends React.Component {
 	}
 	
 	navigateToHome() {
+		var route = '';
+		var companynameParam = '&companyname=' + this.state.companyBox;
 		var usernameParam = '?username=' + this.state.usernameBox;
+		
+		if(this.state.companyAccount) {
+			usernameParam = '?username=' + this.state.companyBox;
+		}
+		
 		var isLocalhostParam = '';
 		if(this.state.localhost===true) { isLocalhostParam='&localhost=80'; }
 		var isCompanyAccountParam = '';
-		if(this.state.companyAccount===true) { isCompanyAccountParam='&iscompany=' + this.state.companyAccount; }
-		
-		window.location.href = 'http://localhost:3000/accounts' + usernameParam + isLocalhostParam + isCompanyAccountParam;
+		if(this.state.companyAccount===true) { 
+			isCompanyAccountParam='&iscompany=' + this.state.companyAccount;
+		}
+
+		window.location.href = window.location.protocol + '//' + window.location.host + '/accounts' + usernameParam + isLocalhostParam + isCompanyAccountParam + companynameParam;
 	}
 	
 	handleChange({ target }) {
@@ -95,11 +124,21 @@ export default class Page extends React.Component {
 				
 				//do fetch
 					
-				let detailsValid = checkDetails(me.state.usernameBox, me.state.passwordBox);
+				let detailsValid = checkDetails(me.state.companyAccount, me.state.companyBox, me.state.usernameBox, me.state.passwordBox);
 
 				
 				if(detailsValid) {
-					RunFetch(me.state.usernameBox, me.state.passwordBox, GLOBAL);
+					var data = {companyInput:me.state.companyBox, usernameInput:me.state.usernameBox, passwordInput:me.state.passwordBox};
+					
+					console.log("localhost===",me.state.localhost);
+					console.log("getApiURL===",getApiURL(me.state.localhost));
+					
+					if(me.state.companyAccount) {
+						data.usernameInput = me.state.companyBox;
+					}
+					
+					
+					RunFetch_Login(getApiURL(me.state.localhost), me.state.companyAccount, data, GLOBAL);
 				}
 			}
 			
@@ -180,19 +219,32 @@ export default class Page extends React.Component {
 							  
 								<div id="LoginFormGroup" className="form-group" style={{paddingBottom:"20px"}} >
 									<input
+										name="companyBox"
+										type="email"
+										className="form-control emailInput"
+										id="companyInput"
+										aria-describedby="emailHelp"
+										placeholder="Enter company name"
+										autoComplete="off"
+										value={ this.state.companyBox }
+										onChange={ this.handleChange }
+									/>
+									
+									{ !this.state.companyAccount &&
+									<input style={{marginTop:"10px"}}
 										name="usernameBox"
 										type="email"
-										className="form-control"
-										id="emailInput"
+										className="form-control emailInput"
+										id="usernameInput"
 										aria-describedby="emailHelp"
-										placeholder="Enter email"
+										placeholder="Enter username"
 										autoComplete="off"
 										value={ this.state.usernameBox }
 										onChange={ this.handleChange }
 									/>
-									<small id="emailHelp" className="form-text" style={{color:"white", fontSize:"14px"}}>This address will never  be spammed or shared.</small>
+									}
 								  
-								  <div className="form-group row">
+								  <div className="form-group row" style={{marginTop:"10px"}}>
 										<div className="col">
 											<input
 												name="passwordBox"

@@ -16,6 +16,7 @@ import {ListItem, Viewer} from './am_viewer';
 import {Options} from './am_options';
 import {CreateAccountForm, ModifyAccountForm, CreateStoreForm, ModifyStoreForm} from './am_forms';
 import {Account} from './am_account';
+import Sidebar from '../Sidebar';
 
 import '../UniversalStyle.css';
 
@@ -76,14 +77,21 @@ class AccountsManagement extends Component {
 		
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
-		var isCompanyParam = urlParams.get('iscompany')
-		var usernameParam = urlParams.get('username')
-		var isLocalhostParam = urlParams.get('localhost')
+		var isCompanyParam = urlParams.get('iscompany');
+		var companynameParam = urlParams.get('companyname');
+		var usernameParam = urlParams.get('username');
+		var isLocalhostParam = urlParams.get('localhost');
 		
-		
+		var userID_x = '';
+		if(isCompanyParam===true) {
+			userID_x = companynameParam;
+		}
+		else {
+			userID_x = usernameParam;
+		}
 		
 		this.state = {
-			global : {isCompany:isCompanyParam, userID:usernameParam, apiURL:getApiURL(isLocalhostParam)},
+			global : {isCompany:isCompanyParam, companyName:companynameParam, userID:userID_x, apiURL:getApiURL(isLocalhostParam)},
 
 			toDo : null,
 			curAccount: null, //Currently selected account.
@@ -109,6 +117,7 @@ class AccountsManagement extends Component {
 	Fetch(type) {
 		if(this.state.global) {
 			var username = this.state.global.userID;
+			var companyName = this.state.global.companyName;
 			var apiURL = this.state.global.apiURL;
 			var isCompany = this.state.global.isCompany;
 			
@@ -116,10 +125,10 @@ class AccountsManagement extends Component {
 			let response = [null,null];
 
 			if(!this.state.loading && type==='accounts') {
-				request = RunFetch_GetAccounts(isCompany,apiURL,username,response);
+				request = RunFetch_GetAccounts(isCompany,apiURL,username,companyName,response);
 			}
 			else if(!this.state.loading && type==='stores') {
-				request = RunFetch_GetStores(isCompany,apiURL,username,response);
+				request = RunFetch_GetStores(isCompany,apiURL,username,companyName,response);
 			}
 			
 			var timer = { eclapsed: 0 };
@@ -219,6 +228,20 @@ class AccountsManagement extends Component {
 		if(target.toLowerCase()==='global') {
 			return this.state.global;
 		}
+		if(target.toLowerCase()==='iscompany') {
+			
+			if(typeof(this.state.global.isCompany) === 'string') {
+				if(this.state.global.isCompany.toLowerCase() === 'true') {
+					return true;
+				}
+				else if(this.state.global.isCompany.toLowerCase() === 'false') {
+					return false;
+				}
+			}
+			else if (typeof(this.state.global.isCompany) === 'boolean'){
+				return this.state.global.isCompany;
+			}
+		}
 		else {
 			return this.state;
 		}
@@ -227,18 +250,27 @@ class AccountsManagement extends Component {
     render() {
 		if(this.state.global) {
 			return (
-				<div className="FloatingContainer">
+				<div class="background">
+				<div>
+                    <Sidebar/>
+                </div>
+			
+				<div className="MainAccountsContainer">
 					<div className="FloatingContainer" style={{flexDirection:"row"}}>
+					
+					{ this.getParentState('iscompany') === true &&
 						<Options type='accounts' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
+					}
 						<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					
 					</div>
 					
-					<div>
+					<div className="FloatingContainer">
 					{this.state.toDo != null &&
 						<Modifications curAccount={this.state.curAccount} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} toDo={this.state.toDo}/>
 					}
 					</div>
+				</div>
 				</div>
 			);
 		} 

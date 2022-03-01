@@ -60,6 +60,13 @@ export class Options extends Component {
 	}
 
 	render() {
+		
+		var createStoreTitle = 'Create Store';
+
+		if(this.getParentState('iscompany') !== true) {
+			createStoreTitle = 'Add Existing Store';
+		}
+		
         return (
 			<div className="FloatingContainer">
 				
@@ -74,8 +81,8 @@ export class Options extends Component {
 				}
 				{
 					this.type==='stores' && <>
-					<button onClick={() => this.createStoreCheck()} className="InteractButton">Create Store</button>
-					<button onClick={() => this.modifyStoreCheck()} disabled={this.props.accountSelected ? true : false}>Modify Store</button> </>
+					<button onClick={() => this.createStoreCheck()} className="InteractButton">{createStoreTitle}</button>
+					<button onClick={() => this.modifyStoreCheck()} disabled={this.props.accountSelected ? true : false}> Modify Store </button> </>
 				}
 				</div>
 			</div>
