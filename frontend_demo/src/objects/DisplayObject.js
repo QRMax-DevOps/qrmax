@@ -39,6 +39,10 @@ export default class Display {
         return this.id;
     }
 
+    getMedia() {
+        return this.media;
+    }
+
     toString() {
         return this.id + " " + this.name + " " + this.media + " " + this.codes.length();
     }
