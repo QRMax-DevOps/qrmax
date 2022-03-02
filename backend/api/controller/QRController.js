@@ -7,20 +7,20 @@ class QRController {
         const company = req.body.company;
         const store = req.body.store;
         const display = req.body.display;
-		const linkedURI = req.body.linkedURI;
+        const mediaName = req.body.mediaName;
+		const mediaFile = req.body.mediaFile;
 		//const linkedURITime = red.body.linkedURITime;
-
         //check if company/store exists
-        if(! await CompanyDAO.checkStore(company, store)){
+        if(!await CompanyDAO.checkStore(company, store)){
             res.json({status:"failure", cause:"no such store"});
         }
         //check if display already exists
         else if(!await DisplayDAO.checkDisplay(company, store, display)){
             res.json({status:"failure", cause:"no such display"});
         }
-        //create qr(add to store as callback)
+        //create qr
         else{
-            DisplayDAO.addQR(company, store, display,linkedURI);
+            DisplayDAO.addQR(company, store, display, mediaName, mediaFile);
             res.json({status:"success"});
         }
         return res;
@@ -30,20 +30,20 @@ class QRController {
         const company = req.body.company;
         const store = req.body.store;
 		const display = req.body.display;
-		const QRID = req.body.QRID;
+		const mediaName = req.body.mediaName;
         if(! await CompanyDAO.checkStore(company, store)){
             res.json({status:"failure", cause:"no such store"});
         }
-        //check if display already exists
+        //check if display exists
         else if(!await DisplayDAO.checkDisplay(company, store, display)){
             res.json({status:"failure", cause:"no such display"});
         }
-        else if(!await DisplayDAO.checkQR(company, store, display, QRID)){
-            res.json({status:"failure", cause:"no such QR"});
+        else if(!await DisplayDAO.checkMedia(company, store, display, mediaName)){
+            res.json({status:"failure", cause:"no such media"});
         }
-        //create qr(add to store as callback)
+        //delete media
         else{
-            DisplayDAO.deleteQR(company, store, display,QRID);
+            DisplayDAO.deleteMedia(company, store, display,mediaName);
             res.json({status:"success"});
         }
     }
@@ -95,6 +95,17 @@ class QRController {
 			DisplayDAO.patchQR(company, store, display, QRID, farray, varray);
 			res.json({status:"success"});
 		}
+    }
+
+    static async getMedia(req, res){
+        const company = req.body.company;
+        const store = req.body.store;
+		const display = req.body.display;
+        const mediaName = req.body.mediaName;
+        const result = await DisplayDAO.getMedia(company, store, display, mediaName);
+        //TODO: check if shit exists
+        let mediaFile = result.mediaFile;
+        res.json({status:"success", mediaFile});
     }
 }
 

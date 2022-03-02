@@ -1,5 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
-const CompanyDAO = require('./CompanyDAO');
+const fs = require('fs');
+const MediaDAO = require("./MediaDAO.js");
+
 let Display;
 
 class DisplayDAO {
@@ -34,7 +36,11 @@ class DisplayDAO {
         store: store, //gross
         display:display, //gross
         mediaCount:0,
-        media:[]
+        media:[],
+        currentMedia:{
+          media:"",
+          timeLive: new Date(Date.now())
+        }
       }
       //insert doc
       try{
@@ -54,50 +60,74 @@ class DisplayDAO {
       return result;
     }
 	
-    static async checkQR(company, store, display, QRID){
-      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{QRID:QRID}}});
+    static async checkQR(company, store, display, mediaName){
+      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
       if(result){
         return true;
       }
       return false;
     }
 	
-    static async addQR(company, store, display, linkedURI){
-      //generate display id
-	  const QRID = uuidv4();
+    static async addQR(company, store, display, mediaName, mediaFile){
+      
+      //generate qr id
+	    const QRID = uuidv4();
+      
+	    let cleanQRID = "";
+	    for (let sub of QRID) {
+		    if (sub != '-') {
+			    cleanQRID+=sub;
+		    }
+	    }
+	    cleanQRID = cleanQRID.slice(0,20);
+
+      const mediaID = uuidv4();
+
+      let cleanMediaID = "";
+	    for (let sub of mediaID) {
+		    if (sub != '-') {
+			    cleanMediaID+=sub;
+		    }
+	    }
+	    cleanMediaID = cleanMediaID.slice(0,20);
 	  
-	  let cleanQRID = "";
-	  for (let sub of QRID) {
-		  if (sub != '-') {
-			cleanQRID+=sub;
-		  }
-	  }
-	  cleanQRID = cleanQRID.slice(0,20);
-	  
-	  const timeCreated = new Date(Date.now());
+	    const TTL = 15;
 	  
       let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1}})
       ID = ID.mediaCount;
       ID += 1;
-	  try {
+	    try {
       	//add qr
-      	Display.updateOne({company:company, store:store, display:display}, {$push:{media:{QRID:cleanQRID,timeCreated:timeCreated,linkedURI:linkedURI,voteCount:0}}});
+      	Display.updateOne({company:company, store:store, display:display}, {$push:{media:{QRID:cleanQRID,TTL:TTL,mediaID:cleanMediaID,media:mediaName,voteCount:0}}});
       	//increment mediaCount
       	Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
       }
       catch(e){
-		  console.error('unable to add new display:' + e);
+		    console.error('unable to add new display:' + e);
       }
+      MediaDAO.newMedia(cleanMediaID, mediaFile);
   	}
 	  
-    static async deleteQR(company, store, display, QRID){
+    static async deleteMedia(company, store, display, mediaName){
 	  //delete QR
-      Display.updateOne({company:company, store:store, display:display},{$pull:{media:{QRID:QRID}}}, {upsert:false});
-      let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1}})
+      let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1, media:1}})
       ID = ID.mediaCount;
       ID -= 1;
+
+      let mediaID;
+      for(var i = 0; i < ID.media.length; i++){
+        if(ID.media[i].media === mediaName){
+          mediaID = ID.media[i].mediaID;
+          break;
+        }
+      }
+
+      Display.updateOne({company:company, store:store, display:display},{$pull:{media:{media:mediaName}}}, {upsert:false});
+      
       //increment mediaCount
       Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
+      //TODO delete media
+      MediaDAO.deleteMedia(MediaID);
     }
 	
     static async listQR(company, store, display){
@@ -138,7 +168,37 @@ class DisplayDAO {
       await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(voteCount)}}, {upsert:false});
 	  return true;
 	}
+
+  static async getMedia(company, store, display, mediaName){
+    let result = await Display.findOne({
+      company:company,
+      store:store,
+      display:display,
+      "media.media":mediaName
+    });
+    //go through result and find media where media = mediaName and store mediaID
+    let mediaID;
+    for(var i = 0; i < result.media.length; i++){
+      if(result.media[i].media === mediaName){
+        mediaID = result.media[i].mediaID;
+        break;
+      }
+    }
+    //send to MediaDAO
+    const mediaReturn = await MediaDAO.retrieveMedia(mediaID);
+    //return media
+    return mediaReturn;
+    
+  }
+
+  static async getMostVoted(company, store, display){
+    //get store
+    //loop through media
+    //select one with highest voteCount
+    //return mediaID
+  }
 }
+
 module.exports = DisplayDAO;
 
 /* This will come in use when we rework so im keeping it here for now

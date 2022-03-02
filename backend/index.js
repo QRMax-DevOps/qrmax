@@ -6,6 +6,7 @@ const CompanyAccountDAO = require("./dao/CompanyAccountDAO.js");
 const StoreAccountDAO = require("./dao/StoreAccountDAO.js");
 const CompanyDAO = require("./dao/CompanyDAO.js");
 const DisplayDAO = require("./dao/DisplayDAO.js");
+const MediaDAO = require("./dao/MediaDAO.js");
 
 dotenv.config();
 const MongoClient = mongodb.MongoClient;
@@ -26,7 +27,10 @@ MongoClient.connect(process.env.QRMAX_DB_URI, {
     await CompanyAccountDAO.injectDB(client);
     await StoreAccountDAO.injectDB(client);
     await CompanyDAO.injectDB(client);
+    await MediaDAO.injectDB(client);
     await DisplayDAO.injectDB(client);
+
+    
     app.listen(port, () => {
       console.log("listening on port ", port);
     });
