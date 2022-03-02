@@ -60,7 +60,7 @@ class DisplayDAO {
       return result;
     }
 	
-    static async checkQR(company, store, display, mediaName){
+    static async checkMedia(company, store, display, mediaName){
       const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
       if(result){
         return true;
