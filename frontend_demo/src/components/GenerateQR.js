@@ -4,6 +4,7 @@ import './GenerateQR.css';
 import Sidebar from './Sidebar';
 import Display from '../objects/DisplayObject.js';
 import QRCode from '../objects/QRCode.js';
+import {HandleDisplay} from '../services/qr_middleware';
 
 class GenerateQR extends Component {
 
@@ -34,12 +35,18 @@ class GenerateQR extends Component {
         })
     }
 
+    data = {};
+    url = "http://localhost:80/";
+    global = new Array(2);
+
+    test = HandleDisplay("GETLIST", this.url, this.data, this.global);
+
     submitCodeChanges(){
-        //middleware fucntion call, pass fields textfield values to alter database objects
+        
     }
 
     removeCode() {
-        //call to remove code from database
+        return 
     }
 
     createNewCode() {
@@ -55,7 +62,7 @@ class GenerateQR extends Component {
                     <Sidebar/>
                 </div>
                 <div id="mainContainer">
-
+                    <h2 className="page-header">QR Management</h2>
                     <div id="topContainer">
 
                         <div id="SelectDisplay" >

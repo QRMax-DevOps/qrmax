@@ -6,6 +6,7 @@ import Card from 'react-bootstrap/Card';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import GenerateQR from "./GenerateQR";
+import DisplayMngr from './DisplayMngr';
 import Login from "./Login/Login";
 
 class Homepage extends Component {
@@ -15,18 +16,16 @@ class Homepage extends Component {
             <div className="background">
 
                 <div>
-                    {/*<Router>*/}
-
-                    <Sidebar/>
-                    {/*<Routes>
-                        <Route path="/homepage" exact component={Homepage}/>
-                        <Route path="/homepage" exact component={Homepage}/>
-                        <Route path="/gen_qr" exact component={GenerateQR}/>
-                        <Route path="/homepage" exact component={Homepage}/>
-                        <Route path="/login" exact component={Login}/>
-                    </Routes>*/}
-
-                    {/*</Router>*/}
+                    <Router>
+                        <Sidebar/>
+                            <Routes>
+                                <Route path="/homepage" exact component={Homepage}/>
+                                <Route path="/display_mngr" exact component={DisplayMngr}/>
+                                <Route path="/gen_qr" exact component={GenerateQR}/>
+                                <Route path="/homepage" exact component={Homepage}/>
+                                <Route path="/login" exact component={Login}/>
+                            </Routes>
+                    </Router>
                 </div>
                 <div className="MainContainer">
                     <div className="DisplayContainer">
