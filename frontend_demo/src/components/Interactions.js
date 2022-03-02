@@ -2,12 +2,15 @@ import React, {Component} from 'react';
 import Sidebar from './Sidebar';
 import './Interactions.css';
 import '../App.css';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { Dropdown, DropdownButton, Button } from 'react-bootstrap';
+
 
 
 
 
 class Interactions extends Component {
+    
+    
     render() { 
         return (
             <div class="background">
@@ -43,6 +46,7 @@ class Interactions extends Component {
                             <p>110</p>
                         </div>
                         <div>
+                        <button type="button" id="Teating button" onClick={this.changePage()}>This is for testing</button>
                         </div>
                     </div>
                 </div>
