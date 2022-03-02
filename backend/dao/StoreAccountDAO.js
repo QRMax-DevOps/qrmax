@@ -136,7 +136,7 @@ class StoreAccountDAO {
         //add store
         await StoreAccount.updateOne({company:company, username:username}, {$push:{stores:{ID:ID,store:s}}})
         //increment storeCount
-        await StoreAccount.updateOne({company:company}, {$set:{storeCount:ID}})
+        await StoreAccount.updateOne({company:company, username:username}, {$set:{storeCount:ID}})
       }
     }
 
@@ -154,7 +154,7 @@ class StoreAccountDAO {
         //delete store
         await StoreAccount.updateOne({company:company, username:username}, {$pull:{stores:{store:s}}}, {upsert:false})
         //for all ID greater than ID
-        result = await StoreAccount.findOne({company:company});
+        result = await StoreAccount.findOne({company:company, username:username});
         //loop through and increment ID
         for(var i = 0; i < result.stores.length; i++){
           if(result.stores[i].ID > ID){
