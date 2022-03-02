@@ -13,6 +13,7 @@ import Homepage from './components/Homepage';
 import Interactions from './components/Interactions';
 import DisplayMngr from './components/DisplayMngr';
 import AccountsManagement from './components/AccountsManagement/am_base';
+import TestEnv from './services/test_environment';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -35,6 +36,7 @@ function App() {
 			<Route path="/interactions" element={<Interactions/>}/>
 			<Route path="/display_mngr" element={<DisplayMngr/>}/>
 			<Route path="/accounts" element={<AccountsManagement/>}/>
+			<Route path="/testenv" element={<TestEnv/>}/>
  		</Routes>
 	)
 }

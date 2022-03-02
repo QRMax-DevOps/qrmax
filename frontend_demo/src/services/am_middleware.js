@@ -139,7 +139,7 @@ export async function RunFetch_CreateStore(url, isCompany, userID, data, global)
 		body = JSON.stringify ({	
 			company		: data.companyName,
 			username	: userID,
-			stores		: ('[{ID:'+data.ID+',store:'+data.store+'}]')
+			stores		: data.store
 		});
 	}
 	
@@ -179,7 +179,7 @@ async function RunFetch_CreateAccount(url, isCompany, bod, type, global) {
 		console.log("endpoint === ",endpoint)
 		
 		// GET request using fetch with basic error handling
-		log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+bod);
+		log("Attempting "+meth+":\n    > At: "+endpoint+"\n    > With body: "+bod);
 		const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 		global[0] = asyncFetch[0];
@@ -234,7 +234,7 @@ export async function RunFetch_DeleteStore( url, isCompany, userID, data, global
 		body = JSON.stringify ({	
 			company		: data.company,
 			username	: userID,
-			stores		: ('[{ID:'+data.ID+',store:'+data.store+'}]')
+			stores		: data.store
 		});
 	}
 	
