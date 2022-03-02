@@ -45,9 +45,8 @@ class Interactions extends Component {
                             <br/>
                             <p>110</p>
                         </div>
-                        <div>
-                        <button type="button" id="Teating button" onClick={this.changePage()}>This is for testing</button>
-                        </div>
+                        
+                       
                     </div>
                 </div>
             </div>
