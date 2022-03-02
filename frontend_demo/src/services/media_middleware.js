@@ -9,7 +9,12 @@ import {log, fetchAPI} from './middleware_core';
  //*****************************************************************************************
  //*****************************************************************************************
  
- 
+ //data.company
+ //data.store
+ //data.display
+ //data.mediaName
+ //data.mediaFile
+ //data.QRID
  
  /* Common arguments used in functions:
   *
@@ -23,13 +28,14 @@ import {log, fetchAPI} from './middleware_core';
   *     - id: As of 02/03, simply just the username of the logged in user.
   *		   > Url parameter, e.g. : "username=usernamehere"
   * 
-  *     - type: The type of request being made. Must be either: "DELETE","CREATE" or "GETLIST"
+  *     - type: The type of request being made. Refer to the switch-case in the function.
   *
   *     - data: An object which can hold the following values:
   *		   > MUST HAVE store: As of 02/03, simply just provide the store name.
   *		   > MUST HAVE company: As of 02/03, simply just provide the company name.
   *		   > MUST HAVE display: As of 02/03, simply just provide the display name.
-  *		   > linkedURI: Uniform resource identifier.
+  *		   > mediaName: The name of the media. Can be arbitrary, simply for ID.
+  *		   > mediaFile: The media to be submitted. Will be converted to hex (base-16).
   *		   > fields: Fields to be updated. Array type.
   *		   > values: Values to be updated, must align with fields. Array type.
   *
@@ -38,9 +44,9 @@ import {log, fetchAPI} from './middleware_core';
   *       well.
   *		   > Should be a length=2 array.
   *		   > First value is either true or false, determining whether the request
-  *		     returned data from the database.
+  *		     was successful.
   *		   > Second value is the actual data or message. If a successful request,
-  *          this will be a JSON.
+  *          this should be a JSON.
   */
 
 
@@ -69,13 +75,8 @@ function ArrayToString(array){
 	//Enum handler
 	type = EnumToString(type);
 	
-	//data.company
-	//data.store
-	//data.display
-	//data.linkedURI
-	
 	//Where this input is being sent to.
-	const endpoint = url+'api/v1/Media';
+	var endpoint = url+'api/v1/Display/Media';
 	
 	//For the request options.
 	var methodGen = null;
@@ -101,11 +102,13 @@ function ArrayToString(array){
 				company	: data.company,
 				store	: data.store,
 				display	: data.display,
-				linkedURI : data.linkedURI
+				mediaName : data.mediaName,
+				mediaFile : data.mediaFile
 			});
 			break;
-		case 'PATCH':
-			methodGen = 'PUT';
+		
+		/* case 'UPDATE':
+			methodGen = 'PATCH';
 			inputGen  = JSON.stringify({
 				company	: data.company,
 				store	: data.store,
@@ -114,14 +117,25 @@ function ArrayToString(array){
 				fields	: ArrayToString(data.fields),
 				values	: ArrayToString(data.values)
 			});
-			break;
+			break; */
+			
 		case 'DELETE':
 			methodGen = 'DELETE';
 			inputGen  = JSON.stringify({
 				company	: data.company,
 				store	: data.store,
 				display	: data.display,
-				QRID	: data.QRID
+				mediaName : data.mediaName
+			});
+			break;
+		case 'GETMEDIAFILE':
+			methodGen = 'POST';
+			endpoint = url+'api/v1/Display/media/file';
+			inputGen = JSON.stringify({
+				company	: data.company,
+				store	: data.store,
+				display	: data.display,
+				mediaName : data.mediaName
 			});
 			break;
 	}
