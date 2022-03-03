@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import Sidebar from './Sidebar';
 import './Interactions.css';
+import '../UniversalStyling.css';
 import '../App.css';
 import { Dropdown, DropdownButton, Button } from 'react-bootstrap';
 
@@ -49,7 +50,10 @@ class Interactions extends Component {
                        
                     </div>
                 </div>
-            </div>
+                </div>
+                
+                
+           
             
         );
     }
