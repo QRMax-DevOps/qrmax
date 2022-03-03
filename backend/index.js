@@ -13,6 +13,8 @@ const MongoClient = mongodb.MongoClient;
 
 const port = process.env.PORT || 80;
 
+
+//TODO: find way to ensure this all happens before the DisplayDao loop is run
 MongoClient.connect(process.env.QRMAX_DB_URI, {
   maxPoolSize: 50,
   wtimeoutMS: 2500,
@@ -23,15 +25,17 @@ MongoClient.connect(process.env.QRMAX_DB_URI, {
     process.exit(1);
   })
   .then(async (client) => {
-    await UserInputDAO.injectDB(client);
-    await CompanyAccountDAO.injectDB(client);
-    await StoreAccountDAO.injectDB(client);
-    await CompanyDAO.injectDB(client);
-    await MediaDAO.injectDB(client);
-    await DisplayDAO.injectDB(client);
+    UserInputDAO.injectDB(client);
+    CompanyAccountDAO.injectDB(client);
+    StoreAccountDAO.injectDB(client);
+    CompanyDAO.injectDB(client);
+    MediaDAO.injectDB(client);
+    DisplayDAO.injectDB(client);
 
-    
     app.listen(port, () => {
       console.log("listening on port ", port);
     });
   });
+
+setTimeout(() => DisplayDAO.loop(), 2000);
+ 

@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
 const MediaDAO = require("./MediaDAO.js");
+const { setgroups } = require('process');
 
 let Display;
 
@@ -39,7 +40,8 @@ class DisplayDAO {
         media:[],
         currentMedia:{
           media:"",
-          timeLive: new Date(Date.now())
+          liveTime: new Date(Date.now()),
+          TTL:"0"
         }
       }
       //insert doc
@@ -188,17 +190,144 @@ class DisplayDAO {
     const mediaReturn = await MediaDAO.retrieveMedia(mediaID);
     //return media
     return mediaReturn;
-    
   }
 
   static async getMostVoted(company, store, display){
     //get store
-    //loop through media
-    //select one with highest voteCount
+    let result = await Display.findOne({
+      company:company,
+      store:store,
+      display:display,
+    });
+    let highest = -1;
+    let highestMedia = 0;
+    //loop through media & select one with highest voteCount
+    for(var i = 0; i < result.media.length; i++){
+      if(result.media[i].voteCount > highest){
+        highest = result.media[i].voteCount;
+        highestMedia = i;
+      }
+    }
     //return mediaID
+    return highestMedia;
+  }
+
+  static async resetVoteCounts(company, store, display){
+    Display.updateOne(
+      {
+        company:company,
+        store:store,
+        display:display,
+      },
+      {$set:
+        {
+          "media.$[elem].voteCount":0
+        }
+      },
+      {
+        "arrayFilters":[
+          {
+            "elem.voteCount":{
+              $gt:0
+            }
+          }
+        ],
+        multi:true
+      }
+    )
+  }
+
+  static async getCurrentMedia(company, store, display){
+    // just return the currentMedia object
+    const result = await Display.findOne(
+      {
+        company:company,
+        store:store,
+        display:display
+      },
+      {
+        projection:{
+          _id:0,
+          currentMedia:1
+        }
+      }
+    )
+    return result;
+  }
+
+  static async setCurrentMedia(company, store, display, highestMedia){
+    const result = await Display.findOne(
+      {
+        company:company,
+        store:store,
+        display:display
+      }
+    )
+    // loop through till name matches highest media
+    //loop through media & select one with highest voteCount
+    const selectedMedia = result.media[highestMedia];
+    // pull all the necessary info out, make new timestamp
+    const media = selectedMedia.media;
+    const liveTime = new Date(Date.now());
+    const TTL = selectedMedia.TTL;
+    //set as current media
+    Display.updateOne(
+      {
+        company:company,
+        store:store,
+        display:display
+      },
+      {
+        $set:{
+          "currentMedia.media": media,
+          "currentMedia.liveTime":liveTime,
+          "currentMedia.TTL":TTL
+        }
+      }
+    )
+  }
+
+  //can call this when server starts
+  static async loopCurrentMedia(){
+    var time = new Date(Date.now());
+    // get each display
+    var displays = await Display.find({}, {projection:{_id:0, displayID:0}}).toArray();
+    // for each display:
+      for(let i = 0; i < displays.length; i++){
+        //check if current time > currentMedia.liveTime + currentMedia.TTL
+        const cTime = new Date(Date.now());
+
+        let liveTime = displays[i].currentMedia.liveTime;
+        liveTime = new Date(liveTime);
+        liveTime = new Date(liveTime.getTime() + (displays[i].currentMedia.TTL * 1000))
+
+        if (cTime >= liveTime){
+          //if media > 0
+          if (displays[i].mediaCount > 0){
+            // set new currentMedia and reset votes
+            const company = displays[i].company; 
+            const store = displays[i].store;
+            const display = displays[i].display;
+            const highestMedia = await this.getMostVoted(company, store, display);
+            //send message to display Qr codes
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            this.setCurrentMedia(company, store, display, highestMedia);
+            this.resetVoteCounts(company, store, display);
+            //send message that current media has changed
+            console.log("changed");
+          }
+        }
+      }
+    //tell open connection that media has changed
+    var time2 = new Date(Date.now());
+    //console.log((time2-time));
+    this.loop();
+  }
+
+  static async loop(){
+    setTimeout(() => this.loopCurrentMedia(), 1000);
   }
 }
-
 module.exports = DisplayDAO;
 
 /* This will come in use when we rework so im keeping it here for now

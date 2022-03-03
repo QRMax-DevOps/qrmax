@@ -52,7 +52,7 @@ class CompanyDAO {
     static async checkStore(company, fstore){
       let result = await Company.findOne({company:company, stores:{$elemMatch:{store:fstore}}});
       if (result){
-          return true;
+        return true;
       }
       return false;
     }

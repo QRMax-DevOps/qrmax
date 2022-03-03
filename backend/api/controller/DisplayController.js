@@ -9,12 +9,12 @@ class StoreController {
         const display = req.body.display;
 
         //check if company/store exists
-        if(! await CompanyDAO.checkStore(company, store)){
+        if(!(await CompanyDAO.checkStore(company, store))){
             res.json({status:"failure", cause:"no such store"})
         }
         //check if display already exists
-        else if(!await DisplayDAO.checkDisplay(company, store, display)){
-            res.json({status:"failure", cause:"no such display"})
+        else if(await DisplayDAO.checkDisplay(company, store, display)){
+            res.json({status:"failure", cause:"Display already exists"})
         }
         //create display(add to store as callback)
         else{
