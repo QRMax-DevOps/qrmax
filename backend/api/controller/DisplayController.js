@@ -56,6 +56,15 @@ class StoreController {
         }
         return res;
     }
+
+    static async listen(req, res){
+        //get company, store, display
+        const company = req.body.company;
+        const store = req.body.store;
+        const display = req.body.display;
+        let rJson = await DisplayDAO.listen(company, store, display);
+        res.json({status:"success", display:rJson});
+    }
 }
 
 

@@ -287,47 +287,80 @@ class DisplayDAO {
     )
   }
 
-  //can call this when server starts
-  static async loopCurrentMedia(){
-    var time = new Date(Date.now());
-    // get each display
-    var displays = await Display.find({}, {projection:{_id:0, displayID:0}}).toArray();
-    // for each display:
-      for(let i = 0; i < displays.length; i++){
-        //check if current time > currentMedia.liveTime + currentMedia.TTL
-        const cTime = new Date(Date.now());
-
-        let liveTime = displays[i].currentMedia.liveTime;
-        liveTime = new Date(liveTime);
-        liveTime = new Date(liveTime.getTime() + (displays[i].currentMedia.TTL * 1000))
-
-        if (cTime >= liveTime){
-          //if media > 0
-          if (displays[i].mediaCount > 0){
-            // set new currentMedia and reset votes
-            const company = displays[i].company; 
-            const store = displays[i].store;
-            const display = displays[i].display;
-            const highestMedia = await this.getMostVoted(company, store, display);
-            //send message to display Qr codes
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            this.setCurrentMedia(company, store, display, highestMedia);
-            this.resetVoteCounts(company, store, display);
-            //send message that current media has changed
-            console.log("changed");
-          }
+  //used to set media to message that it should currently show the QR
+  static async setCurrentMediaQR(company, store, display){
+    const result = await Display.findOne(
+      {
+        company:company,
+        store:store,
+        display:display
+      }
+    )
+    const liveTime = new Date(Date.now());
+    Display.updateOne(
+      {
+        company:company,
+        store:store,
+        display:display
+      },
+      {
+        $set:{
+          "currentMedia.media": "displayQR", // set media to special code to displayQR
+          "currentMedia.liveTime":liveTime,
+          "currentMedia.TTL":10 //set ttl to 10 seconds
         }
       }
-    //tell open connection that media has changed
-    var time2 = new Date(Date.now());
-    //console.log((time2-time));
-    this.loop();
+    )
   }
 
-  static async loop(){
-    setTimeout(() => this.loopCurrentMedia(), 1000);
+  static async loopCurrentMedia(company, store, display){
+    // get display
+    var display = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, displayID:0}})
+    if (display.mediaCount > 0){
+
+      const cTime = new Date(Date.now());
+      let liveTime = display.currentMedia.liveTime;
+      liveTime = new Date(liveTime);
+      liveTime = new Date(liveTime.getTime() + (display.currentMedia.TTL * 1000))
+
+      if (cTime >= liveTime){
+        if(display.currentMedia.media === "displayQR"){
+          const company = display.company; 
+          const store = display.store;
+          const desiredDisplay = display.display;
+          const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
+          //switch to new media
+          await this.setCurrentMedia(company, store, desiredDisplay, highestMedia);
+          this.resetVoteCounts(company, store, desiredDisplay);
+          //send message to display new media
+          return "newMedia";
+        }
+        else{
+          const company = display.company; 
+          const store = display.store;
+          const desiredDisplay = display.display;
+          const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
+          this.setCurrentMediaQR(company, store, desiredDisplay, highestMedia);
+          //send message to display QR
+          return "QR";
+        }
+      }
+    }
+    return null;
   }
+
+  static async listen(company, store, display){
+    //call loop
+    let rMessage = null;
+    while (rMessage == null){
+      await new Promise(resolve => setTimeout(resolve, 250));
+      rMessage = await this.loopCurrentMedia(company, store, display);
+    }
+    return rMessage;
+  }
+
 }
+
 module.exports = DisplayDAO;
 
 /* This will come in use when we rework so im keeping it here for now

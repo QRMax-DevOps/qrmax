@@ -9,6 +9,7 @@ const CompanyStoreList = require("./api/route/CompanyStoreList.route.js");
 const Display = require("./api/route/Display.route.js");
 const QR = require("./api/route/QR.route.js");
 const Media = require("./api/route/media.route.js");
+const Listen = require("./api/route/listen.route.js");
 const bodyParser = require('body-parser')
 
 const app = express();
@@ -40,6 +41,9 @@ app.use("/api/v1/Display", Display);
 //media management
 app.use("/api/v1/Display/Media", QR);
 app.use("/api/v1/Display/Media/file", Media);
+
+//display listen
+app.use("/api/v1/Display/media/listen", Listen);
 
 
 app.use("*", (req, res) => res.status(404).json({ error: "not found" }));

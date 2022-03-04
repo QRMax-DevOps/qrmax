@@ -17,7 +17,7 @@ const port = process.env.PORT || 80;
 //TODO: find way to ensure this all happens before the DisplayDao loop is run
 MongoClient.connect(process.env.QRMAX_DB_URI, {
   maxPoolSize: 50,
-  wtimeoutMS: 2500,
+  wtimeoutMS: 15000,
   useNewUrlParser: true,
 })
   .catch((err) => {
@@ -36,6 +36,4 @@ MongoClient.connect(process.env.QRMAX_DB_URI, {
       console.log("listening on port ", port);
     });
   });
-
-setTimeout(() => DisplayDAO.loop(), 2000);
  
