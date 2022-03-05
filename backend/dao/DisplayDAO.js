@@ -255,7 +255,7 @@ class DisplayDAO {
     return result;
   }
 
-  static async setCurrentMedia(company, store, display, highestMedia){
+  static async setCurrentMedia(company, store, display, highestMedia, desiredDisplay){
     const result = await Display.findOne(
       {
         company:company,
@@ -325,7 +325,7 @@ class DisplayDAO {
           const desiredDisplay = display.display;
           const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
           //switch to new media
-          this.setCurrentMedia(company, store, desiredDisplay, highestMedia);
+          this.setCurrentMedia(company, store, desiredDisplay, highestMedia, desiredDisplay);
           //send message to display new media
           return "newMedia";
         }
