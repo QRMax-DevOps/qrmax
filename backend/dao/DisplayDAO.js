@@ -42,7 +42,7 @@ class DisplayDAO {
           media:"",
           liveTime: new Date(Date.now()),
           TTL:"0"
-        }
+        },
       }
       //insert doc
       try{
@@ -285,17 +285,12 @@ class DisplayDAO {
         }
       }
     )
+    await new Promise(resolve => setTimeout(resolve, 250));
+    this.resetVoteCounts(company, store, desiredDisplay);
   }
 
   //used to set media to message that it should currently show the QR
   static async setCurrentMediaQR(company, store, display){
-    const result = await Display.findOne(
-      {
-        company:company,
-        store:store,
-        display:display
-      }
-    )
     const liveTime = new Date(Date.now());
     Display.updateOne(
       {
@@ -330,8 +325,7 @@ class DisplayDAO {
           const desiredDisplay = display.display;
           const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
           //switch to new media
-          await this.setCurrentMedia(company, store, desiredDisplay, highestMedia);
-          this.resetVoteCounts(company, store, desiredDisplay);
+          this.setCurrentMedia(company, store, desiredDisplay, highestMedia);
           //send message to display new media
           return "newMedia";
         }
