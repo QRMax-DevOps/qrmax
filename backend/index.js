@@ -5,15 +5,19 @@ const UserInputDAO = require("./dao/UserInputDAO.js");
 const CompanyAccountDAO = require("./dao/CompanyAccountDAO.js");
 const StoreAccountDAO = require("./dao/StoreAccountDAO.js");
 const CompanyDAO = require("./dao/CompanyDAO.js");
+const DisplayDAO = require("./dao/DisplayDAO.js");
+const MediaDAO = require("./dao/MediaDAO.js");
 
 dotenv.config();
 const MongoClient = mongodb.MongoClient;
 
 const port = process.env.PORT || 80;
 
+
+//TODO: find way to ensure this all happens before the DisplayDao loop is run
 MongoClient.connect(process.env.QRMAX_DB_URI, {
   maxPoolSize: 50,
-  wtimeoutMS: 2500,
+  wtimeoutMS: 15000,
   useNewUrlParser: true,
 })
   .catch((err) => {
@@ -21,11 +25,15 @@ MongoClient.connect(process.env.QRMAX_DB_URI, {
     process.exit(1);
   })
   .then(async (client) => {
-    await UserInputDAO.injectDB(client);
-    await CompanyAccountDAO.injectDB(client);
-    await StoreAccountDAO.injectDB(client);
-    await CompanyDAO.injectDB(client);
+    UserInputDAO.injectDB(client);
+    CompanyAccountDAO.injectDB(client);
+    StoreAccountDAO.injectDB(client);
+    CompanyDAO.injectDB(client);
+    MediaDAO.injectDB(client);
+    DisplayDAO.injectDB(client);
+
     app.listen(port, () => {
       console.log("listening on port ", port);
     });
   });
+ 

@@ -1,9 +1,9 @@
-const CompanyAccountDao = require("../dao/CompanyAccountDAO.js");
-const CompanyDAO = require("../dao/CompanyDAO.js");
+const CompanyAccountDao = require("../../dao/CompanyAccountDAO.js");
+const CompanyDAO = require("../../dao/CompanyDAO.js");
 const e = require("express");
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
-const StoreAccountDAO = require("../dao/StoreAccountDAO.js");
+const StoreAccountDAO = require("../../dao/StoreAccountDAO.js");
 
 
 class CompanyAccountController {

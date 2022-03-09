@@ -81,7 +81,8 @@ class StoreAccountDAO {
 
     static async patch(Company, username, fields, values){
       let i = -1;
-        for (let field of fields){
+	  let user = username;
+        for (let field of fields) {
             i++;
             let value = values[i];
             if(field == 'company' || field == 'salt'){
@@ -89,7 +90,7 @@ class StoreAccountDAO {
             }
             else if(field == 'username'){
               await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
-              username = value;
+              user = value;
             }
             else if(field == 'password'){
                 // generate salt
@@ -97,33 +98,31 @@ class StoreAccountDAO {
                 // hash password
               const hash = pbkdf2 (value, salt, 80000, 32).toString('hex');
                 // store company salt and hash
-              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:hash, salt:salt}}, {upsert:false});
+              await StoreAccount.updateOne({company:Company, username:user}, {$set:{[field]:hash, salt:salt}}, {upsert:false});
             }
             else if(field === "stores") {
-              await StoreAccount.updateOne({company:Company, username:username}, {$pull:{stores:{}}}, {upsert:false});
+              await StoreAccount.updateOne({company:Company, username:user}, {$pull:{stores:{}}}, {upsert:false});
               for (let val of values[i]) {
                 let temp = val.split(',');
                 let temp1 = temp[0].split(':');
                 let temp2 = temp[1].split(':');
-                console.log(temp1);
-                console.log(temp2);
                 
-                await StoreAccount.updateOne({company:Company, username:username}, {$push:{stores:{ID:temp1[1], store:temp2[1]}}});
+                await StoreAccount.updateOne({company:Company, username:user}, {$push:{stores:{ID:temp1[1], store:temp2[1]}}});
               }
             }
             else{
-              await StoreAccount.updateOne({company:Company, username:username}, {$set:{[field]:value}}, {upsert:false});
+              await StoreAccount.updateOne({company:Company, username:user}, {$set:{[field]:value}}, {upsert:false});
             }
         }
     }
 
     static async getUserList(company){
-      let result = await StoreAccount.find({company:company}, {projection:{_id:0, username:1, stores:1}}).toArray();
-      return result;
+	  var result = await StoreAccount.find({company:company}, {projection:{_id:0, company:0, salt:0, password:0, storeCount:0, stores:1, stores:{displays:0}}}).toArray();
+	  return result;
     }
 
     static async getStoreList(company, username){
-      let result = await StoreAccount.find({company:company, username:username}, {projection:{_id:0, stores:1}}).toArray();
+      let result = await StoreAccount.find({company:company, username:username}, {projection:{_id:0,stores:1, stores:{displays:0}}}).toArray();
       return result;
     }
 
@@ -137,7 +136,7 @@ class StoreAccountDAO {
         //add store
         await StoreAccount.updateOne({company:company, username:username}, {$push:{stores:{ID:ID,store:s}}})
         //increment storeCount
-        await StoreAccount.updateOne({company:company}, {$set:{storeCount:ID}})
+        await StoreAccount.updateOne({company:company, username:username}, {$set:{storeCount:ID}})
       }
     }
 
@@ -146,7 +145,7 @@ class StoreAccountDAO {
       let ID;
       for (let s of stores){
         //find store to deletes ID and set ID to it
-        result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, stores:1}});
+        result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, stores:1,  stores:{displays:0}}});
         for(var i = 0; i < result.stores.length; i++){
           if(result.stores[i].store === s){
             ID = result.stores[i].ID;
@@ -155,7 +154,7 @@ class StoreAccountDAO {
         //delete store
         await StoreAccount.updateOne({company:company, username:username}, {$pull:{stores:{store:s}}}, {upsert:false})
         //for all ID greater than ID
-        result = await StoreAccount.findOne({company:company});
+        result = await StoreAccount.findOne({company:company, username:username});
         //loop through and increment ID
         for(var i = 0; i < result.stores.length; i++){
           if(result.stores[i].ID > ID){

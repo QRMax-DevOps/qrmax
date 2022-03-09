@@ -1,3 +1,4 @@
+const DisplayDAO = require("./DisplayDAO");
 let UserInput;
 
 class UserInputDAO {
@@ -14,28 +15,33 @@ class UserInputDAO {
     }
   }
 
-  static async postUserInput(UserIdentifier, URL){
+  static async postUserInput(UserIdentifier, company, store, display, QRID){
     try{
       const UserInputDoc = {
         UserIdentifier: UserIdentifier,
         URL: URL,
 		TimeOfInput: new Date(Date.now())
       }
+	  DisplayDAO.addVote(company, store, display, QRID);
       return await UserInput.insertOne(UserInputDoc)
     }
     catch(e){
-      console.error('unable to post User Input:' + e)
+      res.json({ status: "fail", cause: e });
     }
   }
 
-  static async validate(cleanURL) {
-    return true; //stub
+  static async validate(company, display, store, QRID) {
+    if (DisplayDAO.checkQR(company, store, display, QRID)) {
+	  return true;
+	}
+    else {
+console.log("QR doesnt exist");
+	  return false;
+	}
   }
 
   static async checkLastVote(cleanIdentifier) {
-    /*
     try {
-      //console.log(await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}}));
       if (await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}})>0) {
         return false;
       }
@@ -46,7 +52,7 @@ class UserInputDAO {
     catch(e) {
       res.json({ status: "fail", cause: e });
       return false;
-    }*/
+    }
     return true;
   }
 
