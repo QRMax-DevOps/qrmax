@@ -11,12 +11,12 @@ class DisplayMngr extends Component {
         currentStore: "Some Store",
         selectedDisplay: 0,
         displayList: [
-            new Display(1, "Display 1", "Something else"), 
-            new Display(2, "Display 2", "Something else"),
-            new Display(3, "Display 3", "Something else"),
-            new Display(4, "Display 4", "Something else"),
-            new Display(5, "Display 5", "Something else"),
-            new Display(6, "Display 6", "Something else"),
+            new Display(0, "Display 1", "Something else"), 
+            new Display(1, "Display 2", "Something else"),
+            new Display(2, "Display 3", "Something else"),
+            new Display(3, "Display 4", "Something else"),
+            new Display(4, "Display 5", "Something else"),
+            new Display(5, "Display 6", "Something else"),
         ]
      }
 

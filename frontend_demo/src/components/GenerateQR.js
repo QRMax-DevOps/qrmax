@@ -11,12 +11,14 @@ class GenerateQR extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentObj: {},
             displayIndex: 0,
             displayList: [new Display(0, 'Display 1', 5), new Display(1, 'Display 2', 4), new Display(2, 'Display 3', 10)],
             selectedCode: 0
         };
         this.setCodeList = this.setCodeList.bind(this);
         this.selectCode = this.selectCode.bind(this);
+        this.getObject = this.getObject.bind(this);
     }
 
     getCurrentDisplayObj = function() {
@@ -35,25 +37,56 @@ class GenerateQR extends Component {
         })
     }
 
-    data = {};
+    storex = "store1";
+    companyx = "testCompany";
+
+    data = {store: this.storex, company: this.companyx, display: this.displayx};
     url = "http://localhost:80/";
     global = new Array(2);
-
-    test = HandleDisplay("GETLIST", this.url, this.data, this.global);
-
-    submitCodeChanges(){
+    test ={};
+    dbObj;
+    tempArray= [];
+    
+    /*
+    getApiObject(_callback) {
+        var obj = HandleDisplay("GETLIST", this.url, this.data, this.global);
+        test = obj;
+        _callback();
+    }
+    callbackFunc() {
+        this.getApiObject(() => {console.log("Finished getting API object")});
+    }
+    */
+ 
+     async getObject() {
+        this.test = await HandleDisplay("GETLIST", this.url, this.data, this.global);
+        console.log("Inside getObject()");
+        this.tempArray = this.global[1];
+        this.dbObj = JSON.parse(this.tempArray);
+        console.log("**********" + this.dbObj);
+        return this.dbObj;
         
     }
 
-    removeCode() {
-        return 
-    }
+    /*componentDidMount() {
+        var response = this.getObject();
+        this.dbObj = response.json();
+        this.tempArray = this.global[1];
 
-    createNewCode() {
-        //Create new instance in database with input from text fields
-    }
+        //console.log("Object ^")
+        //console.log(this.tempArray);
+        this.dbObj = JSON.parse(this.tempArray);
+        console.log("**********" + this.dbObj);
+        this.setState({
+            currentObj: this.dbObj
+        })
+    } */
+
+
 
     render() { 
+
+        let localObject = this.getObject();
 
         return (
             <div className="background" id="background">
@@ -63,15 +96,17 @@ class GenerateQR extends Component {
                 </div>
                 <div id="mainContainer">
                     <h2 className="page-header">QR Management</h2>
+                    
                     <div id="topContainer">
-
+                    
                         <div id="SelectDisplay" >
                             <label htmlFor="displays" className="contents">Select Display:</label>
+                            
                             <select name="display-select" id="display-select" className="contents" value={this.state.displayIndex} onChange={this.setCodeList} >
-                                {this.state.displayList.map((val, key) => {
+                                {localObject.displays.map((val, key) => {
                                     return (
-                                        <option key={key} value={val.getId()}>
-                                            {val.getName()}
+                                        <option key={key} value={key}>
+                                            {val.display}
                                         </option>
                                     );
                                 })}
@@ -79,7 +114,7 @@ class GenerateQR extends Component {
                         </div>
                     </div>
                     <div className="SectionDivider">
-                        <h4>{this.state.displayList[this.state.displayIndex].getName()} Codes</h4>
+                        <h4>{this.state.displayIndex} Codes</h4>
                         <ul id="code-list">
                             {this.getCurrentDisplayObj().codes.map((val, key) => {
                                 return (
@@ -93,13 +128,13 @@ class GenerateQR extends Component {
                         <div id="settings-container">
                             <h5 id="settings-container-header">{this.getCurrentDisplayObj().codes[this.state.selectedCode].getTitle()} Settings</h5>
                             <label htmlFor="code-title-input">Title: </label>
-                            <input type="text" id="code-title-input" value={this.getCurrentDisplayObj().codes[this.state.selectedCode].getTitle()}></input>
+                            <input type="text" id="code-title-input" defaultValue={this.getCurrentDisplayObj().codes[this.state.selectedCode].getTitle()}></input>
                             <br/>
                             <label htmlFor="code-title-input">Code: </label>
-                            <input type="text" id="code-code-input" value={this.getCurrentDisplayObj().codes[this.state.selectedCode].getCode()}></input>
+                            <input type="text" id="code-code-input" defaultValue={this.getCurrentDisplayObj().codes[this.state.selectedCode].getCode()}></input>
                             <br/>
                             <label htmlFor="code-title-input">Length: </label>
-                            <input type="text" id="code-length-input" value={this.getCurrentDisplayObj().codes[this.state.selectedCode].getLength()}></input>
+                            <input type="text" id="code-length-input" defaultValue={this.getCurrentDisplayObj().codes[this.state.selectedCode].getLength()}></input>
                             <br/>
                             <input id="submit-changes-button" type="button" value="Submit Changes" onClick={this.submitCodeChanges()}/>
                             <input id="delete-code-button" type="button" value="Delete Code" onClick={this.removeCode()}/>

@@ -10,38 +10,105 @@ import DisplayMngr from './DisplayMngr';
 import Login from "./Login/Login";
 
 class Homepage extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedDisplay: 0,
+            selectedMedia: 0,
+            selectedMediaArray: [],
+            //Example objects to setup dynamic display
+            displayList: [
+                {id: 0, display: "display 1", media: [{id: 0, name: "media 1", mediaSource: "source", qrList: [{qrID: 0, qrCode: 0}, {qrID: 1, qrCode: 1}, {qrID: 2, qrCode: 2}]}, {id: 1, name: "media 2", mediaSource: "source", qrList: [{qrID: 0, qrCode: 0}, {qrID: 1, qrCode: 1}, {qrID: 2, qrCode: 2}]}]},
+                {id: 1, display: "display 3", media: [{id: 0, name: "media 1", mediaSource: "source", qrList: [{qrID: 0, qrCode: 0}, {qrID: 1, qrCode: 1}, {qrID: 2, qrCode: 2}]}, {id: 1, name: "media 2", mediaSource: "source", qrList: [{qrID: 0, qrCode: 0}, {qrID: 1, qrCode: 1}, {qrID: 2, qrCode: 2}]}]},
+                {id: 2, display: "display 2", media: [{id: 0, name: "media 1", mediaSource: "source", qrList: [{qrID: 0, qrCode: 0}, {qrID: 1, qrCode: 1}, {qrID: 2, qrCode: 2}]}, {id: 1, name: "media 2", mediaSource: "source", qrList: [{qrID: 0, qrCode: 0}, {qrID: 1, qrCode: 1}, {qrID: 2, qrCode: 2}]}]}
+            ]
+        }
+        this.setDisplay = this.setDisplay.bind(this);
+        this.setMedia = this.setMedia.bind(this);
+
+    }
+
+
+
+    setDisplay(e) {
+        this.setState({
+            selectedDisplay: e.target.value
+        })
+    }
+
+    setMedia(e) {
+        this.setState({
+            selectedMedia: e.target.value
+        })
+        this.setMediaArray();
+    }
+
+    setMediaArray() {
+        this.setState({
+            selectedMediaArray: this.getMediaArray()
+        })
+        
+    }
+
+    getMediaArray() {
+        return this.state.displayList[this.state.selectedDisplay].media;
+    }
+    
+    getQrArray() {
+        return this.getMediaArray[this.state.selectedMedia].qrList;
+    }
+
     render() {
         
         return (
             <div className="background">
-
                 <div>
-                    <Router>
-                        <Sidebar/>
-                            <Routes>
-                                <Route path="/homepage" exact component={Homepage}/>
-                                <Route path="/display_mngr" exact component={DisplayMngr}/>
-                                <Route path="/gen_qr" exact component={GenerateQR}/>
-                                <Route path="/homepage" exact component={Homepage}/>
-                                <Route path="/login" exact component={Login}/>
-                            </Routes>
-                    </Router>
+                    <Sidebar/>   
                 </div>
                 <div className="MainContainer">
                     <div className="DisplayContainer">
+                    <h2 className="page-header">Display Preivew</h2>
                         
                         <div id="dropContainer">
-                            <DropdownButton id="displayDrop" title="Display">
-                                <Dropdown.Item>East Wing</Dropdown.Item>
-                                <Dropdown.Item>West Wing</Dropdown.Item>
-                                <Dropdown.Item>A Wing</Dropdown.Item>
-                                <Dropdown.Item>B Wing</Dropdown.Item>
-                            </DropdownButton>
-                        </div>
-                        <div className="DisplayContainer">
-                            <Card id="DisplayPreview">
+                            <label htmlFor='displays-dropdown'>Select Display</label>
+                            <select className="displays-dropdown dropdown" id="displays-dropdown" onChange={this.setDisplay}>
+                                {/* Dynamically return options based on displays */}
+                                {this.state.displayList.map((val, key) => {
+                                    return (
+                                        <option value={key} key={key}>
+                                            {val.display} 
+                                        </option>
+                                    )
+                                })}
+                            </select>
+                            <label htmlFor='media-dropdown'>Select Media</label>
+                            <select className="media-dropdown dropdown" id="media-dropdown" onChange={this.setMedia}>
+                                {/* Dynamically return options based on displays' media */}
 
-                            </Card>
+                                {this.state.displayList[this.state.selectedDisplay].media.map((val, key) => {
+                                    return (
+                                        <option value={key} key={key}>
+                                            {val.name} 
+                                        </option>
+                                    )
+                                })}
+                                
+                            </select>
+                        </div>
+                        <div className="DisplayContainer" id="display-preview">
+                            {/* display media source inside this div */}
+                            <div id="media-source-container">
+                                {/* get the array of qr codes from the currently selected media */} 
+                                {/* cut out this bit of code to have the screen actually display */}
+                                    {this.state.selectedMediaArray[this.state.selectedMedia].qrList.map((val,key) => {
+                                        return (
+                                            <div className="qr-div" id={key} key={key}>
+                                            {/* Qr generation would happen here */}
+                                            [QR {val.qrCode} SOURCE HERE] 
+                                            </div>
+                                        )
+                                    })}
+                            </div>
                         </div>
                     </div>
                 </div>
