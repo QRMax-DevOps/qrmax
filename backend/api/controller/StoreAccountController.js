@@ -11,6 +11,12 @@ class StoreAccountController {
             const pword = req.body.password;
             const company = req.body.company;
             //check if company exists
+            if (username == null){
+                res.json({status:"failure", cause:'no username'});
+            }
+            if (pword == null){
+                res.json({status:"failure", cause:'no password'});
+            }
             if (!(await companyDAO.checkCompany(company))){
                 res.json({status:"failure", cause:'company does not exist'});
             }
@@ -65,7 +71,6 @@ class StoreAccountController {
             const username = req.body.username
             const fields = req.body.fields;
             const values = req.body.values;
-
             const farray = fields.split(',');
             const varray = [];
 

@@ -28,6 +28,9 @@ class StoreController {
             const company = req.body.company;
             const store = req.body.store;
             //ensure company exists
+            if (store == null){
+                res.json({status:"failure", cause:'no store name'});
+            }
             if(await CompanyDao.checkCompany(company)){
                 //check to ensure store dosent exists
                 if(!await CompanyDao.checkStore(company, store)){
