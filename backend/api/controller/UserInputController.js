@@ -14,7 +14,7 @@ class UserInputController {
         const dirtyQRID = req.body.QRID;
         const company = req.body.company;
         const store = req.body.store;
-		const display = req.body.display;
+		    const display = req.body.display;
         const sanitisedIdentifier = DOMPurify.sanitize(dirtyIdentifier);
         const identifierArray = sanitisedIdentifier.split('');
         let cleanIdentifier = "";
@@ -29,7 +29,7 @@ class UserInputController {
           //Validation
           if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
             UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
-			res.json({status:"success"});
+		      	res.json({status:"success"});
           }
           else {
             throw "Validation failed";
@@ -42,7 +42,8 @@ class UserInputController {
       else {
         throw "Sanitisation failed";
       }
-    } catch (e) {
+    } 
+    catch (e) {
       res.json({ status: "fail", cause: e});
     }
   }
