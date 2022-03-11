@@ -1,5 +1,5 @@
 .sidebar {
-    background-color: silver;
+    background-color: white;
     display: inline-block;
     justify-content: center;
     height: 100%;
@@ -19,6 +19,7 @@
 
 .SidebarList {
     list-style-type: none;
+    justify-content: center;
     
 }
 
@@ -39,9 +40,11 @@
 .SidebarList #row {
     width: auto;
     text-align: center;
+    
 }
 
 .SidebarList #row:hover {
     cursor: pointer;
     background-color: gray;
 }
+

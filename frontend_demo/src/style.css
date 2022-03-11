@@ -13,24 +13,11 @@ body {
 }
 
 #background {
-	background: url('graphics/background.jpg');
+	background: url('graphics/background_updated.jpg');
     height:100vh;
 	width:100hw;
     background-size: cover;
     background-repeat: no-repeat;
-}
-
-#passwordInput {
-	background-color: #fff0;
-	color: #fff6;
-	padding-left:0;
-	
-	border-radius: 0px;
-	border-width: 2px;
-	border-style: none none solid none;
-	border-color: white;
-	
-	transition: 0.2s color ease-in-out;
 }
 
 #wrapperPad {
@@ -50,6 +37,12 @@ body {
 }
 
 #submitButton:focus{
+	outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 15px #9ecaed;
+}
+
+#submitButton:active{
 	background-color:#fff9;
 }
 
@@ -100,42 +93,29 @@ body {
 }
 
 
-#emailInput {
+#companyInput, #usernameInput, #passwordInput {
 	background-color: #fff0;
 	color: #fff6;
 	padding-left:0;
-	
-	transition: 0.2s color ease-in-out;
 	
 	border-radius: 0px;
 	border-width: 2px;
 	border-style: none none solid none;
 	border-color: white;
 	
+	transition: 0.2s color ease-in-out;
+	
 }
 
-#emailInput:focus {
+#companyInput:focus, #usernameInput:focus, #passwordInput:focus {
   color: white;
   box-shadow: none;
   caret-color: #fff;
 }
 
-#passwordInput::placeholder {
+#companyInput::placeholder, #usernameInput::placeholder, #passwordInput::placeholder {
 	color: #fff6;
 	caret-color: #fff;
-}
-
-
-#emailInput::placeholder {
-	color: #fff6;
-	caret-color: #fff;
-}
-
-
-#passwordInput:focus {
-  color: white;
-  box-shadow: none;
-  caret-color: #fff;
 }
 
 #leftbox {
@@ -158,7 +138,7 @@ body {
 	
 	width:50%;
 	height:600px;
-	background-color: rgb(51, 142, 240);
+	background-color: #1b5cab;
 	
 	display: flex;
     align-items: center;

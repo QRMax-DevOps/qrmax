@@ -10,8 +10,16 @@ class Home extends React.Component {
 				E.g :
 				<ul>
 				  <li>http://localhost:3000<b>/login</b></li>
-				  <li>http://localhost:3000<b>/response_good</b></li>
-				  <li>http://localhost:3000<b>/response_bad</b></li>
+				  <li>http://localhost:3000<b>/inputresponse</b></li>
+				  <li>http://localhost:3000<b>/inputresponse_good</b></li>
+				  <li>http://localhost:3000<b>/inputresponse_bad</b></li>
+				  <li>http://localhost:3000<b>/inputresponse_processing</b></li>
+				  <li>http://localhost:3000<b>/gen_qr</b></li>
+				  <li>http://localhost:3000<b>/homepage</b></li>
+				  <li>http://localhost:3000<b>/interactions</b></li>
+				  <li>http://localhost:3000<b>/display_mngr</b></li>
+				  <li>http://localhost:3000<b>/accounts</b></li>
+				  <li>http://localhost:3000<b>/testenv</b></li>
 				</ul>
 			</div>
 		);
