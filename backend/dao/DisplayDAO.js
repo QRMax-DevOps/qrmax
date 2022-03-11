@@ -69,14 +69,6 @@ class DisplayDAO {
       }
       return false;
     }
-
-    static async checkQR(company, store, display, mediaName){
-      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
-      if(result){
-        return true;
-      }
-      return false;
-    }
 	
     static async addQR(company, store, display, mediaName, mediaFile){
       
@@ -125,19 +117,26 @@ class DisplayDAO {
       ID -= 1;
 
       let mediaID;
-      for(var i = 0; i < ID.media.length; i++){
-        if(ID.media[i].media === mediaName){
-          mediaID = ID.media[i].mediaID;
-          break;
+      try {
+        for(var i = 0; i < ID.media.length; i++){
+          if(ID.media[i].media === mediaName){
+            mediaID = ID.media[i].mediaID;
+            break;
+          }
         }
-      }
-
-      Display.updateOne({company:company, store:store, display:display},{$pull:{media:{media:mediaName}}}, {upsert:false});
+        Display.updateOne({company:company, store:store, display:display},{$pull:{media:{media:mediaName}}}, {upsert:false});
       
-      //increment mediaCount
-      Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
-      //TODO delete media
-      MediaDAO.deleteMedia(MediaID);
+        //increment mediaCount
+        Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
+        //TODO delete media
+        MediaDAO.deleteMedia(MediaID);
+      }
+      catch (e) {
+        console.log("Fail");
+      }
+      
+
+     
     }
 	
     static async listQR(company, store, display){
