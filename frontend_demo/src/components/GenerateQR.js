@@ -11,9 +11,9 @@ class GenerateQR extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentObj: {},
+            currentObj: null,
             displayIndex: 0,
-            displayList: [new Display(0, 'Display 1', 5), new Display(1, 'Display 2', 4), new Display(2, 'Display 3', 10)],
+            displayList: [],
             selectedCode: 0
         };
         this.setCodeList = this.setCodeList.bind(this);
@@ -40,7 +40,7 @@ class GenerateQR extends Component {
     storex = "store1";
     companyx = "testCompany";
 
-    data = {store: this.storex, company: this.companyx, display: this.displayx};
+    data = {store: this.storex, company: this.companyx};
     url = "http://localhost:80/";
     global = new Array(2);
     test ={};
@@ -56,37 +56,81 @@ class GenerateQR extends Component {
     callbackFunc() {
         this.getApiObject(() => {console.log("Finished getting API object")});
     }
+    
+    async getObject(_arr) {
+       this.test = await HandleDisplay("GETLIST", this.url, this.data, this.global);
+       console.log(this.global[1]);
+       console.log("Inside getObject()");
+       this.tempArray = this.global[1];
+       this.dbObj = JSON.parse(this.tempArray);
+       console.log("**********" + this.dbObj);
+       return this.dbObj;
+       
+   }
     */
- 
-     async getObject() {
-        this.test = await HandleDisplay("GETLIST", this.url, this.data, this.global);
-        console.log("Inside getObject()");
-        this.tempArray = this.global[1];
-        this.dbObj = JSON.parse(this.tempArray);
-        console.log("**********" + this.dbObj);
-        return this.dbObj;
-        
+
+   getObject(_passArr) {
+       var request = null;
+       var response =[null, null];
+
+       request = HandleDisplay("GETLIST", this.url, this.data, this.global);
+
+       var timer = {elapsed: 0}
+
+       var interval = setInterval(() => {
+            timer.elapsed++;
+
+            if (response[0] !== null) {
+                clearInterval(interval);
+                if(response[0] === true) {
+                    console.log(response[1]);
+                    return JSON.parse(response);
+                }
+            }
+
+            
+
+            if(timer.elapsed == 24) {
+                console.log("Request taking too long. Timed out.");
+                clearInterval(interval);
+            }
+       }, 500)
+   }
+
+    testAsync(){
+        return new Promise((resolve,reject)=>{
+            //here our function should be implemented 
+            setTimeout(()=>{
+                console.log("Hello from inside the testAsync function");
+                HandleDisplay("GETLIST", this.url, this.data, this.global);
+                resolve();
+            ;} , 5000
+            );
+        });
     }
 
-    /*componentDidMount() {
-        var response = this.getObject();
-        this.dbObj = response.json();
-        this.tempArray = this.global[1];
+    async callerFun(){
+        console.log("Caller");
+        await this.testAsync();
+        console.log("After waiting");
+    }
+ 
 
-        //console.log("Object ^")
-        //console.log(this.tempArray);
-        this.dbObj = JSON.parse(this.tempArray);
-        console.log("**********" + this.dbObj);
+    componentDidMount() {
+        HandleDisplay("GETLIST", this.url, this.data, this.global);
         this.setState({
-            currentObj: this.dbObj
+            currentObj: JSON.parse(this.global[1])
         })
-    } */
+    } 
 
 
 
     render() { 
-
-        let localObject = this.getObject();
+        var passArr= [];
+        //var localObject = this.getObject(passArr);
+        this.callerFun();
+        console.log(this.state.currentObj);
+        
 
         return (
             <div className="background" id="background">
@@ -103,7 +147,7 @@ class GenerateQR extends Component {
                             <label htmlFor="displays" className="contents">Select Display:</label>
                             
                             <select name="display-select" id="display-select" className="contents" value={this.state.displayIndex} onChange={this.setCodeList} >
-                                {localObject.displays.map((val, key) => {
+                                {this.state.currentObj.displays.map((val, key) => {
                                     return (
                                         <option key={key} value={key}>
                                             {val.display}
@@ -116,13 +160,7 @@ class GenerateQR extends Component {
                     <div className="SectionDivider">
                         <h4>{this.state.displayIndex} Codes</h4>
                         <ul id="code-list">
-                            {this.getCurrentDisplayObj().codes.map((val, key) => {
-                                return (
-                                    <li className='code-list-item' key={key} value={val.getIndex()} onClick={this.selectCode}>
-                                        {val.getTitle()}
-                                    </li>
-                                );
-                            })}
+                            
                             <li className="code-list-item" id="createNewCode">+ Crete New Code</li>
                         </ul>
                         <div id="settings-container">
@@ -136,8 +174,8 @@ class GenerateQR extends Component {
                             <label htmlFor="code-title-input">Length: </label>
                             <input type="text" id="code-length-input" defaultValue={this.getCurrentDisplayObj().codes[this.state.selectedCode].getLength()}></input>
                             <br/>
-                            <input id="submit-changes-button" type="button" value="Submit Changes" onClick={this.submitCodeChanges()}/>
-                            <input id="delete-code-button" type="button" value="Delete Code" onClick={this.removeCode()}/>
+                            <input id="submit-changes-button" type="button" value="Submit Changes" />
+                            <input id="delete-code-button" type="button" value="Delete Code" />
                         </div>
                     </div>
                 </div>
@@ -146,3 +184,19 @@ class GenerateQR extends Component {
     }
 }
 export default GenerateQR;
+
+/*
+{this.getCurrentDisplayObj().codes.map((val, key) => {
+    return (
+        <li className='code-list-item' key={key} value={val.getIndex()} onClick={this.selectCode}>
+            {val.getTitle()}
+        </li>
+    );
+})}
+
+
+
+
+
+
+*/

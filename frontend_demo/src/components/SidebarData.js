@@ -16,7 +16,7 @@ export const SidebarData = [
         id: 2,
         title: "Display Management",
         icon: <DisplaySettingsIcon/>,
-        link: "/homepage"
+        link: "/display_mngr"
     },
     {
         id: 3,

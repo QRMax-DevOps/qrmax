@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Display from '../objects/DisplayObject';
+import Sidebar from './Sidebar';
 import './DisplayMngr.css';
 
 class DisplayMngr extends Component {
@@ -41,28 +42,33 @@ class DisplayMngr extends Component {
 
     render() { 
         return ( 
-            <div className="main-container">
-                <h2 className="page-header">Display Management</h2>
-                <h4 id="selected-store-header">Showing store: {this.getCurrentStoreObj()}</h4>
-                <ul id="display-list">
-                    {this.state.displayList.map((val, key) => {
-                        return (
-                            <li className="display-list-item" key={key} value={val.getId()} onClick={this.selectDisplay}>{val.getName()}</li>
-                        );
-                    })}
-                </ul>
-                <div id='settings-box'>
-                    <h5 id="settings-box-header" ></h5>
-                    <label htmlFor='name-field'>Name</label>
-                    <input id="name-field" type="text" value={this.getSelectedDisplay().getName()}></input>
-                    <br/>
-                    <label htmlFor='status-field'>Status</label>
-                    <input id="status-field" type="text" value={this.getSelectedDisplay().getId()}></input> {/**Should be status instead of ID */}
-                    <br/>
-                    <label htmlFor='cause-field' >Cause</label>
-                    <input id="cause-field" type="text" value={this.getSelectedDisplay().getMedia()}></input>
+            <div className='background'>
+                <div>
+                    <Sidebar/>
                 </div>
-                <input type="button" value="Create New Display"></input>
+                <div className="main-container">
+                    <h2 className="page-header">Display Management</h2>
+                    <h4 id="selected-store-header">Showing store: {this.getCurrentStoreObj()}</h4>
+                    <ul id="display-list">
+                        {this.state.displayList.map((val, key) => {
+                            return (
+                                <li className="display-list-item" key={key} value={val.getId()} onClick={this.selectDisplay}>{val.getName()}</li>
+                            );
+                        })}
+                    </ul>
+                    <div id='settings-box'>
+                        <h5 id="settings-box-header" ></h5>
+                        <label htmlFor='name-field'>Name</label>
+                        <input id="name-field" type="text" value={this.getSelectedDisplay().getName()}></input>
+                        <br/>
+                        <label htmlFor='status-field'>Status</label>
+                        <input id="status-field" type="text" value={this.getSelectedDisplay().getId()}></input> {/**Should be status instead of ID */}
+                        <br/>
+                        <label htmlFor='cause-field' >Cause</label>
+                        <input id="cause-field" type="text" value={this.getSelectedDisplay().getMedia()}></input>
+                    </div>
+                    <input type="button" value="Create New Display"></input>
+                </div>
             </div>
          );
     }

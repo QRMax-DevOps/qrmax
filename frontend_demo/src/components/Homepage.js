@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Sidebar from './Sidebar';
 import './Homepage.css';
 import '../App.css';
+import QRCode from 'qrcode.react';
 import Card from 'react-bootstrap/Card';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
@@ -58,12 +59,13 @@ class Homepage extends Component {
         return this.getMediaArray[this.state.selectedMedia].qrList;
     }
 
+    
     render() {
-        
+        //var QRCode = require('qrcode.react');
         return (
             <div className="background">
                 <div>
-                    <Sidebar/>   
+                    <Sidebar/>  
                 </div>
                 <div className="MainContainer">
                     <div className="DisplayContainer">
@@ -100,14 +102,9 @@ class Homepage extends Component {
                             <div id="media-source-container">
                                 {/* get the array of qr codes from the currently selected media */} 
                                 {/* cut out this bit of code to have the screen actually display */}
-                                    {this.state.selectedMediaArray[this.state.selectedMedia].qrList.map((val,key) => {
-                                        return (
-                                            <div className="qr-div" id={key} key={key}>
-                                            {/* Qr generation would happen here */}
-                                            [QR {val.qrCode} SOURCE HERE] 
-                                            </div>
-                                        )
-                                    })}
+                                <div>
+                                    <QRCode value="http://localhost:3000/inputresponse?company=testCompany&store=testStore&display=display1&qrid=123"/>
+                                </div>
                             </div>
                         </div>
                     </div>
