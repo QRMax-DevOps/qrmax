@@ -5,7 +5,12 @@ import { Route , withRouter} from 'react-router-dom';
 //flexible fetch
 export function log(message) {
 	let curTime = new Date().toLocaleTimeString();
-	console.log(" - @"+curTime+" - UPD: "+message);
+	console.log("["+curTime+"] : "+message);
+}
+
+export function logWarn(message) {
+	let curTime = new Date().toLocaleTimeString();
+	console.warn("["+curTime+"] : "+message);
 }
 
 function isInt(value) {
@@ -49,7 +54,7 @@ export async function fetchAPI(address, requestOptions) {
         .then((response) => response.json())
 		.then((res) => {
             if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
-				log(requestOptions.method+" to API : Handled rejection! (response: "+JSON.stringify(res)+")");
+				logWarn(requestOptions.method+" to API : Handled rejection! (response: "+JSON.stringify(res)+")");
 				return [false,JSON.stringify(res),getBetterRejectionReason(res)];
             } 
 			else {
@@ -58,7 +63,7 @@ export async function fetchAPI(address, requestOptions) {
 			}
         })
         .catch(res => {
-            log(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")\n    > Double check that the server is running!\n    > Also check the correct url is being used for the FETCH function.");
+            logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")\n    > Double check that the server is running!\n    > Also check the correct url is being used for the FETCH function.");
 			return [false,getBetterRejectionReason(res)];
         });
 }

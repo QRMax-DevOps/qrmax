@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'react-bootstrap/Image'
-import Button from "../Custom_Button.js"
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstrap';

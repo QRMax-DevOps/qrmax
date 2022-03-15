@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-import { Link, useLocation, BrowserRouter as Router } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import ResponseProcessing from './Response_Processing';
 import ResponseGood from './Response_Good';
@@ -33,30 +33,32 @@ function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
+//Currently very basic. Will only check the null state of given values.
+
+function logCheck(dataName, data, result) {
+	if(!data) {
+		console.warn("    - "+dataName+" failed (is null)");
+		result[0] = false;
+	} else {
+		console.log("     - "+dataName+" passed");
+	}
+}
+
 function checkFormat(data) {
-	var result = true;
+	var result = [true];
 	
-	if(!data.company) {
-		console.log(" - data.company failed");
-		result = false;
-	}
-	if(!data.store) {
-		console.log(" - data.store failed");
-		result = false;
-	}
-	if(!data.display) {
-		console.log(" - data.display failed");
-		result = false;
-	}
-	if(!data.QRID) {
-		console.log(" - data.QRID failed");
-		result = false;
-	}
-	return result;
+	logCheck("data.company", data.company, result)
+	logCheck("data.store", data.store, result)
+	logCheck("data.display", data.display, result)
+	logCheck("data.QRID", data.QRID, result)
+	
+	if(result[0]===true) { console.log(" ^ Check passed\n\n"); }
+	else { console.error(" ^ Check failed\n\n"); }
+	
+	return result[0];
 }
 
 var GLOBAL = [null,null]
-
 export default function InputResponse() {
 	
 	const [counter, setCounter] = useState(0);
@@ -89,25 +91,22 @@ export default function InputResponse() {
 		if(!checkComplete) {
 			if(!checkBegun) {
 				if(counter >= 0.5) {
-					console.log("CHECKING QR DATA: \""+JSON.stringify(data)+"\"")
+					log("Performing format check on: \""+JSON.stringify(data)+"\"");
 					setFormatState(checkFormat(data), processStatus);
-					
 					setCheckBegun(true);
 				}
 			} else {
 				//Failure check
 				if(GLOBAL[1]!="wait") {
+					
 					if(formatState === false || apiResponse === false) {
 						setCheckPassed(false);
 						setCheckComplete(true);
-
-						console.log("CHECK FAILED!")
 					}
 					else if(formatState === true && apiResponse === true) {
 						setCheckPassed(true);
 						setCheckComplete(true);
-
-						console.log("CHECK PASSED!")
+					
 					}
 					else if(formatState === true && GLOBAL[0] === null) {
 						ActionQRID(data,GLOBAL,true);
