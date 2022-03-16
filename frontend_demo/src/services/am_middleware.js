@@ -125,7 +125,7 @@ export async function RunFetch_CreateStoreAccount(url, isCompany, user, companyN
 
 
 export async function RunFetch_CreateStore(url, isCompany, userID, data, global) {
-	console.log("creating store w/ ",data.company,data.store)
+	//console.log("creating store w/ ",data.companyName,data.store)
 	
 	var body = null;
 	
@@ -219,6 +219,10 @@ export async function RunFetch_DeleteStoreAccount( url, isCompany, user, company
 export async function RunFetch_DeleteStore( url, isCompany, userID, data, global) {
 	
 	console.log('RunFetch_DeleteStore',  url, isCompany, userID, data);
+	
+	//Values are converted to JSON, which casts bools into strings
+	//Therefor, bools need to be cast back to boolean-type
+	isCompany = (isCompany == "true");
 	
 	console.log('Global is:',global);
 	

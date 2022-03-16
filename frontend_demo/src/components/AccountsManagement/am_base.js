@@ -83,6 +83,14 @@ class AccountsManagement extends Component {
 		var isLocalhostParam = urlParams.get('localhost');
 		
 		var userID_x = '';
+		
+		if(isCompanyParam==='true') {
+			isCompanyParam = true;
+		}
+		else {
+			isCompanyParam = false;
+		}
+		
 		if(isCompanyParam===true) {
 			userID_x = companynameParam;
 		}
@@ -257,11 +265,8 @@ class AccountsManagement extends Component {
 			
 				<div className="MainAccountsContainer">
 					<div className="FloatingContainer" style={{flexDirection:"row"}}>
-					
-					{ this.getParentState('iscompany') === true &&
-						<Options type='accounts' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
-					}
-						<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
+
+					<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					
 					</div>
 					
@@ -283,7 +288,7 @@ class AccountsManagement extends Component {
 					{ this.getParentState('iscompany') === true &&
 						<Options type='accounts' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					}
-						<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
+					<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					
 					</div>
 					

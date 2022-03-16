@@ -61,13 +61,15 @@ export class Options extends Component {
 
 	render() {
 		
-		if (this.getParentState('iscompany')) {
+		console.log(this.getParentState('iscompany'));
+		if (this.getParentState('iscompany')===false) {
 			var createStoreTitle = 'Add Store';
 
 		}
 		
 		
         return (
+		
 			<div className="FloatingContainer">
 				
 				<p>{this.title}</p>
@@ -80,10 +82,11 @@ export class Options extends Component {
 					<button onClick={() => this.modifyAccountCheck()} disabled={this.props.accountSelected ? true : false}>Modify Account</button> </>
 				}
 				{
-					this.type==='stores' && this.getParentState('iscompany') && <>
+					this.type==='stores' && <>
 					<button onClick={() => this.createStoreCheck()} className="InteractButton">{createStoreTitle}</button>
 					<button onClick={() => this.modifyStoreCheck()} disabled={this.props.accountSelected ? true : false}> Modify Store </button> </>
 				}
+				
 				</div>
 			</div>
         );
