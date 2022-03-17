@@ -18,7 +18,7 @@ function Sidebar() {
                     {SidebarData.map((val, key) => {
                         return (
                                 <li id="row" key={key}>
-                                    <Link to={val.link}>
+                                    <Link className='page-links' to={val.link}>
                                         <p className="navIcon">{val.icon}</p>
                                         <p className="navTitle">{val.title}</p>
                                     </Link>

@@ -1,9 +1,12 @@
+
 .main-container {
     height: 100vh;
     width: 100vw;
     padding: 10px;
-    justify-content: center;
-    
+    margin: 50px;
+    display: inline-block;
+    background-color: white;
+    font-family: 'Arial';
 }
 
 .page-header {
@@ -17,16 +20,38 @@
     overflow-y: scroll;
     border: 2px solid white;
     list-style: none;
+    margin: auto;
 }
 
 .display-list-item:hover {
     cursor: pointer;
-    background-color: blue;
+    background-color: #1b5cab;;
     color: white;
 }
 
 #settings-box {
     height: auto;
     width: auto;
+    padding: 5px;
 
 }
+
+.buttons {
+    outline: none;
+    background-color: #1b5cab;
+    color: white;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease-in-out;
+    margin-top: 10px;
+}
+
+.buttons:hover {
+    outline: none;
+    cursor: pointer;
+    background-color: #216ecc;
+    color: white;
+    border-color: grey;
+    box-shadow: 0 0 15px grey;
+}
+
+
