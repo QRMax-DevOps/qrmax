@@ -1,17 +1,16 @@
+import Media from "./MediaObject.js";
+
 export default class QRCode {
-    constructor(codeIndex, title, code, length) {
-        this.title = title;
+    constructor(codeIndex, code, media) {
+  
         this.code = code;
-        this.length = length;
+        this.media = media;
         this.codeIndex = codeIndex;
+        this.fillMedia();
     }
 
-    getTitle() {
-        return this.title;
-    }
-
-    setTitle(title) {
-        this.title = title;
+    fillMedia() {
+        this.media = new Media("Media 1", "c:/media", 0)
     }
 
     getCode() {
@@ -22,19 +21,19 @@ export default class QRCode {
         this.code = code;
     }
 
-    getLength() {
-        return this.length;
-    }
-
-    setLength(length) {
-        this.length = length;
-    }
-
     getIndex() {
         return this.codeIndex;
     }
 
     setIndex(codeIndex) {
         this.codeIndex = codeIndex;
+    }
+
+    getMedia() {
+        return this.media;
+    }
+
+    setMedia(media) {
+        this.media = media;
     }
 }
