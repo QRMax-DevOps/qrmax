@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import Sidebar from './Sidebar';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
-import { SliderValueLabel } from '@mui/material';
 
 class MediaMngr extends Component {
     constructor(props) {
@@ -11,12 +10,12 @@ class MediaMngr extends Component {
     }
     state = {
         currentDisplay: "Some Display",
-        selectedDisplay: 0,
+        selectedMedia: 0,
         mediaList: [
-            new Media(0, "Media 1", "something"),
-            new Media(1, "Media 2", "something"),
-            new Media(2, "Media 3", "something"),
-            new Media(3, "Media 4", "something"),
+            new Media(0, "Media 1", "something1"),
+            new Media(1, "Media 2", "something2"),
+            new Media(2, "Media 3", "something3"),
+            new Media(3, "Media 4", "something4"),
         ]
     }
 
@@ -46,7 +45,7 @@ class MediaMngr extends Component {
                 </div>
                 <div className="main-container">
                     <h2 className='page-header'>Media Management</h2>
-                    <h4 id='selected-display'>Showing Display: {this.getCurrentDisplayObj()}</h4>
+                    <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <ul id='media-list'>
                         {this.state.mediaList.map((val, key) => {
                             return (
@@ -59,13 +58,10 @@ class MediaMngr extends Component {
                         <label htmlFor='name-field'>Name</label>
                         <input id='name-field' type='text' value={this.getSelectedMedia().getName()}></input>
                         <br/>
-                        <label htmlFor='content-field'>Content</label>
-                        <input id='content-field' type='text' value={this.getSelectedMedia().getContent()}></input>
-                        <br/>
-                        <label htmlFor='length-field'>Length</label>
-                        <input id='length-field' type='text' value={this.getSelectedMedia().getLength()}></input>
+                        <label htmlFor='file-field'>File</label>
+                        <input id='file-field' type='text' value={this.getSelectedMedia().getFile()}></input>
                     </div>
-                    <input type='button' value='Create New Display'></input>
+                    <input type='button' value='Create New Media'></input>
                 </div>
             </div>
         );

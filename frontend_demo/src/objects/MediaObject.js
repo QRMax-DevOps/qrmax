@@ -1,8 +1,9 @@
 export default class Media{
-    constructor(name, content, length) {
+    constructor(id, name, file) {
+        this.id = id;
         this.name = name;
-        this.content = content;
-        this.length = length;
+        this.file = file;
+        
     }
 
     getName() {
@@ -13,12 +14,22 @@ export default class Media{
         this.name = name;
     }
 
-    getContent() {
-        return this.content;
+
+    getId() {
+        return this.id;
     }
 
-    setContent(content) {
-        this.content = content;
+    setName(id) {
+        this.id = id;
+    }
+
+
+    getFile() {
+        return this.file;
+    }
+
+    setFile(file) {
+        this.file = file;
     }
 
     getLength() {
@@ -30,6 +41,6 @@ export default class Media{
     }
 
     toString() {
-        return this.name + " " + this.content + " " + this.length;
+        return this.id + " " + this.name + " " + this.file;
     }
 }

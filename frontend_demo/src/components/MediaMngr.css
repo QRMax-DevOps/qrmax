@@ -10,7 +10,7 @@
     text-align: center;
 }
 
-#display-list {
+#media-list {
     height: 200px;
     width: 200px;
     overflow: hidden;
@@ -20,7 +20,7 @@
     margin: auto;
 }
 
-.display-list-item:hover {
+.media-list-item:hover {
     cursor: pointer;
     background-color: blue;
     color: white;
