@@ -2,21 +2,18 @@ import React, {Component} from 'react';
 import Sidebar from './Sidebar';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
+import {HandleMedia} from '../services/media_middleware';
 
 class MediaMngr extends Component {
     constructor(props) {
         super(props);
         this.selectMedia = this.selectMedia.bind(this);
+        this.fetchMedia();
     }
     state = {
         currentDisplay: "Some Display",
+        currentObj: {medias: [{media: null}]},
         selectedMedia: 0,
-        mediaList: [
-            new Media(0, "Media 1", "something1"),
-            new Media(1, "Media 2", "something2"),
-            new Media(2, "Media 3", "something3"),
-            new Media(3, "Media 4", "something4"),
-        ]
     }
 
     getMediaList() {
@@ -37,6 +34,47 @@ class MediaMngr extends Component {
         });
     }
 
+
+    fetchMedia() {
+        var url = "http://localhost:80/";
+        var data = {company: "displayCompany", store: "displayStore", display: "mediaDisplay"};
+
+        let request = null;
+        let response = null;
+
+        var me = this;
+        var timer = {elapsed: 0};
+
+        request = HandleMedia("GETLIST", url, data, response);
+        console.log(data.company + " " + data.store + " " + data.display);
+
+        var interval = setInterval(function(){
+            timer.elapsed++;
+
+            if(response[0] !== null){
+                clearInterval(interval);
+                me.setState({loading:false});
+
+                if(response[0] === true){
+                    var json = JSON.parse(response[1]);
+
+                    me.setState({currentObj: json});
+                    console.log(me.state.currentObj);
+                }
+            }
+            if(timer.elapsed == 24) {
+                console.log("Fetch-loop timeout!");
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+        }, 500);
+    }
+
+    componentDidMount() {
+        this.fetchMedia();
+    }
+
+
     render() {
         return (
             <div className="background">
@@ -49,7 +87,7 @@ class MediaMngr extends Component {
                     <ul id='media-list'>
                         {this.state.mediaList.map((val, key) => {
                             return (
-                                <li className='media-list-item' key={key} value={val.getId()} onClick={this.selectMedia}>{val.getName()}</li>
+                                <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
                             );
                         })}
                     </ul>
@@ -61,7 +99,9 @@ class MediaMngr extends Component {
                         <label htmlFor='file-field'>File</label>
                         <input id='file-field' type='text' value={this.getSelectedMedia().getFile()}></input>
                     </div>
-                    <input type='button' value='Create New Media'></input>
+                    <input type='button' id='update-button' className='buttons' value='Update'></input>
+                    <br/>
+                    <input type='button' id='create-button' className='buttons' value='Create New Display'></input>
                 </div>
             </div>
         );
