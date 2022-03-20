@@ -19,7 +19,7 @@ export default class Media{
         return this.id;
     }
 
-    setName(id) {
+    setId(id) {
         this.id = id;
     }
 

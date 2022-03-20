@@ -25,7 +25,7 @@ class MediaMngr extends Component {
     }
 
     getSelectedMedia(){
-        return this.state.currentObj.media[this.state.selectedMedia];
+        return this.state.currentObj.medias[this.state.selectedMedia];
     }
 
     selectMedia(e) {
@@ -86,7 +86,7 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <ul id='media-list'>
                         {console.log(this.state.currentObj)}
-                        {this.state.currentObj.map((val, key) => {
+                        {this.state.currentObj.medias.map((val, key) => {
                             return (
                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
                             );
@@ -95,10 +95,10 @@ class MediaMngr extends Component {
                     <div id='settings-box'>
                         <h5 id='settings-box-header'></h5>
                         <label htmlFor='name-field'>Name</label>
-                        <input id='name-field' type='text' value={this.getSelectedMedia().getName()}></input>
+                        <input id='name-field' type='text' value={this.getSelectedMedia().media}></input>
                         <br/>
                         <label htmlFor='file-field'>File</label>
-                        <input id='file-field' type='text' value={this.getSelectedMedia().getFile()}></input>
+                        <input id='file-field' type='text' value={this.getSelectedMedia().media}></input>
                     </div>
                     <input type='button' id='update-button' className='buttons' value='Update'></input>
                     <br/>
