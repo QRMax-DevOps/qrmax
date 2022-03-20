@@ -25,7 +25,7 @@ class MediaMngr extends Component {
     }
 
     getSelectedMedia(){
-        return this.state.mediaList[this.state.selectedMedia];
+        return this.state.currentObj.media[this.state.selectedMedia];
     }
 
     selectMedia(e) {
@@ -40,7 +40,7 @@ class MediaMngr extends Component {
         var data = {company: "displayCompany", store: "displayStore", display: "mediaDisplay"};
 
         let request = null;
-        let response = null;
+        let response = [null, null];
 
         var me = this;
         var timer = {elapsed: 0};
@@ -85,7 +85,8 @@ class MediaMngr extends Component {
                     <h2 className='page-header'>Media Management</h2>
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <ul id='media-list'>
-                        {this.state.mediaList.map((val, key) => {
+                        {console.log(this.state.currentObj)}
+                        {this.state.currentObj.map((val, key) => {
                             return (
                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
                             );
