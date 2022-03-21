@@ -106,6 +106,7 @@ export async function getDisplays(type, url, data, global) {
 			break;
 		
 		case 'UPDATE':
+			endpoint = "http://localhost:80/api/v1/Display/" + data.id;
 			methodGen = 'PATCH';
 			inputGen  = JSON.stringify({
 				company	: data.company,

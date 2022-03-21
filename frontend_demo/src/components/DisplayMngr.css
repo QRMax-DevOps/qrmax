@@ -23,6 +23,13 @@
     margin: auto;
 }
 
+#styled-container {
+    box-shadow: 1px 1px 5px grey;
+    margin: auto;
+    width:500px;
+    padding: 10px;
+}
+
 .display-list-item:hover {
     cursor: pointer;
     background-color: #1b5cab;;
@@ -33,7 +40,7 @@
     height: auto;
     width: auto;
     padding: 5px;
-
+    box-shadow: 20px, 20px, 20px, black;
 }
 
 .buttons {
