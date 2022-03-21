@@ -10,7 +10,10 @@ const Display = require("./api/route/Display.route.js");
 const QR = require("./api/route/QR.route.js");
 const Media = require("./api/route/media.route.js");
 const Listen = require("./api/route/listen.route.js");
-const bodyParser = require('body-parser')
+const CompanyAccountSettings = require("./api/route/CompanyAccountSettings.route.js");
+const StoreAccountSettings = require("./api/route/StoreAccountSettings.route.js");
+const DisplaySettings = require("./api/route/DisplaySettings.route.js");
+const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -44,6 +47,16 @@ app.use("/api/v1/Display/Media/file", Media);
 
 //display listen
 app.use("/api/v1/Display/media/listen", Listen);
+
+//Company account settings
+app.use("/api/v1/Company/Account/Settings", CompanyAccountSettings);
+
+//Store account settings
+app.use("/api/v1/Store/Account/Settings", StoreAccountSettings);
+
+//Display settings
+app.use("/api/v1/Display/Settings", DisplaySettings);
+
 
 
 app.use("*", (req, res) => res.status(404).json({ error: "not found" }));

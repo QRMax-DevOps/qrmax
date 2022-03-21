@@ -103,7 +103,41 @@ class CompanyAccountController {
         catch(e){
             res.json({status:"failure", cause:e})
         }
-    }   
+    } 
+    
+    static async getSettings(req, res){
+        try{
+            const company = req.body.company;
+            if(await CompanyAccountDao.checkAccount(company)){
+                let settingsR = await CompanyAccountDao.getSettings(company);
+                res.json({status:"success", settings:settingsR.settings});
+            }
+            else{
+                res.json({status:"failure", cause:'no account exists'});
+            }  
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
+
+    static async changeSettings(req, res){
+        try{
+            const company = req.body.company;
+            const fields = req.body.fields;
+            const values = req.body.values;
+            if(await CompanyAccountDao.checkAccount(company)){
+                CompanyAccountDao.setSettings(company, fields, values);
+                res.json({status:"success"});
+            }
+            else{
+                res.json({status:"failure", cause:'no account exists'});
+            }  
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
   }
 
 module.exports = CompanyAccountController;
