@@ -4,6 +4,7 @@ import { getDisplays } from '../services/display_middleware';
 import { HandleDisplay } from '../services/qr_middleware';
 import './DisplayMngr.css';
 import Popup from './Popup';
+import { ImageToBase64 } from '../services/base64_utilities';
 
 import Sidebar from './Sidebar';
 
@@ -13,10 +14,10 @@ class DisplayMngr extends Component {
         this.selectDisplay = this.selectDisplay.bind(this);
         this.changeCurrentDisplayInput = this.changeCurrentDisplayInput.bind(this);
         this.updateDsiplay = this.updateDsiplay.bind(this);
-        //this.createDisplayPopup = this.createDisplayPopup.bind(this);
         this.createDisplay = this.createDisplay.bind(this);
         this.deleteDisplay = this.deleteDisplay.bind(this);
         this.setSelectedFile = this.setSelectedFile.bind(this);
+    
     }
     state = { 
         currentStore: "Some Store",
@@ -25,13 +26,8 @@ class DisplayMngr extends Component {
         displayInput: 'default',
         createNewDisplayName: null,
         open: false,
-        selectedFile: null
-     }
-
-     togglePop() {
-         this.setState({
-             open: !this.state.open
-         });
+        selectedFile: null,
+        imgString: null
      }
 
      getDsiplayList() {
@@ -59,12 +55,14 @@ class DisplayMngr extends Component {
         })
      }
 
-     setSelectedFile(e) {
+     async setSelectedFile(e) {
+         const file = e.target.files[0];
+         const base64 = await this.getBase64(file);
          this.setState({
-             selectedDisplay: e.target.files[0]
+             imgString: base64
          })
      }
-
+    
      updateDsiplay(){
         var data = {id: "6232a8819d0e35f4708ad8e8", company: "displayCompany", store: "displayStore", display: this.state.displayInput};
         this.fetchDisplays("UPDATE", data);
@@ -77,7 +75,7 @@ class DisplayMngr extends Component {
 
      createDisplay() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: newName};
+        var data = {company: "displayCompany", store: "displayStore", display: newName, src: this.state.imgString};
         this.fetchDisplays("CREATE", data);
      }
 
@@ -104,7 +102,7 @@ class DisplayMngr extends Component {
         var timer = {elapsed: 0};
 
         request = getDisplays(type, url, data, response);
-        console.log(data.company + " " + data.store);
+        
 
         var interval = setInterval(function() {
             timer.elapsed++;
@@ -133,6 +131,21 @@ class DisplayMngr extends Component {
         }, 500);
      }
 
+     getBase64(file) {
+         return new Promise(function(resolve, reject){
+
+             const reader = new FileReader();
+             reader.readAsDataURL(file);
+             reader.onload = () => {
+                 resolve(reader.result);
+             };
+
+            reader.onerror = (error) => {
+                reject(error);
+            };
+         });
+     }
+
      componentDidMount() {
          var data;
          this.fetchDisplays("GETLIST",  data = {company: "displayCompany", store: "displayStore"});
@@ -153,11 +166,13 @@ class DisplayMngr extends Component {
                     <ul id="display-list">
                         {console.log(this.state.currentObj)}
                         {this.state.currentObj.displays.map((val, key) => {
-                            return (
-                                <li className="display-list-item" key={key} value={key} onClick={this.selectDisplay}>{val.display}</li>
+                                return (
+                                    <li className="display-list-item" key={key} value={key} onClick={this.selectDisplay}>{val.display}</li>
+                                    
                                 );
                             })}
                     </ul>
+                    {console.log(this.state.selectedFile)}
                     <div id='settings-box'>
                         <h5 id="settings-box-header" ></h5>
                         <label htmlFor='name-field'>Name</label>
@@ -191,6 +206,17 @@ class DisplayMngr extends Component {
                     >
                         Delete Display
                     </button>
+                    <br/>
+                    <button 
+                        type="button" 
+                        id="check-button" 
+                        className='buttons'
+                        onClick={this.uploadImage}
+                        
+                    >
+                        Check Image
+                    </button>
+                    {console.log("image string " + this.state.imgString)}
                 </div>
             </div>
 			</div>

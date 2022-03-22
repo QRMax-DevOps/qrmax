@@ -101,7 +101,8 @@ export async function getDisplays(type, url, data, global) {
 			inputGen  = JSON.stringify({
 				company	: data.company,
 				store	: data.store,
-				display	: data.display
+				display	: data.display,
+				src		: data.src
 			});
 			break;
 		
