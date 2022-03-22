@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import Sidebar from './Sidebar';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
 import {HandleMedia} from '../services/media_middleware';
+
+import Sidebar from './Sidebar';
 
 class MediaMngr extends Component {
     constructor(props) {
@@ -13,7 +14,6 @@ class MediaMngr extends Component {
         this.createMedia = this.createMedia.bind(this);
         this.deleteMedia = this.deleteMedia.bind(this);
         this.setSelectedFile = this.setSelectedFile.bind(this);
-        this.fetchMedia();
     }
     state = {
         currentDisplay: "Display1",
@@ -85,7 +85,7 @@ class MediaMngr extends Component {
 
     fetchMedia(type, data) {
         var url = "http://localhost:80/";
-        //var data = {company: "displayCompany", store: "displayStore", display: "display1"};
+        
 
         let request = null;
         let response = [null, null];
