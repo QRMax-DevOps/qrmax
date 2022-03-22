@@ -8,12 +8,27 @@ class MediaMngr extends Component {
     constructor(props) {
         super(props);
         this.selectMedia = this.selectMedia.bind(this);
+        this.changeCurrentMediaInput = this.changeCurrentMediaInput.bind(this);
+        this.updateMedia = this.updateMedia.bind(this);
+        this.createMedia = this.createMedia.bind(this);
+        this.deleteMedia = this.deleteMedia.bind(this);
+        this.setSelectedFile = this.setSelectedFile.bind(this);
         this.fetchMedia();
     }
     state = {
-        currentDisplay: "Some Display",
-        currentObj: {medias: [{media: null}]},
+        currentDisplay: "Display1",
+        currentObj: {medias: [{media: ''}]},
         selectedMedia: 0,
+        mediaInput: 'default',
+        createNewMediaName: null,
+        open: false,
+        selectedFile: null
+    }
+
+    togglePop() {
+        this.setState({
+            open: !this.state.open
+        });
     }
 
     getMediaList() {
@@ -34,10 +49,43 @@ class MediaMngr extends Component {
         });
     }
 
+    changeCurrentMediaInput(e) {
+        this.setState({
+            mediaInput: e.target.value
+        })
+    }
 
-    fetchMedia() {
+    setSelectedFile(e) {
+        this.setState({
+            selectedMedia: e.target.files[0]
+        })
+    }
+
+    updateMedia(){
+        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        this.fetchMedias("UPDATE", data);
+        console.log("inside updateMedia");
+    }
+
+    getNewName() {
+        return this.state.mediaInput;
+    }
+
+    createMedia() {
+        let newName = this.getNewName();
+        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName};
+        this.fetchMedia("CREATE", data);
+    }
+
+    deleteMedia() {
+        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.medias[this.state.selectedMedia].media};
+        this.fetchMedia("DELETE", data);
+    }
+
+
+    fetchMedia(type, data) {
         var url = "http://localhost:80/";
-        var data = {company: "displayCompany", store: "displayStore", display: "mediaDisplay"};
+        //var data = {company: "displayCompany", store: "displayStore", display: "display1"};
 
         let request = null;
         let response = [null, null];
@@ -45,7 +93,7 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = HandleMedia("GETLIST", url, data, response);
+        request = HandleMedia(type, url, data, response);
         console.log(data.company + " " + data.store + " " + data.display);
 
         var interval = setInterval(function(){
@@ -59,7 +107,7 @@ class MediaMngr extends Component {
                     var json = JSON.parse(response[1]);
 
                     me.setState({currentObj: json});
-                    console.log(me.state.currentObj);
+                    //console.log(me.state.currentObj);
                 }
             }
             if(timer.elapsed == 24) {
@@ -71,7 +119,9 @@ class MediaMngr extends Component {
     }
 
     componentDidMount() {
-        this.fetchMedia();
+        var data;
+        this.fetchMedia("GETLIST", data = {company: "displayCompany", store: "displayStore", display: "display1"});
+        console.log("did mount");
     }
 
 
@@ -84,26 +134,29 @@ class MediaMngr extends Component {
                 <div className="main-container">
                     <h2 className='page-header'>Media Management</h2>
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
-                    <ul id='media-list'>
-                        {console.log(this.state.currentObj)}
-                        {this.state.currentObj.medias.map((val, key) => {
-                            return (
-                                <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
-                            );
-                        })}
-                    </ul>
-                    <div id='settings-box'>
-                        <h5 id='settings-box-header'></h5>
-                        <label htmlFor='name-field'>Name</label>
-                        <input id='name-field' type='text' value={this.getSelectedMedia().media}></input>
+                    <div id="styled-container">
+                        <ul id='media-list'>
+                            {console.log(this.state.currentObj)}
+                            {this.state.currentObj.medias.map((val, key) => {
+                                return (
+                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
+                                );
+                             })}
+                        </ul>
+                        <div id='settings-box'>
+                            <h5 id='settings-box-header'></h5>
+                            <label htmlFor='name-field'>Name</label>
+                            <input id='name-field' type='text' onChange={this.changeCurrentMediaInput}></input>
+                            <input type="file" onChange={this.setSelectedFile}/>
+                        </div>
+                        <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update</button>
                         <br/>
-                        <label htmlFor='file-field'>File</label>
-                        <input id='file-field' type='text' value={this.getSelectedMedia().media}></input>
+                        <button type="button" id="create-button" className='buttons' onClick={this.createMedia}>Create New Media</button>   
+                        <br/>
+                        <button type="button" id="delete-button" className='buttons' onClick={this.deleteMedia}>Delete Media</button>
+                        
+                        </div>
                     </div>
-                    <input type='button' id='update-button' className='buttons' value='Update'></input>
-                    <br/>
-                    <input type='button' id='create-button' className='buttons' value='Create New Display'></input>
-                </div>
             </div>
         );
     }

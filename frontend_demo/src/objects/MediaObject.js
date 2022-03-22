@@ -32,14 +32,6 @@ export default class Media{
         this.file = file;
     }
 
-    getLength() {
-        return this.length;
-    }
-
-    setLength(length){
-        this.length = length;
-    }
-
     toString() {
         return this.id + " " + this.name + " " + this.file;
     }
