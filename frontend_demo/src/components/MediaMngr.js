@@ -17,7 +17,7 @@ class MediaMngr extends Component {
         this.setSelectedFile = this.setSelectedFile.bind(this);
     }
     state = {
-        currentDisplay: "Display1",
+        currentDisplay: "Some Display",
         currentObj: {medias: [{media: ''}]},
         selectedMedia: 0,
         mediaInput: 'default',
@@ -72,7 +72,7 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName};
+        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName, src: this.state.imgString};
         this.fetchMedia("CREATE", data);
     }
 
@@ -87,7 +87,7 @@ class MediaMngr extends Component {
         
 
         let request = null;
-        let response = [null, null];
+        let response = [null,null];
 
         var me = this;
         var timer = {elapsed: 0};
@@ -106,7 +106,7 @@ class MediaMngr extends Component {
                     var json = JSON.parse(response[1]);
 
                     me.setState({currentObj: json});
-                    //console.log(me.state.currentObj);
+                    
                 }
             }
             if(timer.elapsed == 24) {
@@ -115,6 +115,21 @@ class MediaMngr extends Component {
                 clearInterval(interval);
             }
         }, 500);
+    }
+
+    getBase64(file) {
+        return new Promise(function(resolve, reject){
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+
+            reader.onerror = (error) => {
+                reject(error);
+            }
+        });
     }
 
     componentDidMount() {
@@ -135,7 +150,7 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
                         <ul id='media-list'>
-                            {console.log(this.state.currentObj)}
+                            
                             {this.state.currentObj.medias.map((val, key) => {
                                 return (
                                  <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
@@ -155,6 +170,7 @@ class MediaMngr extends Component {
                         <br/>
                         <button type="button" id="delete-button" className='buttons' onClick={this.deleteMedia}>Delete Media</button>
                         </div>
+                        
                     </div>
             </div>
         );
