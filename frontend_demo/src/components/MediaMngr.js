@@ -5,6 +5,7 @@ import {HandleMedia} from '../services/media_middleware';
 import { ImageToBase64 } from '../services/base64_utilities';
 
 import Sidebar from './Sidebar';
+import { getDisplays } from '../services/display_middleware';
 
 class MediaMngr extends Component {
     constructor(props) {
@@ -18,7 +19,8 @@ class MediaMngr extends Component {
     }
     state = {
         currentDisplay: "Some Display",
-        currentObj: {medias: [{media: ''}]},
+        currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
+        //also got rid of all "medias" mentions and replaced with the actual field name from DB
         selectedMedia: 0,
         mediaInput: 'default',
         createNewMediaName: null,
@@ -37,7 +39,7 @@ class MediaMngr extends Component {
     }
 
     getSelectedMedia(){
-        return this.state.currentObj.medias[this.state.selectedMedia];
+        return this.state.currentObj.media[this.state.selectedMedia];
     }
 
     selectMedia(e) {
@@ -77,7 +79,7 @@ class MediaMngr extends Component {
     }
 
     deleteMedia() {
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.medias[this.state.selectedMedia].media};
+        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
         this.fetchMedia("DELETE", data);
     }
 
@@ -92,7 +94,7 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = HandleMedia(type, url, data, response);
+        request = getDisplays(type, url, data, response); //Switched to displayMW
         
 
         var interval = setInterval(function(){
@@ -150,10 +152,10 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
                         <ul id='media-list'>
-                            
-                            {this.state.currentObj.medias.map((val, key) => {
+                            {console.log(this.state.currentObj)}
+                            {this.state.currentObj.displays[0].media.map((val, key) => {
                                 return (
-                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
+                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
                                 );
                              })}
                         </ul>
