@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
 import {HandleMedia} from '../services/media_middleware';
+import { ImageToBase64 } from '../services/base64_utilities';
 
 import Sidebar from './Sidebar';
 
@@ -22,15 +23,11 @@ class MediaMngr extends Component {
         mediaInput: 'default',
         createNewMediaName: null,
         open: false,
-        selectedFile: null
+        selectedFile: null,
+        imgString: null
     }
 
-    togglePop() {
-        this.setState({
-            open: !this.state.open
-        });
-    }
-
+    
     getMediaList() {
 
     }
@@ -55,10 +52,12 @@ class MediaMngr extends Component {
         })
     }
 
-    setSelectedFile(e) {
-        this.setState({
-            selectedMedia: e.target.files[0]
-        })
+    async setSelectedFile(e) {
+        const file = e.target.files[0];
+         const base64 = await this.getBase64(file);
+         this.setState({
+             imgString: base64
+         })
     }
 
     updateMedia(){
@@ -94,7 +93,7 @@ class MediaMngr extends Component {
         var timer = {elapsed: 0};
 
         request = HandleMedia(type, url, data, response);
-        console.log(data.company + " " + data.store + " " + data.display);
+        
 
         var interval = setInterval(function(){
             timer.elapsed++;
@@ -143,6 +142,7 @@ class MediaMngr extends Component {
                                 );
                              })}
                         </ul>
+                        {console.log(this.state.currentObj)}
                         <div id='settings-box'>
                             <h5 id='settings-box-header'></h5>
                             <label htmlFor='name-field'>Name</label>
@@ -154,7 +154,6 @@ class MediaMngr extends Component {
                         <button type="button" id="create-button" className='buttons' onClick={this.createMedia}>Create New Media</button>   
                         <br/>
                         <button type="button" id="delete-button" className='buttons' onClick={this.deleteMedia}>Delete Media</button>
-                        
                         </div>
                     </div>
             </div>
