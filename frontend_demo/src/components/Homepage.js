@@ -193,7 +193,7 @@ class Homepage extends Component {
                                 {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
                                         <Draggable key={key}>
-                                                <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=displayCompany&store=displayStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
+                                                <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=displayCompany&store=displayStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&QRID=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
                                         </Draggable>
                                     )
                                 })}

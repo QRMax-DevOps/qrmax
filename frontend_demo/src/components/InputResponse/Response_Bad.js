@@ -4,6 +4,7 @@ import RedCrossImage from '../../graphics/cross.png'
 import './InputResponse.css';
 
 class ResponseBad extends React.Component {
+
  render() {
          return (
              <div>
