@@ -18,7 +18,7 @@ class MediaMngr extends Component {
         this.setSelectedFile = this.setSelectedFile.bind(this);
     }
     state = {
-        currentDisplay: "Some Display",
+        currentDisplay: "Display1",
         currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
         //also got rid of all "medias" mentions and replaced with the actual field name from DB
         selectedMedia: 0,
@@ -64,7 +64,7 @@ class MediaMngr extends Component {
 
     updateMedia(){
         var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
-        this.fetchMedias("UPDATE", data);
+        this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
     }
 
