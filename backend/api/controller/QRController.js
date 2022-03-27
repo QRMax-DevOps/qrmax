@@ -132,6 +132,26 @@ class QRController {
             res.json({status:"failure", cause:e});
         }
     }
+
+    static async refreshMedia(req, res){
+        //get Company store display media
+        const company = req.body.company;
+        const store = req.body.store;
+		const display = req.body.display;
+        const mediaName = req.body.mediaName;
+        let result;
+        if (mediaName){
+            result = await DisplayDAO.refreshSingleQR(company, store, display, mediaName);
+        }
+        //check if media is filled
+            //refresh single 
+        //check if display is filled
+            //referesh display
+        //if no 
+            //refersh store
+        //return success
+        res.json({status:"success", r:result});
+    }
 }
 
 
