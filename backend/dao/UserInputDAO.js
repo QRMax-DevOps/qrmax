@@ -31,6 +31,7 @@ class UserInputDAO {
   }
 
   static async validate(company, display, store, QRID) {
+    return true;
     if (DisplayDAO.checkQR(company, store, display, QRID)) {
 	  return true;
 	}
@@ -41,6 +42,7 @@ console.log("QR doesnt exist");
   }
 
   static async checkLastVote(cleanIdentifier) {
+    return true;
     try {
       if (await UserInput.countDocuments({"UserIdentifier": {$eq: cleanIdentifier}})>0) {
         return false;
