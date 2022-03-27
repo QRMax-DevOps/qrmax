@@ -46,7 +46,17 @@ class CompanyAccountDAO {
     static async checkLogin(company, hash){
         let result = await CompanyAccount.findOne({company:company, password:hash});
         if (result){
-            return {status:'success'};
+			const token = jwt.sign(
+			        { company: company, username: username},
+			        "secret_this_should_be_longer",
+			        { expiresIn: "1h" }
+			      );
+			      res.status(200).json({
+			        token: token,
+			        expiresIn: 3600,
+			        userId: fetchedUser._id
+			      }
+			);
         }
         return {status:'failure', cause:'incorrect password'};
     }
