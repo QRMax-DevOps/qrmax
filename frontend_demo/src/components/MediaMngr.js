@@ -18,7 +18,7 @@ class MediaMngr extends Component {
         this.setSelectedFile = this.setSelectedFile.bind(this);
     }
     state = {
-        currentDisplay: "Display1",
+        currentDisplay: "Some Display",
         currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
         //also got rid of all "medias" mentions and replaced with the actual field name from DB
         selectedMedia: 0,
@@ -63,7 +63,7 @@ class MediaMngr extends Component {
     }
 
     updateMedia(){
-        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        var data = {id: "623c29248db6418f803d0240", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
         this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
     }
@@ -86,7 +86,7 @@ class MediaMngr extends Component {
 
     fetchMedia(type, data) {
         var url = "http://localhost:80/";
-        
+       
 
         let request = null;
         let response = [null,null];
@@ -136,7 +136,7 @@ class MediaMngr extends Component {
 
     componentDidMount() {
         var data;
-        this.fetchMedia("GETLIST", data = {company: "displayCompany", store: "displayStore", display: "display1"});
+        this.fetchMedia("GETLIST", data = {company: "mediaCompany", store: "mediaStore", display: "display1"});
         console.log("did mount");
     }
 
@@ -151,7 +151,7 @@ class MediaMngr extends Component {
                     <h2 className='page-header'>Media Management</h2>
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
-                        <ul id='media-list'>
+                    <ul id='media-list'>
                             {console.log(this.state.currentObj)}
                             {this.state.currentObj.displays[0].media.map((val, key) => {
                                 return (

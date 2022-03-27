@@ -30,7 +30,7 @@
     margin: auto;
 }
 
-.display-list-item:hover {
+.media-list-item:hover {
     cursor: pointer;
     background-color: #1b5cab;;
     color: white;
