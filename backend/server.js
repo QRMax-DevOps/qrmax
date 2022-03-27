@@ -13,6 +13,8 @@ const Listen = require("./api/route/listen.route.js");
 const CompanyAccountSettings = require("./api/route/CompanyAccountSettings.route.js");
 const StoreAccountSettings = require("./api/route/StoreAccountSettings.route.js");
 const DisplaySettings = require("./api/route/DisplaySettings.route.js");
+const Interactions = require("./api/route/Interactions.route.js");
+const MediaRefresh = require("./api/route/MediaRefresh.route.js");
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -56,6 +58,12 @@ app.use("/api/v1/Store/Account/Settings", StoreAccountSettings);
 
 //Display settings
 app.use("/api/v1/Display/Settings", DisplaySettings);
+
+//Media interactions
+app.use("/api/v1/Display/Interactions", Interactions);
+
+//Display QR refresh
+app.use("/api/v1/Display/Media/Refresh", MediaRefresh);
 
 
 

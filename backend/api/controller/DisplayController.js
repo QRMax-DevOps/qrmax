@@ -131,6 +131,56 @@ class StoreController {
             res.json({status:"failure", cause:e})
         }
     }
+
+    static async getInteractions(req, res){
+        res.json({status:'alive'})
+    }
+
+    static async getSettings(req, res){
+        try{
+            const company = req.body.company;
+            const store = req.body.store;
+            const display = req.body.display;
+
+            if(!(await CompanyDAO.checkStore(company, store))){
+                res.json({status:"failure", cause:"no such store"})
+            }
+            else if(!(await DisplayDAO.checkDisplay(company, store, display))){
+                res.json({status:"failure", cause:"no such display"})
+            }
+            else{
+                let settingsR = await DisplayDAO.getSettings(company, store, display);
+                res.json({status:"success", settings:settingsR.settings});
+            }
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
+
+    static async changeSettings(req, res){
+        try{
+            const company = req.body.company;
+            const store = req.body.store;
+            const display = req.body.display;
+            const fields = req.body.fields;
+            const values = req.body.values;
+
+            if(!(await CompanyDAO.checkStore(company, store))){
+                res.json({status:"failure", cause:"no such store"})
+            }
+            else if(!(await DisplayDAO.checkDisplay(company, store, display))){
+                res.json({status:"failure", cause:"no such display"})
+            }
+            else{
+                DisplayDAO.setSettings(company, store, display, fields, values);
+                res.json({status:"success"});
+            }
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
 }
 
 module.exports = StoreController;

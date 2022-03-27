@@ -430,7 +430,6 @@ class DisplayDAO {
   static async refreshDisplayQR(company, store, display){
 
   }
-}
 
 static async setSetting(company, store, display, fields, values){
     for (let i=0; i<fields.length; i++){
