@@ -25,7 +25,8 @@ class CompanyAccountDAO {
             const registerDoc = {
               company: company,
               salt: salt,
-              password: hash
+              password: hash,
+              settings:[]
             }
             return await CompanyAccount.insertOne(registerDoc)
         }
@@ -99,6 +100,22 @@ class CompanyAccountDAO {
     static async delete(Company){
         CompanyAccount.deleteOne({company:Company})
     }   
+
+    static async getSettings(company){
+        let result = await CompanyAccount.findOne({company:company}, {projection:{_id:0, settings:1}});
+        return result;
+    }
+
+    static async setSettings(company, fields, values){
+        fields = fields.split(',');
+        values = values.split(',');
+
+        for (let i=0; i<fields.length; i++){
+            let field = fields[i];
+            await CompanyAccount.updateOne({company:company}, {$pull:{settings:{[field]:{$exists:true}}}});
+            await CompanyAccount.updateOne({company:company}, {$addToSet:{settings:{[field]:values[i]}}});
+        }
+    }
 
 }
 

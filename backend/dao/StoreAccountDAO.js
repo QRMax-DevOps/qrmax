@@ -26,7 +26,8 @@ class StoreAccountDAO {
           salt: salt,
           password: hash,
           storeCount:0,
-          stores:[]
+          stores:[],
+          settings:[]
         }
         return await StoreAccount.insertOne(registerDoc)
       }
@@ -182,6 +183,34 @@ class StoreAccountDAO {
     static async deleteAll(company){
       StoreAccount.deleteMany({company:company});
     }
+
+    static async getSettings(company, username){
+        let result = await CompanyAccount.findOne({company:company, username:username}, {projection:{_id:0, settings:1}});
+        return result;
+    }
+
+  static async setSettings(company, username, fields, values){
+      for (let i=0; i<fields.length; i++){
+          let field = fields[i]
+          StoreAccount.updateOne({company:company, username:username}, {settings:{[field]:values[i]}}, {upsert:true});
+      }
+  }
+
+  static async getSettings(company, username){
+    let result = await StoreAccount.findOne({company:company, username:username}, {projection:{_id:0, settings:1}});
+    return result;
+  }
+
+static async setSettings(company, username, fields, values){
+    fields = fields.split(',');
+    values = values.split(',');
+
+    for (let i=0; i<fields.length; i++){
+        let field = fields[i];
+        await StoreAccount.updateOne({company:company, username:username}, {$pull:{settings:{[field]:{$exists:true}}}});
+        await StoreAccount.updateOne({company:company, username:username}, {$addToSet:{settings:{[field]:values[i]}}});
+    }
+  }
 }
 
 module.exports = StoreAccountDAO;
