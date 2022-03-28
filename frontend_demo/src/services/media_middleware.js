@@ -67,7 +67,9 @@ function EnumToString(value){
 }
 
 function ArrayToString(array){
-	//tbi
+	var strArray = array.toString();
+	strArray = "["+strArray+"]";
+	return strArray;
 }
 
 //DISPLAY HANDLER (POST,PUT,DELETE @ /api/v1/Display)
