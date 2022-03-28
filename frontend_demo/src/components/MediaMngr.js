@@ -63,7 +63,7 @@ class MediaMngr extends Component {
     }
 
     updateMedia(){
-        var data = {id: "623c29248db6418f803d0240", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        var data = {id: "623c29248db6418f803d0240", company: "mediaCompany", store: "mediaStore", display: "display1", media: this.state.mediaInput};
         this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
     }
@@ -74,12 +74,12 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName, src: this.state.imgString};
+        var data = {company: "mediaCompany", store: "mediaStore", display: "display1", media: newName, src: this.state.imgString};
         this.fetchMedia("CREATE", data);
     }
 
     deleteMedia() {
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
+        var data = {company: "mediaCompany", store: "mediaStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
         this.fetchMedia("DELETE", data);
     }
 
@@ -94,7 +94,7 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays(type, url, data, response); //Switched to displayMW
+        request = HandleMedia(type, url, data, response); //Switched to displayMW
         
 
         var interval = setInterval(function(){

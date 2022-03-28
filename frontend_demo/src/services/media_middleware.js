@@ -76,7 +76,7 @@ function ArrayToString(array){
 	type = EnumToString(type);
 	
 	//Where this input is being sent to.
-	var endpoint = url+'api/v1/Display/Media';
+	var endpoint = url+'api/v1/Display';
 	
 	//For the request options.
 	var methodGen = null;
@@ -102,8 +102,8 @@ function ArrayToString(array){
 				company	: data.company,
 				store	: data.store,
 				display	: data.display,
-				mediaName : data.mediaName,
-				mediaFile : data.mediaFile
+				media : data.media,
+				name : data.name
 			});
 			break;
 		
