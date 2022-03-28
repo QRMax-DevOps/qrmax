@@ -5,7 +5,7 @@ import {log, fetchAPI} from './middleware_core';
 
 export async function RunFetch_Login(url, isCompanyAccount, data, global) {
 
-		console.log("Inside login call! Values are: ", url, isCompanyAccount, data, global);
+		//console.log("Inside login call! Values are: ", url, isCompanyAccount, data, global);
 
 		var endpoint = '';
 		var bodyIn = '';
@@ -27,8 +27,6 @@ export async function RunFetch_Login(url, isCompanyAccount, data, global) {
 		
 		
 		// GET request using fetch with basic error handling
-		log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+bodyIn);
-		
 		const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 		global[0] = asyncFetch[0];

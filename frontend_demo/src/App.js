@@ -19,8 +19,6 @@ import MarketingWebsite from './components/MarketingWebsite/mw_base';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-//const browserHistory = createBrowserHistory();
-
 function App() {
 	document.title = "Test Application";
 	

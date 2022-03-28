@@ -21,9 +21,7 @@ import {log, fetchAPI, getApiURL} from './middleware_core';
 			body: input
 		};
 		
-		// GET request using fetch with basic error handling
-		log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+input);
-		
+		// GET request using fetch with basic error handling	
 		const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 		global[0] = asyncFetch[0];

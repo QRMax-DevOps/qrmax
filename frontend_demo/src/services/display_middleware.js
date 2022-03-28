@@ -131,7 +131,6 @@ export async function getDisplays(type, url, data, global) {
 	};
 	
 	//Doing the actual request.
-	log("Attempting "+requestOptions.method+":\n    > At: "+endpoint+"\n    > With body: "+requestOptions.body);
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
 	//Note that: array values are references.
 	

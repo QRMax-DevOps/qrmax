@@ -41,7 +41,7 @@ export class Options extends Component {
 		let accountSelected = this.getParentState('curAccount');
 		
 		if(accountSelected != null) {
-			console.log('An account is selected!')
+			//console.log('An account is selected!')
 			this.setParentState('toDo', 'modifyaccount');
 		}
 	}
@@ -54,16 +54,17 @@ export class Options extends Component {
 		let accountSelected = this.getParentState('curStore');
 		
 		if(accountSelected != null) {
-			console.log('A store is selected!')
+			//console.log('A store is selected!')
 			this.setParentState('toDo', 'modifystore');
 		}
 	}
 
 	render() {
 		
-		console.log(this.getParentState('iscompany'));
+		//console.log(this.getParentState('iscompany'));
+		var createStoreTitle = 'Create Store';
 		if (this.getParentState('iscompany')===false) {
-			var createStoreTitle = 'Add Store';
+			createStoreTitle = 'Add Store';
 
 		}
 		

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
+import {checkLoginToken, getLoginToken} from './auth_util';
 
 //flexible fetch
 export function log(message) {
@@ -19,8 +20,8 @@ function isInt(value) {
 }
 
 export function getApiURL(localhost) {
-	if(localhost !== null && localhost !== false) {
-		if(localhost === true) {
+	if(localhost !== null && localhost !== false && localhost !== 'false') {
+		if(localhost === true || localhost === 'true') {
 			return 'http://localhost:80/';
 		} else if (isInt(localhost)) {
 			return 'http://localhost:'+localhost+'/';
@@ -59,6 +60,28 @@ export async function fetchAPI(address, requestOptions) {
 		return [false, getBetterRejectionReason("")];
 	}
 	else {
+		//If login token exists, then create/append Authorization field to headers
+		
+		//JSON.stringify({company:id});
+		
+		requestOptions.headers = {'Content-Type':'application/json'};
+		var headersShown = {'Content-Type':'application/json'};
+		
+		if(checkLoginToken()===true) {
+			var loginToken = getLoginToken();
+			
+			//console.log(requestOptions);
+			requestOptions.headers = { 'Content-Type': 'application/json', 'Authorization':'Basic '+loginToken};
+			
+			var reducedToken = (loginToken.substring(0, 5)+"..."+loginToken.substring(loginToken.length-5,loginToken.length));
+			
+			headersShown = { 'Content-Type': 'application/json', 'Authorization':'Basic '+reducedToken};
+			//console.log("updated: ", requestOptions);
+		}
+		
+		log("Attempting "+requestOptions.method+":\n    > At: "+address+"\n    > With body: "+requestOptions.body+"\n    > And headers: "+JSON.stringify(headersShown));
+		
+		
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {

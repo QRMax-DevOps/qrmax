@@ -6,6 +6,8 @@ import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstra
 
 import {log, getApiURL} from '../../services/middleware_core';
 import {RunFetch_Login} from '../../services/login_middleware';
+import {saveLoginToken} from '../../services/auth_util';
+import {getNiceError} from './login_util';
 
 import Img1 from '../../graphics/updated_logo.PNG'
 import Homepage from '../Homepage';
@@ -76,22 +78,27 @@ export default class Page extends React.Component {
 	}
 	
 	navigateToHome() {
-		var route = '';
-		var companynameParam = '&companyname=' + this.state.companyBox;
-		var usernameParam = '?username=' + this.state.usernameBox;
+		sessionStorage.setItem('companyName',this.state.companyBox);
+		
+		sessionStorage.setItem('username',this.state.usernameBox);
 		
 		if(this.state.companyAccount) {
-			usernameParam = '?username=' + this.state.companyBox;
+			sessionStorage.setItem('username',this.state.companyBox);
 		}
 		
-		var isLocalhostParam = '';
-		if(this.state.localhost===true) { isLocalhostParam='&localhost=80'; }
-		var isCompanyAccountParam = '';
-		if(this.state.companyAccount===true) { 
-			isCompanyAccountParam='&iscompany=' + this.state.companyAccount;
+		sessionStorage.setItem('isLocalhost',false);
+		if(this.state.localhost===true) { 
+			sessionStorage.setItem('isLocalhost',true);
 		}
-		localStorage.setItem("params", usernameParam + isLocalhostParam + isCompanyAccountParam + companynameParam);
-		window.location.href = window.location.protocol + '//' + window.location.host + '/accounts' + usernameParam + isLocalhostParam + isCompanyAccountParam + companynameParam;
+		
+		sessionStorage.setItem('isCompanyAccount',this.state.companyAccount);
+		if(this.state.companyAccount===true) { 
+			sessionStorage.setItem('isCompanyAccount',this.state.companyAccount);
+		}
+
+		saveLoginToken(JSON.parse(GLOBAL[1]).token);
+		
+		window.location.href = window.location.protocol + '//' + window.location.host + '/homepage';
 	}
 	
 	handleChange({ target }) {
@@ -129,8 +136,8 @@ export default class Page extends React.Component {
 				if(detailsValid) {
 					var data = {companyInput:me.state.companyBox, usernameInput:me.state.usernameBox, passwordInput:me.state.passwordBox};
 					
-					console.log("localhost===",me.state.localhost);
-					console.log("getApiURL===",getApiURL(me.state.localhost));
+					//console.log("localhost===",me.state.localhost);
+					//console.log("getApiURL===",getApiURL(me.state.localhost));
 					
 					if(me.state.companyAccount) {
 						data.usernameInput = me.state.companyBox;
@@ -144,10 +151,9 @@ export default class Page extends React.Component {
 			else if(response.dataSent==true && GLOBAL[0] != null) {
 				me.setState({loading : false});
 				clearInterval(interval);
-				log("Loop Ceased.")
 				
 				if(GLOBAL[0]==false) {
-					me.setState({loginError : GLOBAL[1]});
+					me.setState({loginError : getNiceError(GLOBAL[1])});
 					
 				}
 				
@@ -174,7 +180,7 @@ export default class Page extends React.Component {
 		return(
 			<div id="background">
 			
-				<div id="mainbox" className="center" >
+				<div id="mainbox" >
 
 					<div id="leftbox" className="alignmentCheck">
 						<div id="innerbox">
@@ -203,7 +209,7 @@ export default class Page extends React.Component {
 							  
 							  <div id="LoginFields_Container">
 							  
-								 <label id="LoginErrorBox" >{this.state.loginError}</label>
+								 <label id="LoginErrorBox">{this.state.loginError}</label>
 							  
 								  <div id="Checkbox_Container">
 									<div id="RememberMe_Container" className="form-check">
@@ -217,6 +223,8 @@ export default class Page extends React.Component {
 								</div>
 							  
 								<div id="LoginFormGroup" className="form-group" style={{paddingBottom:"20px"}} >
+								
+
 									<input
 										name="companyBox"
 										type="email"
@@ -229,7 +237,7 @@ export default class Page extends React.Component {
 										onChange={ this.handleChange }
 									/>
 									
-									{ !this.state.companyAccount &&
+									{ !this.state.companyAccount && <>
 									<input style={{marginTop:"10px"}}
 										name="usernameBox"
 										type="email"
@@ -241,6 +249,7 @@ export default class Page extends React.Component {
 										value={ this.state.usernameBox }
 										onChange={ this.handleChange }
 									/>
+									</>
 									}
 								  
 								  <div className="form-group row" style={{marginTop:"10px"}}>
@@ -255,7 +264,7 @@ export default class Page extends React.Component {
 												onChange={ this.handleChange }
 											/>
 										</div>
-										<div class="col-auto">
+										<div className="col-auto">
 											<button type="button" id="forgotPasswordButton">?</button>
 										</div>
 								  </div>
@@ -267,7 +276,7 @@ export default class Page extends React.Component {
 									  </div>
 								  </div>
 							  </div>
-							  <button type="button" onClick={this.SubmitLoginRequest} class="btn" id="submitButton" style={{color:"rgb(51, 142, 240)", fontWeight:"bold", width:"100%"}}>Submit</button>
+							  <button type="button" onClick={this.SubmitLoginRequest} className="btn" id="submitButton" style={{color:"rgb(51, 142, 240)", fontWeight:"bold", width:"100%"}}>Submit</button>
 							</form>
 						</div>
 					</div>
