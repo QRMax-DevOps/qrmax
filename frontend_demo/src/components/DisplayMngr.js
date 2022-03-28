@@ -3,7 +3,6 @@ import Display from '../objects/DisplayObject';
 import { getDisplays } from '../services/display_middleware';
 import { HandleDisplay } from '../services/qr_middleware';
 import './DisplayMngr.css';
-import Popup from './Popup';
 import { ImageToBase64 } from '../services/base64_utilities';
 
 import Sidebar from './Sidebar';
@@ -82,13 +81,6 @@ class DisplayMngr extends Component {
      deleteDisplay() {
          var data = {company: "displayCompany", store: "displayStore", display: this.state.currentObj.displays[this.state.selectedDisplay].display};
          this.fetchDisplays("DELETE", data);
-     }
-
-     createDisplayPopup() {
-        console.log("Clicked");
-        return (
-            <Popup/>
-        );
      }
 
      fetchDisplays(type, data) {
