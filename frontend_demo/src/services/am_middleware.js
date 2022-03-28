@@ -7,8 +7,6 @@ import {log, fetchAPI, getApiURL} from './middleware_core';
 
 
 
-
-
 /*
  * ACCOUNT RETRIEVAL
  *
@@ -82,12 +80,6 @@ import {log, fetchAPI, getApiURL} from './middleware_core';
 	}
 }
 
-/*
-export async function RunFetch_GetAccounts(account, global) {
-
-}*/
-
-
 
 
 
@@ -121,9 +113,6 @@ export async function RunFetch_CreateStoreAccount(url, isCompany, user, companyN
 	return RunFetch_CreateAccount(url, isCompany, body, 'storeAccount', global);
 }
 
-//{company, store}
-
-
 export async function RunFetch_CreateStore(url, isCompany, userID, data, global) {
 	//console.log("creating store w/ ",data.companyName,data.store)
 	
@@ -145,8 +134,6 @@ export async function RunFetch_CreateStore(url, isCompany, userID, data, global)
 	
 	return RunFetch_CreateAccount(url, isCompany, body, 'store', global);
 }
-
-
 
 async function RunFetch_CreateAccount(url, isCompany, bod, type, global) {
 		let endpoint=null
@@ -185,7 +172,6 @@ async function RunFetch_CreateAccount(url, isCompany, bod, type, global) {
 		global[0] = asyncFetch[0];
 		global[1] = asyncFetch[1];
 }
-
 
 
 
@@ -344,7 +330,6 @@ export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAcco
 		return RunFetch_UpdateAccount(url, 'storeAccount',body,global);
 }
 
-
 //Not yet supported by the API.
 export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newStore, global) {
 		/*
@@ -373,7 +358,6 @@ export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newS
 		return RunFetch_UpdateAccount(url, 'store',body,global);
 		*/
 }
-
 
 export async function RunFetch_UpdateAccount(url, type, bod, global) {
 	let endpoint=null

@@ -31,6 +31,10 @@ export function getApiURL(localhost) {
 	}
 }
 
+function isUnassigned(str){
+    return str === null || str.match(/^ *$/) !== null || str === 'UNASSIGNED_BODY' || str === 'UNASSIGNED_METHOD';
+}
+
 //Produces a much more user-friendly reason for rejection.
 export function getBetterRejectionReason(res) {
 	try {
@@ -50,20 +54,26 @@ export function getBetterRejectionReason(res) {
 }
 
 export async function fetchAPI(address, requestOptions) {
-    return fetch(address, requestOptions)
-        .then((response) => response.json())
-		.then((res) => {
-            if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
-				logWarn(requestOptions.method+" to API : Handled rejection! (response: "+JSON.stringify(res)+")");
-				return [false,JSON.stringify(res),getBetterRejectionReason(res)];
-            } 
-			else {
-				log(requestOptions.method+" to API : successful! (response: "+JSON.stringify(res)+")");
-				return [true,JSON.stringify(res),"The API accepted the POST request!"];
-			}
-        })
-        .catch(res => {
-            logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")\n    > Double check that the server is running!\n    > Also check the correct url is being used for the FETCH function.");
-			return [false,getBetterRejectionReason(res)];
-        });
+	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
+		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request \'method\' and/or \'body\' is unassigned.");
+		return [false, getBetterRejectionReason("")];
+	}
+	else {
+		return fetch(address, requestOptions)
+			.then((response) => response.json())
+			.then((res) => {
+				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
+					logWarn(requestOptions.method+" to API : Handled rejection! (response: "+JSON.stringify(res)+")");
+					return [false,JSON.stringify(res),getBetterRejectionReason(res)];
+				} 
+				else {
+					log(requestOptions.method+" to API : successful! (response: "+JSON.stringify(res)+")");
+					return [true,JSON.stringify(res),"The API accepted the POST request!"];
+				}
+			})
+			.catch(res => {
+				logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")\n    > Double check that the server is running!\n    > Also check the correct url is being used for the FETCH function.");
+				return [false,getBetterRejectionReason(res)];
+			});
+	}
 }

@@ -1,21 +1,35 @@
 import React, {Component} from 'react';
-import Sidebar from './Sidebar';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
 import {HandleMedia} from '../services/media_middleware';
+import { ImageToBase64 } from '../services/base64_utilities';
+
+import Sidebar from './Sidebar';
+import { getDisplays } from '../services/display_middleware';
 
 class MediaMngr extends Component {
     constructor(props) {
         super(props);
         this.selectMedia = this.selectMedia.bind(this);
-        this.fetchMedia();
+        this.changeCurrentMediaInput = this.changeCurrentMediaInput.bind(this);
+        this.updateMedia = this.updateMedia.bind(this);
+        this.createMedia = this.createMedia.bind(this);
+        this.deleteMedia = this.deleteMedia.bind(this);
+        this.setSelectedFile = this.setSelectedFile.bind(this);
     }
     state = {
-        currentDisplay: "Some Display",
-        currentObj: {medias: [{media: null}]},
+        currentDisplay: "Display1",
+        currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
+        //also got rid of all "medias" mentions and replaced with the actual field name from DB
         selectedMedia: 0,
+        mediaInput: 'default',
+        createNewMediaName: null,
+        open: false,
+        selectedFile: null,
+        imgString: null
     }
 
+    
     getMediaList() {
 
     }
@@ -25,7 +39,7 @@ class MediaMngr extends Component {
     }
 
     getSelectedMedia(){
-        return this.state.mediaList[this.state.selectedMedia];
+        return this.state.currentObj.media[this.state.selectedMedia];
     }
 
     selectMedia(e) {
@@ -34,19 +48,54 @@ class MediaMngr extends Component {
         });
     }
 
+    changeCurrentMediaInput(e) {
+        this.setState({
+            mediaInput: e.target.value
+        })
+    }
 
-    fetchMedia() {
+    async setSelectedFile(e) {
+        const file = e.target.files[0];
+         const base64 = await this.getBase64(file);
+         this.setState({
+             imgString: base64
+         })
+    }
+
+    updateMedia(){
+        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        this.fetchMedia("UPDATE", data);
+        console.log("inside updateMedia");
+    }
+
+    getNewName() {
+        return this.state.mediaInput;
+    }
+
+    createMedia() {
+        let newName = this.getNewName();
+        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName, src: this.state.imgString};
+        this.fetchMedia("CREATE", data);
+    }
+
+    deleteMedia() {
+        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
+        this.fetchMedia("DELETE", data);
+    }
+
+
+    fetchMedia(type, data) {
         var url = "http://localhost:80/";
-        var data = {company: "displayCompany", store: "displayStore", display: "mediaDisplay"};
+        
 
         let request = null;
-        let response = null;
+        let response = [null,null];
 
         var me = this;
         var timer = {elapsed: 0};
 
-        request = HandleMedia("GETLIST", url, data, response);
-        console.log(data.company + " " + data.store + " " + data.display);
+        request = getDisplays(type, url, data, response); //Switched to displayMW
+        
 
         var interval = setInterval(function(){
             timer.elapsed++;
@@ -59,7 +108,7 @@ class MediaMngr extends Component {
                     var json = JSON.parse(response[1]);
 
                     me.setState({currentObj: json});
-                    console.log(me.state.currentObj);
+                    
                 }
             }
             if(timer.elapsed == 24) {
@@ -70,8 +119,25 @@ class MediaMngr extends Component {
         }, 500);
     }
 
+    getBase64(file) {
+        return new Promise(function(resolve, reject){
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                resolve(reader.result);
+            };
+
+            reader.onerror = (error) => {
+                reject(error);
+            }
+        });
+    }
+
     componentDidMount() {
-        this.fetchMedia();
+        var data;
+        this.fetchMedia("GETLIST", data = {company: "displayCompany", store: "displayStore", display: "display1"});
+        console.log("did mount");
     }
 
 
@@ -84,25 +150,30 @@ class MediaMngr extends Component {
                 <div className="main-container">
                     <h2 className='page-header'>Media Management</h2>
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
-                    <ul id='media-list'>
-                        {this.state.mediaList.map((val, key) => {
-                            return (
-                                <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
-                            );
-                        })}
-                    </ul>
-                    <div id='settings-box'>
-                        <h5 id='settings-box-header'></h5>
-                        <label htmlFor='name-field'>Name</label>
-                        <input id='name-field' type='text' value={this.getSelectedMedia().getName()}></input>
+                    <div id="styled-container">
+                        <ul id='media-list'>
+                            {console.log(this.state.currentObj)}
+                            {this.state.currentObj.displays[0].media.map((val, key) => {
+                                return (
+                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
+                                );
+                             })}
+                        </ul>
+                        {console.log(this.state.currentObj)}
+                        <div id='settings-box'>
+                            <h5 id='settings-box-header'></h5>
+                            <label htmlFor='name-field'>Name</label>
+                            <input id='name-field' type='text' onChange={this.changeCurrentMediaInput}></input>
+                            <input type="file" onChange={this.setSelectedFile}/>
+                        </div>
+                        <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update</button>
                         <br/>
-                        <label htmlFor='file-field'>File</label>
-                        <input id='file-field' type='text' value={this.getSelectedMedia().getFile()}></input>
+                        <button type="button" id="create-button" className='buttons' onClick={this.createMedia}>Create New Media</button>   
+                        <br/>
+                        <button type="button" id="delete-button" className='buttons' onClick={this.deleteMedia}>Delete Media</button>
+                        </div>
+                        
                     </div>
-                    <input type='button' id='update-button' className='buttons' value='Update'></input>
-                    <br/>
-                    <input type='button' id='create-button' className='buttons' value='Create New Display'></input>
-                </div>
             </div>
         );
     }

@@ -19,7 +19,7 @@ export default class Media{
         return this.id;
     }
 
-    setName(id) {
+    setId(id) {
         this.id = id;
     }
 
@@ -30,14 +30,6 @@ export default class Media{
 
     setFile(file) {
         this.file = file;
-    }
-
-    getLength() {
-        return this.length;
-    }
-
-    setLength(length){
-        this.length = length;
     }
 
     toString() {
