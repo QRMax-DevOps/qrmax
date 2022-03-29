@@ -8,8 +8,8 @@
 */
 
 import React, { useState, Component } from 'react';
-import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/am_middleware';
-import {getApiURL} from './../../services/middleware_core';
+import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/middleware/accounts_mw';
+import {getApiURL} from './../../services/core_mw';
 import {useLocation} from "react-router-dom";
 
 import {ListItem, Viewer} from './am_viewer';

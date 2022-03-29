@@ -8,8 +8,8 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import GenerateQR from "./GenerateQR";
 import DisplayMngr from './DisplayMngr';
 import Login from "./Login/Login";
-import {getApiURL} from "./../services/middleware_core"
-import {HandleMedia} from "./../services/media_middleware"
+import {getApiURL} from "./../services/core_mw"
+import {HandleMedia} from "./../services/middleware/media_mw"
 
 class Homepage extends Component {
     constructor(props) {

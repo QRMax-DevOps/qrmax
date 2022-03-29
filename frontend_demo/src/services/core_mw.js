@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
-import {checkLoginToken, getLoginToken} from './auth_util';
+import {checkLoginToken, getLoginToken} from './utilities/auth_util';
 
 //flexible fetch
 export function log(message) {

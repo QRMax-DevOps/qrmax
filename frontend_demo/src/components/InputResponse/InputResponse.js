@@ -6,8 +6,8 @@ import ResponseProcessing from './Response_Processing';
 import ResponseGood from './Response_Good';
 import ResponseBad from './Response_Bad';
 
-import {log} from '../../services/middleware_core';
-import {ActionQRID} from '../../services/ir_middleware';
+import {log} from '../../services/core_mw';
+import {ActionQRID} from '../../services/middleware/input_mw';
 
 import '../test.css';
 import '../Login/login_style.css';

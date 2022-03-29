@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 import {Container, Row, Col, Form, FormControl, InputGroup} from 'react-bootstrap';
 
-import {log, getApiURL} from '../../services/middleware_core';
-import {RunFetch_Login} from '../../services/login_middleware';
-import {saveLoginToken} from '../../services/auth_util';
+import {log, getApiURL} from '../../services/core_mw';
+import {RunFetch_Login} from '../../services/middleware/login_mw';
+import {saveLoginToken} from '../../services/utilities/auth_util';
 import {getNiceError} from './login_util';
 
 import Img1 from '../../graphics/updated_logo.PNG'

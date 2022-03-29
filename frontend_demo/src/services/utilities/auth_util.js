@@ -1,4 +1,4 @@
-import {log, logWarn} from './middleware_core';
+import {log, logWarn} from '../core_mw';
 
 //Checks for null, unassigned or whitespace-only input
 function isEmpty(str){

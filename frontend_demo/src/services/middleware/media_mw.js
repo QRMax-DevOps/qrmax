@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
-import {log, fetchAPI} from './middleware_core';
 
 /*The mw_core suite contains all the fundamental functions
  * utilised by all middleware suites. */
-
+import {log, fetchAPI} from '../core_mw';
 
  //*****************************************************************************************
  //*****************************************************************************************
@@ -68,16 +67,18 @@ function EnumToString(value){
 }
 
 function ArrayToString(array){
-	//tbi
+	var strArray = array.toString();
+	strArray = "["+strArray+"]";
+	return strArray;
 }
 
 //DISPLAY HANDLER (POST,PUT,DELETE @ /api/v1/Display)
-export async function getDisplays(type, url, data, global) {
+ export async function HandleMedia(type, url, data, global) {
 	//Enum handler
 	type = EnumToString(type);
 	
 	//Where this input is being sent to.
-	var endpoint = url+'api/v1/Display';
+	var endpoint = url+'api/v1/Display/Media';
 	
 	//For the request options.
 	var methodGen = null;
@@ -92,7 +93,8 @@ export async function getDisplays(type, url, data, global) {
 			methodGen = 'POST';
 			inputGen  = JSON.stringify({
 				company	: data.company,
-				store	: data.store
+				store	: data.store,
+				display : data.display
 			});
 			break;
 		
@@ -101,25 +103,41 @@ export async function getDisplays(type, url, data, global) {
 			inputGen  = JSON.stringify({
 				company	: data.company,
 				store	: data.store,
-				display	: data.display
+				display	: data.display,
+				mediaName : data.mediaName,
+				mediaFile : data.mediaFile
 			});
 			break;
 		
-		case 'UPDATE':
+		/* case 'UPDATE':
 			methodGen = 'PATCH';
 			inputGen  = JSON.stringify({
 				company	: data.company,
 				store	: data.store,
-				display	: data.display
+				display	: data.display,
+				QRID	: data.QRID,
+				fields	: ArrayToString(data.fields),
+				values	: ArrayToString(data.values)
 			});
-			break;
+			break; */
 			
 		case 'DELETE':
 			methodGen = 'DELETE';
 			inputGen  = JSON.stringify({
 				company	: data.company,
 				store	: data.store,
-				display	: data.display
+				display	: data.display,
+				mediaName : data.mediaName
+			});
+			break;
+		case 'GETMEDIAFILE':
+			methodGen = 'POST';
+			endpoint = url+'api/v1/Display/media/file';
+			inputGen = JSON.stringify({
+				company	: data.company,
+				store	: data.store,
+				display	: data.display,
+				mediaName : data.mediaName
 			});
 			break;
 	}
@@ -132,6 +150,7 @@ export async function getDisplays(type, url, data, global) {
 	
 	//Doing the actual request.
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
+
 	//Note that: array values are references.
 	
 	/*References need to be used instead of a simple return since "fetchAPI" is asynchronous
