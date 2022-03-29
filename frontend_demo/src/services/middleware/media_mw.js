@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
 import {log, fetchAPI} from '../core_mw';
-import {enumToString} from '../utilities/common_util';
+import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 
 
 // ...................................................................................................
@@ -82,7 +82,7 @@ import {enumToString} from '../utilities/common_util';
 
 	const requestOptions = {
 		method	: methodGen,
-		headers	: { 'Content-Type': 'application/json' },
+		headers	: getDefaultHeaders(),
 		body	: inputGen
 	};
 	

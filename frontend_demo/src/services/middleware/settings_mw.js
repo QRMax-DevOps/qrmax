@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
 import {log, logWarn, fetchAPI} from '../core_mw';
-import {enumToString, arrayToString} from '../utilities/common_util';
+import {enumToString, arrayToString, getDefaultHeaders} from '../utilities/common_util';
 
 
 // ...................................................................................................
@@ -157,7 +157,7 @@ export async function getSettings(target, type, url, data, global) {
 
 	const requestOptions = {
 		method	: methodGen,
-		headers	: { 'Content-Type': 'application/json' },
+		headers	: getDefaultHeaders(),
 		body	: inputGen
 	};
 	

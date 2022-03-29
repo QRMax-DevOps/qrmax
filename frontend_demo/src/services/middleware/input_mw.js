@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
 import {log, fetchAPI, getApiURL} from '../core_mw';
-import {enumToString} from '../utilities/common_util';
+import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 
 
 // ...................................................................................................
@@ -14,7 +14,7 @@ import {enumToString} from '../utilities/common_util';
 	//json:{company, store, display, QRID}
 	var url = getApiURL(isLocalHost);
 	var endpoint = url+'api/v1/QR/';
-	var input = JSON.stringify({
+	var bodyGen = JSON.stringify({
 		company: data.company,
 		store: data.store,
 		display: data.display,
@@ -23,8 +23,8 @@ import {enumToString} from '../utilities/common_util';
 	
 	const requestOptions = {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: input
+		headers: getDefaultHeaders(),
+		body: bodyGen
 	};
 	
 	// GET request using fetch with basic error handling	
