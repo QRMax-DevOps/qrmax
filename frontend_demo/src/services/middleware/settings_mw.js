@@ -1,81 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
+
 import {log, logWarn, fetchAPI} from '../core_mw';
-
-/*The mw_core suite contains all the fundamental functions
- * utilised by all middleware suites. */
+import {enumToString, arrayToString} from '../utilities/common_util';
 
 
- //*****************************************************************************************
- //*****************************************************************************************
- 
- //data.company
- //data.store
- //data.display
- //data.mediaName
- //data.mediaFile
- //data.QRID
- 
- /* Common arguments used in functions:
-  *
-  *     - Any "url parameters" described are usually produced automatically
-  *       by the login screen upon successful login.
-  *
-  *     - url: Where is the server being hosted?
-  *		   > Usually http://localhost:80 (localhost) or http://3.25.134.204
-  *		   > Url parameters to help with this, e.g. : "islocalhost=80"
-  *
-  *     - id: As of 02/03, simply just the username of the logged in user.
-  *		   > Url parameter, e.g. : "username=usernamehere"
-  * 
-  *     - type: The type of request being made. Refer to the switch-case in the function.
-  *
-  *     - data: An object which can hold the following values:
-  *		   > tore: As of 02/03, simply just provide the store name.
-  *		   > company: As of 02/03, simply just provide the company name.
-  *		   > display: As of 02/03, simply just provide the display name.
-  *		   > fields: Fields to be updated. Array type.
-  *		   > values: Values to be updated, must align with fields. Array type.
-  *
-  *     - global: Excuse the name. This is basically the object which stores
-  *       the response from the API and, hopefully, the database if all goes
-  *       well.
-  *		   > Should be a length=2 array.
-  *		   > First value is either true or false, determining whether the request
-  *		     was successful.
-  *		   > Second value is the actual data or message. If a successful request,
-  *          this should be a JSON.
-  */
+// ...................................................................................................
+// ...................................................................................................
 
-
-
-//If is symbol, will take e.g., Symbol("data") and return "data".
-//This function is not exported and cannot be imported.
-function enumToString(value) {
-	switch(typeof value) {
-		case 'symbol':
-			return value.description;
-			
-		case 'string':
-			return value;
-			
-		default:
-			return null;
-	}
-}
-
-function arrayToString(array){
-	var strArray = array.toString();
-	return strArray;
-}
 
 function handleTarget(target) {
 	//Just in case an enum is provided.
-	var v = enumToString(target);
+	var tgt_str = enumToString(target);
 	
 	//If not null and a string
-	if(v && typeof v === 'string') {
+	if(tgt_str && typeof tgt_str === 'string') {
 		switch(enumToString(target).toLowerCase()) {
 			case 'companyaccount':
 			case 'companyacc':
@@ -91,18 +31,23 @@ function handleTarget(target) {
 				return 'display';
 				
 			default:
-				logWarn("Middleware error in \'getSettings() ... handleTarget()\'. A value of "+(typeof v)+" \'"+v+"\' was provided as the target. This was not recognised as a valid input. (Must be \'companyaccount\', \'storeaccount\', \'display\', etc.)")
-				return v;
+				logWarn("Middleware error in \'getSettings() ... handleTarget()\'. A value of "
+					+(typeof tgt_str)+" \'"+tgt_str+"\' was provided as the target. This was not" 
+					+"recognised as a valid input. (Must be \'companyaccount\', \'storeaccount\'"
+					+", \'display\', etc.)");
+				return tgt_str;
 		}
 	}
 	else {
-		logWarn("Middleware error in \'getSettings() ... handleTarget()\'. A value of "+(typeof v)+" \'"+v+"\' was provided as the target and does not meet conditions: (target && typeof target === \'string\')")
+		logWarn("Middleware error in \'getSettings() ... handleTarget()\'. A value of "+(typeof tgt_str)
+			+" \'"+tgt_str+"\' was provided as the target and does not meet conditions: (target && "
+			+"typeof target === \'string\')");
 	}
 }
 
+
 function getEndpoint(url, target) {
 	//If not null and a string
-	
 	if(target && typeof target === 'string') {
 		switch(target.toLowerCase())  {
 			case 'companyaccount':
@@ -115,14 +60,19 @@ function getEndpoint(url, target) {
 				return url+'api/v1/Display/Settings';
 				
 			default:
-				logWarn("Middleware error in \'getSettings() ... getEndpoint()\'. A value of "+(typeof target)+" \'"+target+"\' was provided as the target. This was not recognised as a valid input. (Must be \'companyaccount\', \'storeaccount\', \'display\', etc.)")
+				logWarn("Middleware error in \'getSettings() ... getEndpoint()\'. A value of "
+					+(typeof target)+" \'"+target+"\' was provided as the target. This was not recognised "
+					+"as a valid input. (Must be \'companyaccount\', \'storeaccount\', \'display\', etc.)");
 				return 'ENDPOINT_GEN_FAILURE';
 		}
 	}
 	else {
-		logWarn("Middleware error in \'getSettings() ... getEndpoint()\'. A value of "+(typeof target)+" \'"+target+"\' was provided as the target and does not meet conditions: (target && typeof target === \'string\')")
+		logWarn("Middleware error in \'getSettings() ... getEndpoint()\'. A value of "+(typeof target)+" \'"
+			+target+"\' was provided as the target and does not meet conditions: (target && typeof target === "
+			+"\'string\')")
 	}
 }
+
 
 export async function getSettings(target, type, url, data, global) {
 	
@@ -152,8 +102,8 @@ export async function getSettings(target, type, url, data, global) {
 					methodGen = 'PATCH';
 					inputGen  = JSON.stringify({
 						company	: data.company,
-						fields	: arrayToString(data.fields),
-						values	: arrayToString(data.values)
+						fields	: arrayToString('BASIC', data.fields),
+						values	: arrayToString('BASIC',data.values)
 					});
 					break;
 			}
@@ -174,8 +124,8 @@ export async function getSettings(target, type, url, data, global) {
 					inputGen  = JSON.stringify({
 						company		: data.company,
 						username	: data.username,
-						fields		: arrayToString(data.fields),
-						values		: arrayToString(data.values)
+						fields		: arrayToString('BASIC',data.fields),
+						values		: arrayToString('BASIC',data.values)
 					});
 					break;
 			}
@@ -197,8 +147,8 @@ export async function getSettings(target, type, url, data, global) {
 						company	: data.company,
 						store	: data.store,
 						display	: data.display,
-						fields	: arrayToString(data.fields),
-						values	: arrayToString(data.values)
+						fields	: arrayToString('BASIC',data.fields),
+						values	: arrayToString('BASIC',data.values)
 					});
 					break;
 			}
@@ -220,6 +170,3 @@ export async function getSettings(target, type, url, data, global) {
 	global[0] = asyncFetch[0];
 	global[1] = asyncFetch[1];
 }
-//Company/Account/Settings
-//Store/Account/Settings
-//Display/Settings
