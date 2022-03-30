@@ -1,39 +1,40 @@
-import React, { useState, Component } from 'react';
-import './mw_style.css';
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="./mw_style.css">
+</head>
+<body>
 
-class MarketingWebsite extends Component {
-	constructor(props) {
-		super(props);
-	}
+			<div class="baseContainer">
 
-    render() {
-		return (
-			<div className="baseContainer">
-
-				<div className="screenHeaderContainer">
-					<div className="logoContainer">
-						<div style={{lineHeight:"60px", color:"white"}}>
-							Logo here
+				<div class="screenHeaderContainer">
+					<div class="logoContainer">
+						<div>
+							<img src='../../graphics/updated_logo_bare.PNG' style='height:68px;'/>
 						</div>
-						<div style={{lineHeight:"60px", color:"white"}}>
-							Title here
+						<div>
+							<p style='margin:auto; margin-top:18px; color:#174980; font-size:30px; font-weight: bold;'>QRMAX</p>
 						</div>
 					</div>
-				  
-					<div className="buttonsContainer">
+					
+					<div class="buttonsContainer">
 						<button>Home</button>
 						<button>Features</button>
 						<button>Downloads</button>
 						<button>Contact</button>
 					</div>
-				
 				</div>
 				
-				<div className="screenBodyContainer">
+				<div class="screenBodyContainer">
 					<div id="overlaySplash">
 						<div id="overlaySplashInternal">
-							<h1 style={{textAlign:"left"}}>An innovative, organised approach<br/>to QR management</h1>
+							<p style={{textAlign:"left"}}>An innovative, organised approach<br/>to QR management</p>
 							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquet leo at lacus fringilla, a congue felis consectetur. Morbi nec dolor congue, convallis diam at, cursus erat.</p>
+						
+							<div id="overlaySplashButtons">
+								<button>Go Left</button>
+								<button>Go Right</button>
+							</div>
 						</div>
 					</div>
 					
@@ -49,12 +50,5 @@ Sed eget nibh sem. Morbi in lobortis lacus. Ut luctus tincidunt nisi, sit amet s
 					</div>
 				</div>
 			</div>
-		);
-	}
-}
-
-export default MarketingWebsite;
-
-/*
-
-*/
+</body>
+</html>

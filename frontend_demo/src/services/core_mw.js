@@ -64,18 +64,15 @@ export async function fetchAPI(address, requestOptions) {
 		
 		//JSON.stringify({company:id});
 		
-		requestOptions.headers = {'Content-Type':'application/json'};
-		var headersShown = {'Content-Type':'application/json'};
-		
 		if(checkLoginToken()===true) {
 			var loginToken = getLoginToken();
 			
 			//console.log(requestOptions);
-			requestOptions.headers = { 'Content-Type': 'application/json', 'Authorization':'Basic '+loginToken};
+			requestOptions.headers.append('Authorization','Basic '+loginToken);
 			
 			var reducedToken = (loginToken.substring(0, 5)+"..."+loginToken.substring(loginToken.length-5,loginToken.length));
 			
-			headersShown = { 'Content-Type': 'application/json', 'Authorization':'Basic '+reducedToken};
+			var headersShown = {'Content-Type': 'application/json', 'Authorization':'Basic '+reducedToken};
 			//console.log("updated: ", requestOptions);
 		}
 		
