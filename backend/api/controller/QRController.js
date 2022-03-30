@@ -140,17 +140,39 @@ class QRController {
 		const display = req.body.display;
         const mediaName = req.body.mediaName;
         let result;
-        if (mediaName){
-            result = await DisplayDAO.refreshSingleQR(company, store, display, mediaName);
+        //check if store exists
+        if(! await CompanyDAO.checkStore(company, store)){
+            res.json({status:"failure", cause:"no such store"});
         }
         //check if media is filled
-            //refresh single 
+        if (mediaName){
+            //cehck the media exists
+            if(await DisplayDAO.checkMedia(company, store, display, mediaName)){
+                DisplayDAO.refreshSingleQR(company, store, display, mediaName);
+                res.json({status:"success"});
+            }
+            else{
+                res.json({status:"failure", cause:"no such media"});
+            }
+        }
         //check if display is filled
-            //referesh display
-        //if no 
-            //refersh store
+        else if (display){
+            //ehck if the display exists
+            if(await DisplayDAO.checkDisplay(company, store, display)){
+                DisplayDAO.refreshDisplayQR(company, store, display);
+                res.json({status:"success"});
+            }
+            else{
+                res.json({status:"failure", cause:"no such display"});
+            }
+        }
+        //otherwiase refesh all QR
+        else {
+            DisplayDAO.refreshAllQR(company, store);
+            res.json({status:"success"});
+        }
         //return success
-        res.json({status:"success", r:result});
+        
     }
 }
 

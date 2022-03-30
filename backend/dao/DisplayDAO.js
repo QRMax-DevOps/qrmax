@@ -27,6 +27,14 @@ class DisplayDAO {
       return false;
     }
 
+    static async checkMedia(company, store, display, media){
+      const result = await Display.findOne({company:company, store:store, display:display, });
+      if(result){
+        return true;
+      }
+      return false;
+    }
+
     static async newDisplay(company, store, display, addDisplay){
       //generate display id
       const id = uuidv4();
@@ -131,12 +139,13 @@ class DisplayDAO {
     static async deleteMedia(company, store, display, mediaName){
 	  //delete QR
       let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1, media:1}})
-      ID = ID.mediaCount;
-      ID -= 1;
+      let newID = ID.mediaCount;
+      newID -= 1;
 
       let mediaID;
       try {
         for(var i = 0; i < ID.media.length; i++){
+          console.log(ID.media[i].media+" - "+mediaName);
           if(ID.media[i].media === mediaName){
             mediaID = ID.media[i].mediaID;
             break;
@@ -145,12 +154,12 @@ class DisplayDAO {
         Display.updateOne({company:company, store:store, display:display},{$pull:{media:{media:mediaName}}}, {upsert:false});
       
         //increment mediaCount
-        Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
+        Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:newID}});
         //TODO delete media
         MediaDAO.deleteMedia(MediaID);
       }
       catch (e) {
-        console.log("Fail");
+        console.log(e);
       }
       
 
@@ -183,8 +192,8 @@ class DisplayDAO {
 	}
 	
 	static async addVote(company, store, display, QRID) {
-      var result = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0}});
-	  let voteCount;
+    var result = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0}});
+    let voteCount;
 	  for(var i = 0; i < result.media.length; i++){
         if(result.media[i].QRID === QRID){
           voteCount = result.media[i].voteCount;
@@ -419,12 +428,12 @@ class DisplayDAO {
   }
 
 
-  static async refreshAllQr(){
+  static async refreshAllQR(){
   
   }
 
   static async refreshSingleQR(company, store, display, media){
-    return 'hello';
+
   }
 
   static async refreshDisplayQR(company, store, display){
