@@ -7,7 +7,7 @@ import {log, fetchAPI, getApiURL} from './middleware_core';
  export async function ActionQRID(data, global, isLocalHost) {
 			//json:{company, store, display, QRID}
 		var url = getApiURL(isLocalHost);
-		var endpoint = url+'api/v1/Display/';
+		var endpoint = url+'api/v1/QR/';
 		var input = JSON.stringify({
 			company: data.company,
 			store: data.store,

@@ -30,12 +30,13 @@ class Homepage extends Component {
 		this.mediaName = "cat2";
         this.setDisplay = this.setDisplay.bind(this);
         this.setMedia = this.setMedia.bind(this);
+        this.fillObject = this.fillObject.bind(this);
 		//this.getMedia();
     }
 
     fillCurrentObject() {
         var url = "http://localhost:80/";
-        var data = {company: "displayCompany", store: "displayStore"};
+        var data = {company: "demoCompany", store: "demoStore"};
 
         let request = null;
         let response = [null,null];
@@ -58,10 +59,11 @@ class Homepage extends Component {
 
                 if(response[0] === true){
                     
+                    console.log("Inside fill")
                     var json = JSON.parse(response[1]);
                     
                     me.setState({currentObj: json});
-                    console.log(me.state.currentObj);
+                    console.log("Where the fuck is this " + me.state.currentObj);
                     //console.log(me.state.currentObj);
                 }
             }
@@ -149,10 +151,23 @@ class Homepage extends Component {
         return this.getMediaArray[this.state.selectedMedia].qrList;
     }
 
+    async fillObject() {
+        var url = "http://localhost:80/";
+        var data = {company: "demoCompany", store: "demoStore"};
+
+        let request = null;
+        let response = [null,null];
+        request = await getDisplays("GETLIST", url, data, response);
+        var json = JSON.parse(response[1]);
+        return json;
+
+    }
+
     componentDidMount() {
+        //var json = this.fillObject();
         this.fillCurrentObject();
         //this.selectedDisplay = this.state.currentObj.displays[0].display;
-        console.log(this.state.currentObj);
+        console.log("Mount flag " + this.state.currentObj);
         console.log("did mount");
     }
 
@@ -176,12 +191,13 @@ class Homepage extends Component {
                         <div id="dropContainer">
 							<p>Currently showing store: {this.store}, display: {this.display}</p>
                             <select onChange={this.setDisplay}>
+                            {console.log("Flag " + this.state.currentObj)}
                                 {this.state.currentObj.displays.map((val,key) => {
                                     return (
                                         <option name={val.display} value={key} key={key}>{val.display}</option>
                                     );
                                 })}
-                                {console.log("Flag " + this.state.currentObj)}
+                                
                             </select>
                         </div>
                         <div className="DisplayContainer" id="display-preview">
@@ -193,7 +209,7 @@ class Homepage extends Component {
                                 {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
                                         <Draggable key={key}>
-                                                <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=displayCompany&store=displayStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&QRID=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
+                                                <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
                                         </Draggable>
                                     )
                                 })}

@@ -63,7 +63,7 @@ class DisplayMngr extends Component {
      }
     
      updateDsiplay(){
-        var data = {id: "6232a8819d0e35f4708ad8e8", company: "displayCompany", store: "displayStore", display: this.state.displayInput};
+        var data = {id: "6232a8819d0e35f4708ad8e8", company: "demoCompany", store: "demoStore", display: this.state.displayInput};
         this.fetchDisplays("UPDATE", data);
         console.log("inside updateDisplay");
      }
@@ -74,18 +74,18 @@ class DisplayMngr extends Component {
 
      createDisplay() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: newName, src: this.state.imgString};
+        var data = {company: "demoCompany", store: "demoStore", display: newName, src: this.state.imgString};
         this.fetchDisplays("CREATE", data);
      }
 
      deleteDisplay() {
-         var data = {company: "displayCompany", store: "displayStore", display: this.state.currentObj.displays[this.state.selectedDisplay].display};
+         var data = {company: "demoCompany", store: "demoStore", display: this.state.currentObj.displays[this.state.selectedDisplay].display};
          this.fetchDisplays("DELETE", data);
      }
 
      fetchDisplays(type, data) {
         var url = "http://localhost:80/";
-        //var data = {company: "displayCompany", store: "displayStore"};
+        //var data = {company: "demoCompany", store: "demoStore"};
 
         let request = null;
         let response = [null,null];
@@ -140,7 +140,7 @@ class DisplayMngr extends Component {
 
      componentDidMount() {
          var data;
-         this.fetchDisplays("GETLIST",  data = {company: "displayCompany", store: "displayStore"});
+         this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore"});
          console.log("did mount");
      }
 
