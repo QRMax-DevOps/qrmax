@@ -51,6 +51,7 @@ class DisplayDAO {
           liveTime: new Date(Date.now()),
           TTL:"0"
         },
+        settings:[]
       }
       //insert doc
       try{
@@ -71,6 +72,14 @@ class DisplayDAO {
     }
 	
     static async checkMedia(company, store, display, mediaName){
+      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
+      if(result){
+        return true;
+      }
+      return false;
+    }
+
+    static async checkQR(company, store, display, mediaName){
       const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
       if(result){
         return true;
@@ -102,13 +111,22 @@ class DisplayDAO {
 	    cleanMediaID = cleanMediaID.slice(0,20);
 	  
 	    const TTL = 15;
-	  
+
       let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1}})
       ID = ID.mediaCount;
       ID += 1;
+      const insert = {
+        QRID:cleanQRID,
+        QR_History:[QRID],
+        TTL:TTL,
+        mediaID:cleanMediaID,
+        media:mediaName,
+        voteCount:0,
+        lifetimeVotes:0
+      }
 	    try {
       	//add qr
-      	Display.updateOne({company:company, store:store, display:display}, {$push:{media:{QRID:cleanQRID,TTL:TTL,mediaID:cleanMediaID,media:mediaName,voteCount:0}}});
+      	Display.updateOne({company:company, store:store, display:display}, {$push:{media:insert}});
       	//increment mediaCount
       	Display.updateOne({company:company, store:store, display:display}, {$set:{mediaCount:ID}});
       }
@@ -369,24 +387,82 @@ class DisplayDAO {
     return rMessage;
   }
 
+  static async getSetting(company, store, display){
+    let result = await CompanyAccount.findOne({company:company, store:store, display:display}, {projection:{_id:0, settings:1}});
+    return result;
+}
+
+  static async setSetting(company, store, display, fields, values){
+    for (let i=0; i<fields.length; i++){
+        let field = fields[i]
+        CompanyAccount.updateOne({company:company, store:store, display:display}, {settings:{[field]:values[i]}}, {upsert:true});
+    }
+  }
+
+  static async getSettings(company, store, display){
+    let result = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, settings:1}});
+    return result;
+  }
+
+  static async setSettings(company, store, display, fields, values){
+    fields = fields.split(',');
+    values = values.split(',');
+
+    for (let i=0; i<fields.length; i++){
+        let field = fields[i];
+        await Display.updateOne({company:company, store:store, display:display}, {$pull:{settings:{[field]:{$exists:true}}}});
+        await Display.updateOne({company:company, store:store, display:display}, {$addToSet:{settings:{[field]:values[i]}}});
+    }
+  }
+
+  static async getStats(company, store, display, period){
+    let result = await Display.findOne({company:company, store:store, display:display});
+    if (period == 0){
+      let votes = [];
+      const media = result.media;
+      for (m of media){
+        votes.push(m.lifetimeVotes);
+      }
+      return votes;
+    }
+  }
+
+
+  static async refreshAllQR(){
+  
+  }
+
+  static async refreshSingleQR(company, store, display, media){
+
+  }
+
+  static async refreshDisplayQR(company, store, display){
+
+  }
+
+static async setSetting(company, store, display, fields, values){
+    for (let i=0; i<fields.length; i++){
+        let field = fields[i]
+        CompanyAccount.updateOne({company:company, store:store, display:display}, {settings:{[field]:values[i]}}, {upsert:true});
+    }
+}
+
+static async getSettings(company, store, display){
+  let result = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, settings:1}});
+  return result;
+}
+
+static async setSettings(company, store, display, fields, values){
+  fields = fields.split(',');
+  values = values.split(',');
+
+  for (let i=0; i<fields.length; i++){
+      let field = fields[i];
+      await Display.updateOne({company:company, store:store, display:display}, {$pull:{settings:{[field]:{$exists:true}}}});
+      await Display.updateOne({company:company, store:store, display:display}, {$addToSet:{settings:{[field]:values[i]}}});
+  }
+}
+
 }
 
 module.exports = DisplayDAO;
-
-/* This will come in use when we rework so im keeping it here for now
-    static async checkDisplay(company, store, display){
-      //get the list of display ID from store
-      let result = await CompanyDAO.getList(company);
-      //loop through and check if matching store and company exists
-      for(let s of result.stores){
-        if(s.store == store){
-          for(let d of s.displays){
-            if(d.display == display){
-              return true;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    */

@@ -169,7 +169,8 @@ class StoreAccountController {
             res.json({status:"failure", cause:e})
         }
     }
-
+    //god this is disgusting why is this done like this
+    //TODO: redo
     static async addStore(req, res){
         try{
             const company = req.body.company;
@@ -242,6 +243,48 @@ class StoreAccountController {
             else{
                 res.json({status:"failure", cause:"no such company"})
             }
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
+
+    static async getSettings(req, res){
+        try{
+            const company = req.body.company;
+            const username = req.body.username;
+            if (!await companyDAO.checkCompany(company)){
+                res.json({status:"failure", cause:'no such company exists'});
+            }
+            else if (await storeAccountDAO.checkAccount(company, username)){
+                let settingsR = await storeAccountDAO.getSettings(company, username);
+                res.json({status:"success", settings:settingsR.settings});
+            }
+            else{
+                res.json({status:"failure", cause:'no such account exists'});
+            }  
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
+
+    static async changeSettings(req, res){
+        try{
+            const company = req.body.company;
+            const username = req.body.username;
+            const fields = req.body.fields;
+            const values = req.body.values;
+            if (!await companyDAO.checkCompany(company)){
+                res.json({status:"failure", cause:'no such company exists'});
+            }
+            else if (await storeAccountDAO.checkAccount(company, username)){
+                storeAccountDAO.setSettings(company, username, fields, values);
+                res.json({status:"success"});
+            }
+            else{
+                res.json({status:"failure", cause:'no such account exists'});
+            }  
         }
         catch(e){
             res.json({status:"failure", cause:e})

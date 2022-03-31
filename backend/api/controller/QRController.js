@@ -132,6 +132,48 @@ class QRController {
             res.json({status:"failure", cause:e});
         }
     }
+
+    static async refreshMedia(req, res){
+        //get Company store display media
+        const company = req.body.company;
+        const store = req.body.store;
+		const display = req.body.display;
+        const mediaName = req.body.mediaName;
+        let result;
+        //check if store exists
+        if(! await CompanyDAO.checkStore(company, store)){
+            res.json({status:"failure", cause:"no such store"});
+        }
+        //check if media is filled
+        if (mediaName){
+            //cehck the media exists
+            if(await DisplayDAO.checkMedia(company, store, display, mediaName)){
+                DisplayDAO.refreshSingleQR(company, store, display, mediaName);
+                res.json({status:"success"});
+            }
+            else{
+                res.json({status:"failure", cause:"no such media"});
+            }
+        }
+        //check if display is filled
+        else if (display){
+            //ehck if the display exists
+            if(await DisplayDAO.checkDisplay(company, store, display)){
+                DisplayDAO.refreshDisplayQR(company, store, display);
+                res.json({status:"success"});
+            }
+            else{
+                res.json({status:"failure", cause:"no such display"});
+            }
+        }
+        //otherwiase refesh all QR
+        else {
+            DisplayDAO.refreshAllQR(company, store);
+            res.json({status:"success"});
+        }
+        //return success
+        
+    }
 }
 
 

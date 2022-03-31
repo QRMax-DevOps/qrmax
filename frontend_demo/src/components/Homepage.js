@@ -7,6 +7,7 @@ import {HandleMedia} from "./../services/media_middleware"
 import { getDisplays } from '../services/display_middleware';
 import QRCode from 'qrcode.react';
 import Draggable from 'react-draggable';
+import { ListenTo } from '../services/listener_middleware';
 
 
 class Homepage extends Component {
@@ -167,6 +168,7 @@ class Homepage extends Component {
         //var json = this.fillObject();
         this.fillCurrentObject();
         //this.selectedDisplay = this.state.currentObj.displays[0].display;
+        ListenTo({url: "/api/v1/Display/media/listen", active: true})
         console.log("Mount flag " + this.state.currentObj);
         console.log("did mount");
     }

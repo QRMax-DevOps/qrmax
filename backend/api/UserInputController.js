@@ -5,7 +5,8 @@ const e = require("express");
 
 class UserInputController {
   static async apiPostUserInput(req, res) {
-    try {
+    //try {
+      console.log("hey");
       const windowEmulator = new JSDOM('').window;
       const DOMPurify = createDOMPurify(windowEmulator);
       if (DOMPurify.isSupported) {
@@ -41,9 +42,10 @@ class UserInputController {
       }
 
       res.json({ status: "success"});
-    } catch (e) {
+    /*} catch (e) {
+      console.log(e);
       res.json({ status: "fail", cause: e});
-    }
+    }*/
   }
 }
 
