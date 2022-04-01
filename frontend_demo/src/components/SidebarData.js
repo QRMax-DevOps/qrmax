@@ -10,25 +10,25 @@ export let SidebarData = [
         id: 1,
         title: "Display Preview",
         icon: <DesktopWindowsIcon/>,
-        link: "/homepage" + localStorage.getItem("params")
+        link: "/homepage" //+ localStorage.getItem("params")
     },
     {
         id: 2,
         title: "Display Management",
         icon: <DisplaySettingsIcon/>,
-        link: "/display_mngr" + localStorage.getItem("params")
+        link: "/display_mngr" //+ localStorage.getItem("params")
     },
     {
         id: 3,
         title: "QR Settings",
         icon: <QrCodeIcon/>,
-        link: "/gen_qr" + localStorage.getItem("params")
+        link: "/media_mngr" //+ localStorage.getItem("params")
     },
     {
         id: 4,
         title: "Interactions",
         icon: <QueryStatsIcon/>,
-        link: "/interactions" + localStorage.getItem("params")
+        link: "/interactions" //+ localStorage.getItem("params")
     },
     {
         id: 5,

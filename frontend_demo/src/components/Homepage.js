@@ -14,6 +14,7 @@ class Homepage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            items: null,
             selectedDisplay: 0,
             selectedMedia: 0,
             selectedMediaArray: [],
@@ -164,19 +165,25 @@ class Homepage extends Component {
 
     }
 
+
+
     componentDidMount() {
         //var json = this.fillObject();
         this.fillCurrentObject();
         //this.selectedDisplay = this.state.currentObj.displays[0].display;
-        ListenTo({url: "/api/v1/Display/media/listen", active: true})
+        var param = {
+            ur: "http://localhost:80/api/v1/Display/media/listen",
+            active: true
+        }
+        ListenTo(param);
         console.log("Mount flag " + this.state.currentObj);
         console.log("did mount");
     }
 
-    getImage() {
-        var image = new Image();
-        image.src = this.state.currentObj.displays[0].src;
-        return image;
+    async getItems() {
+        fetch("http://localhost:80/Display")
+            .then(result => result.json())
+            .then(result => this.setState({items: result}))
     }
 
     render() {
@@ -191,7 +198,7 @@ class Homepage extends Component {
                     <h2 className="page-header">Display Preivew</h2>
                         
                         <div id="dropContainer">
-							<p>Currently showing store: {this.store}, display: {this.display}</p>
+							<p>Currently showing store: demoStore, display: {this.state.currentObj.displays[this.state.selectedDisplay].display}</p>
                             <select onChange={this.setDisplay}>
                             {console.log("Flag " + this.state.currentObj)}
                                 {this.state.currentObj.displays.map((val,key) => {
@@ -208,13 +215,15 @@ class Homepage extends Component {
                                 <img src={this.state.media}/>
                                 <br/>
                                 <img className="image" src={this.state.currentObj.displays[this.state.selectedDisplay].src}/>
-                                {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
-                                    return (
-                                        <Draggable key={key}>
-                                                <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
-                                        </Draggable>
-                                    )
-                                })}
+                                <div>
+                                    {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
+                                        return (
+                                            <Draggable key={key}>
+                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
+                                            </Draggable>
+                                        )
+                                    })}
+                                </div>
                                 
                             </div>
                         </div>

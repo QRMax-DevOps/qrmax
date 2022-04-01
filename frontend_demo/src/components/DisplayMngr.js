@@ -19,7 +19,7 @@ class DisplayMngr extends Component {
     
     }
     state = { 
-        currentStore: "Some Store",
+        currentStore: "demoStore",
         currentObj: {displays: [{display: ''}]},
         selectedDisplay: 0,
         displayInput: 'default',

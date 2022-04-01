@@ -19,7 +19,7 @@ class MediaMngr extends Component {
     }
     state = {
         currentDisplay: "Display1",
-        currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
+        currentObj: {displays: [{media: [{media: ''}]}]}, //needs displays array when using displayMW
         //also got rid of all "medias" mentions and replaced with the actual field name from DB
         selectedMedia: 0,
         mediaInput: 'default',
@@ -63,7 +63,7 @@ class MediaMngr extends Component {
     }
 
     updateMedia(){
-        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "demoCompany", store: "demoStore", display: "display1", media: this.state.mediaInput};
         this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
     }
@@ -74,12 +74,14 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName, src: this.state.imgString};
+        console.log(newName);
+        var data = {company: "demoCompany", store: "demoStore", display: "display1", mediaName: newName, mediaFile: this.state.imgString};
         this.fetchMedia("CREATE", data);
     }
 
     deleteMedia() {
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
+        
+        var data = {company: "demoCompany", store: "demoStore", display: "display1", mediaName: this.state.currentObj.displays[0].media[this.state.selectedMedia].media};
         this.fetchMedia("DELETE", data);
     }
 
@@ -94,7 +96,12 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays(type, url, data, response); //Switched to displayMW
+        if(type == "GETLIST") {
+
+            request = getDisplays(type, url, data, response); //Switched to displayMW
+        } else {
+            request = HandleMedia(type, url, data, response)
+        }
         
 
         var interval = setInterval(function(){
@@ -136,7 +143,7 @@ class MediaMngr extends Component {
 
     componentDidMount() {
         var data;
-        this.fetchMedia("GETLIST", data = {company: "displayCompany", store: "displayStore", display: "display2"});
+        this.fetchMedia("GETLIST", data = {company: "demoCompany", store: "demoStore", display: "display1"});
         console.log("did mount");
     }
 
@@ -152,10 +159,9 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
                         <ul id='media-list'>
-                            {console.log(this.state.currentObj)}
-                            {this.state.currentObj.displays[2].media.map((val, key) => {
+                            {this.state.currentObj.displays[0].media.map((val, key) => {
                                 return (
-                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
+                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
                                 );
                              })}
                         </ul>

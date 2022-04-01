@@ -14,6 +14,7 @@ import Interactions from './components/Interactions';
 import DisplayMngr from './components/DisplayMngr';
 import AccountsManagement from './components/AccountsManagement/am_base';
 import TestEnv from './services/test_environment';
+import MediaMngr from './components/MediaMngr';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -37,6 +38,7 @@ function App() {
 			<Route path="/display_mngr" element={<DisplayMngr/>}/>
 			<Route path="/accounts" element={<AccountsManagement/>}/>
 			<Route path="/testenv" element={<TestEnv/>}/>
+			<Route path="/media_mngr" element={<MediaMngr/>}/>
  		</Routes>
 	)
 }
