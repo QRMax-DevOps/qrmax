@@ -17,7 +17,7 @@
 	padding: 10px;
 	margin: 20px;
 	width:95%;
-	min-width:600px;
+	min-width:945px;
 	
 	display: flex;
     align-items: flex-start;
@@ -54,10 +54,11 @@ label {
 
 #CreateAccountFormContainer {
 	border-radius: 10px;
-	border: 1px solid black;
+	border: 1px solid transparent;
+	background-color: white;
 	
 	padding:20px;
-	width:100%;
+	width:425px;
 	
 	display: flex;
     justify-content: space-around;
@@ -67,21 +68,44 @@ label {
 
 .SubmitButtonContainer {
 	margin:0px;
-	margin-top:10px;
+	margin-top:30px;
 	padding:0px;
 	
 	width:100%;
 }
 
+.InputContainer label {
+	margin-top:7px;
+}
+
+.InputContainer input {
+	width:270px;
+	background-color: #ECECEC;
+	border-radius: 3px;
+	border: 1px solid transparent;
+}
+
+.InputContainer input:disabled {
+	background-color: #ECECEC;
+	color: #B8B8B8;
+}
+
+.InputContainer input:focus {
+	outline: 1px solid black !important;
+}
+
 .InputContainer {
-	margin:10px;
+	margin-top:10px;
+	margin-left:10px;
+	margin-right:10px;
+	margin-bottom:0px;
 	padding:0px;
 	
 	width:100%;
 	
 	display: flex;
     justify-content: space-between;
-	align-items: center;
+	align-items: top;
 	flex-direction: row;
 }
 

@@ -4,7 +4,7 @@ import './GenerateQR.css';
 import Sidebar from './Sidebar';
 import Display from '../objects/DisplayObject.js';
 import QRCode from '../objects/QRCode.js';
-import {HandleDisplay} from '../services/qr_middleware';
+import {HandleDisplay} from '../services/middleware/qr_mw';
 
 class GenerateQR extends Component {
 

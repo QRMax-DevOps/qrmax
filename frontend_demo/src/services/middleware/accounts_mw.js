@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
-import {log, fetchAPI, getApiURL} from './middleware_core';
+import {log, fetchAPI, getApiURL} from '../core_mw';
+import {getDefaultHeaders} from '../utilities/common_util';
 
+// ...................................................................................................
+// ...................................................................................................
 
-
-
-
+const DEFAULT_HEADERS = getDefaultHeaders(); //Default headers used by every request in this file.
 
 /*
  * ACCOUNT RETRIEVAL
@@ -17,30 +18,26 @@ import {log, fetchAPI, getApiURL} from './middleware_core';
  *
  */
  export async function RunFetch_GetStores(isCompany, url, id, companyName, global) {
-	
 	var endpoint = '';
-	var input = '';
+	var bodyGen = '';
  
 	if(isCompany) {
 		endpoint = url+'api/v1/Company/Store';
-		input = JSON.stringify({company:id});
-		console.log("yes, by all means. It equals: ",endpoint);
+		bodyGen = JSON.stringify({company:id});
 	}
 	else {
 		endpoint = url+'api/v1/Store/Account/storesList';
-		input = JSON.stringify({company:companyName,username:id});
+		bodyGen = JSON.stringify({company:companyName,username:id});
 	}
-
+	
 	const requestOptions = {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: input
+		headers: DEFAULT_HEADERS,
+		body: bodyGen
 	};
 	
 	// GET request using fetch with basic error handling
-	log("Attempting a really cool POST:\n    > At: "+endpoint+"\n    > With body: "+input);
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
-
 	
 	global[0] = asyncFetch[0];
 	global[1] = asyncFetch[1];
@@ -48,45 +45,29 @@ import {log, fetchAPI, getApiURL} from './middleware_core';
 }
 
  export async function RunFetch_GetAccounts(isCompany, url, id, companyName, global) {
-	
-	console.log(isCompany, url, id);
-	
-	//determine store or company
-	//run two fetches, 1 for store/account and 1 for (if store) storeslist.
-	//compile results
-	
-	
 	if(isCompany) {
-		var input = JSON.stringify({company:id});
+		var bodyGen = JSON.stringify({company:id});
 		const endpoint = url+'api/v1/Company/Account/AccountList';
 		
-		//create new account
 		const requestOptions = {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: input
+			headers: DEFAULT_HEADERS,
+			body: bodyGen
 		};
 		
 		// GET request using fetch with basic error handling
-		log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+input);
 		const asyncFetch = await fetchAPI(endpoint,requestOptions);
-	
 		
 		global[0] = asyncFetch[0];
 		global[1] = asyncFetch[1];
 	}
 	else {
+		
 		global[0] = false;
 		log("\"RunFetch_GetAccounts\" failed conditions: You must be logged in as a company account to access accounts management.");
 		global[1] = "You must be logged in as a company account to access accounts management.";
 	}
 }
-
-/*
-export async function RunFetch_GetAccounts(account, global) {
-
-}*/
-
 
 
 
@@ -107,7 +88,7 @@ export async function RunFetch_CreateCompanyAccount(url,newCompanyAccount, globa
 }
 
 export async function RunFetch_CreateStoreAccount(url, isCompany, user, companyName, userName, userStores, userPassword, global) {
-	console.log("creating store acount w/ ",companyName,userName,userPassword)
+	//console.log("creating store acount w/ ",companyName,userName,userPassword)
 
 	var betterStores = generateStoresList(userStores);
 	
@@ -121,11 +102,8 @@ export async function RunFetch_CreateStoreAccount(url, isCompany, user, companyN
 	return RunFetch_CreateAccount(url, isCompany, body, 'storeAccount', global);
 }
 
-//{company, store}
-
-
 export async function RunFetch_CreateStore(url, isCompany, userID, data, global) {
-	console.log("creating store w/ ",data.company,data.store)
+	//console.log("creating store w/ ",data.companyName,data.store)
 	
 	var body = null;
 	
@@ -146,19 +124,17 @@ export async function RunFetch_CreateStore(url, isCompany, userID, data, global)
 	return RunFetch_CreateAccount(url, isCompany, body, 'store', global);
 }
 
-
-
-async function RunFetch_CreateAccount(url, isCompany, bod, type, global) {
+async function RunFetch_CreateAccount(url, isCompany, bodyGen, type, global) {
 		let endpoint=null
-		let meth=null;
+		let methodGen=null;
 
-		console.log('RunFetch_CreateAccount: ',url, isCompany,bod,type);
+		//console.log('RunFetch_CreateAccount: ',url, isCompany,bod,type);
 
 		switch(type.toLowerCase()){ 
-			  case 'companyaccount':	meth='PUT';		endpoint=url+'api/v1/Company/Account';		break;
-			  case 'storeaccount':		meth='PUT';		endpoint=url+'api/v1/Store/Account';		break;
+			  case 'companyaccount':	methodGen='PUT';	endpoint=url+'api/v1/Company/Account';		break;
+			  case 'storeaccount':		methodGen='PUT';	endpoint=url+'api/v1/Store/Account';		break;
 			  case 'store':			
-				meth='PUT';	
+				methodGen='PUT';	
 				if(isCompany) {
 					endpoint=url+'api/v1/Company/Store';	
 				}
@@ -170,22 +146,20 @@ async function RunFetch_CreateAccount(url, isCompany, bod, type, global) {
 		
 		//Setting parameters for the fetch request.
 		const requestOptions = {
-			method: meth,
-			headers: { 'Content-Type': 'application/json' },
-			body: bod
+			method: methodGen,
+			headers: DEFAULT_HEADERS,
+			body: bodyGen
 		}
 		
-		console.log("requestOptions === ",requestOptions)
-		console.log("endpoint === ",endpoint)
+		//console.log("requestOptions === ",requestOptions)
+		//console.log("endpoint === ",endpoint)
 		
 		// GET request using fetch with basic error handling
-		log("Attempting "+meth+":\n    > At: "+endpoint+"\n    > With body: "+bod);
 		const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 		global[0] = asyncFetch[0];
 		global[1] = asyncFetch[1];
 }
-
 
 
 
@@ -209,7 +183,7 @@ export async function RunFetch_DeleteStoreAccount( url, isCompany, user, company
 		username	: userName
 	});
 	
-	console.log("RunFetch_DeleteStoreAccount:  ",body)
+	//console.log("RunFetch_DeleteStoreAccount:  ",body)
 	
 	return RunFetch_DeleteAccount(url, isCompany, 'storeaccount',body,global);
 }
@@ -218,9 +192,13 @@ export async function RunFetch_DeleteStoreAccount( url, isCompany, user, company
 
 export async function RunFetch_DeleteStore( url, isCompany, userID, data, global) {
 	
-	console.log('RunFetch_DeleteStore',  url, isCompany, userID, data);
+	//console.log('RunFetch_DeleteStore',  url, isCompany, userID, data);
 	
-	console.log('Global is:',global);
+	//Values are converted to JSON, which casts bools into strings
+	//Therefor, bools need to be cast back to boolean-type
+	isCompany = (isCompany == "true");
+	
+	//console.log('Global is:',global);
 	
 	var body = null;
 	
@@ -242,23 +220,23 @@ export async function RunFetch_DeleteStore( url, isCompany, userID, data, global
 	return RunFetch_DeleteAccount(url, isCompany, 'store',body,global);
 }
 
-export async function RunFetch_DeleteAccount(url, isCompany, type, bod, global) {
+export async function RunFetch_DeleteAccount(url, isCompany, type, bodyGen, global) {
 	let endpoint=null
-	let meth=null;
+	let methodGen=null;
 		
 	switch(type) {
 			  case 'companyaccount':
-				meth='DELETE';
+				methodGen='DELETE';
 				endpoint=url+'api/v1/Company/Account';
 				break;
 				
 			  case 'storeaccount':
-				meth='DELETE';
+				methodGen='DELETE';
 				endpoint=url+'api/v1/Store/Account';
 				break;
 				
 			  case 'store':	
-				meth='DELETE';
+				methodGen='DELETE';
 				if(isCompany) {
 					endpoint=url+'api/v1/Company/Store';
 				} else {
@@ -268,13 +246,12 @@ export async function RunFetch_DeleteAccount(url, isCompany, type, bod, global) 
 	}
 
 	const requestOptions = {
-		method: meth,
-		headers: { 'Content-Type': 'application/json' },
-		body: bod
+		method: methodGen,
+		headers: DEFAULT_HEADERS,
+		body: bodyGen
 	}
 			
 	// GET request using fetch with basic error handling
-	log("Attempting "+meth+":\n    > At: "+endpoint+"\n    > With body: "+bod);
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 	global[0] = asyncFetch[0];
@@ -320,12 +297,12 @@ function generateStoresList(stores) {
 
 export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAccount, newAccount, global) {
 		
-		console.log('RunFetch_UpdateStoreAccount ',url,isCompany,user,oldAccount,newAccount);
+		//console.log('RunFetch_UpdateStoreAccount ',url,isCompany,user,oldAccount,newAccount);
 		
 		
 		var stores = generateStoresList(newAccount.stores);
 		
-		console.log('stores===',stores);
+		//console.log('stores===',stores);
 		
 		
 		var body = JSON.stringify({
@@ -335,11 +312,10 @@ export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAcco
 			values:(newAccount.company+','+newAccount.username+','+newAccount.password+","+stores)
 		})
 		
-		console.log("BODY===",body);
+		//console.log("BODY===",body);
 		
 		return RunFetch_UpdateAccount(url, 'storeAccount',body,global);
 }
-
 
 //Not yet supported by the API.
 export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newStore, global) {
@@ -370,25 +346,22 @@ export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newS
 		*/
 }
 
-
-export async function RunFetch_UpdateAccount(url, type, bod, global) {
+export async function RunFetch_UpdateAccount(url, type, bodyGen, global) {
 	let endpoint=null
-	let meth=null;
+	let methodGen=null;
 
 	switch(type.toLowerCase()) {
-		  case 'companyaccount':	meth='PATCH';		endpoint=url+'api/v1/Company/Account';		break;
-		  case 'storeaccount':		meth='PATCH';		endpoint=url+'api/v1/Store/Account';		break;
+		  case 'companyaccount':	methodGen='PATCH';		endpoint=url+'api/v1/Company/Account';		break;
+		  case 'storeaccount':		methodGen='PATCH';		endpoint=url+'api/v1/Store/Account';		break;
 	}
-
 		
 	const requestOptions = {
-		method: meth,
-		headers: { 'Content-Type': 'application/json' },
-		body: bod
+		method: methodGen,
+		headers: DEFAULT_HEADERS,
+		body: bodyGen
 	}
 			
 	// GET request using fetch with basic error handling
-	log("Attempting POST:\n    > At: "+endpoint+"\n    > With body: "+bod);
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
 		
 	global[0] = asyncFetch[0];

@@ -445,6 +445,11 @@ static async setSetting(company, store, display, fields, values){
         let field = fields[i]
         CompanyAccount.updateOne({company:company, store:store, display:display}, {settings:{[field]:values[i]}}, {upsert:true});
     }
+static async setSetting(company, store, display, fields, values){
+    for (let i=0; i<fields.length; i++){
+        let field = fields[i]
+        CompanyAccount.updateOne({company:company, store:store, display:display}, {settings:{[field]:values[i]}}, {upsert:true});
+    }
 }
 
 static async getSettings(company, store, display){

@@ -19,7 +19,7 @@ class ListItem_Account extends Component {
 		this.UpdateCurrentSelectedAccount = this.props.UpdateCurrentSelectedAccount;
 		this.buildAccountComponent = this.buildAccountComponent.bind(this);
 		
-		console.log('Constructing ACCOUNT object from data: ',this.account);
+		//console.log('Constructing ACCOUNT object from data: ',this.account);
 		
 		this.state = {selected:false, account:this.account, bgColor:'#E7E7E7'};
 	}
@@ -27,7 +27,7 @@ class ListItem_Account extends Component {
 	getStoresString(stores) {
 		var json = stores;
 		
-		console.log("generating stores string from: ",json);
+		//console.log("generating stores string from: ",json);
 		
 		var toReturn ='';
 		
@@ -58,7 +58,7 @@ class ListItem_Account extends Component {
 		var account = this.props.account;
 		var stores = this.getStoresString(account.stores);
 		
-		console.log('account===',account);
+		//console.log('account===',account);
 		
 		if(account.type.toLowerCase()==='storeaccount') {
 			
@@ -94,7 +94,7 @@ class ListItem_Store extends Component {
 		this.getParentState = this.props.getParentState;
 		this.UpdateCurrentSelectedAccount = this.props.UpdateCurrentSelectedAccount;
 		
-		console.log('Constructing STORE object from data: ',this.storeData);
+		//console.log('Constructing STORE object from data: ',this.storeData);
 	}
 	
 	render() {
@@ -152,7 +152,7 @@ export class Viewer extends Component {
 	
 	BuildList(type, source) {
 		
-		console.log("BUILDING LIST FROM: ",type,source)
+		//console.log("BUILDING LIST FROM: ",type,source)
 		
 		if(source!=null) {
 			return {ListItems:source.map((data) => this.BuildListItem(type, data))};
@@ -163,7 +163,7 @@ export class Viewer extends Component {
 	
 	BuildListItem(type, data) {
 		
-		console.log("BUILDING ITEM FROM: ",type,data)
+		//console.log("BUILDING ITEM FROM: ",type,data)
 		
 		if(this.type==='accounts') {
 			return  <li key={data.username}>
@@ -188,7 +188,7 @@ export class Viewer extends Component {
 			}
 			else if(this.type === 'accounts') {
 				
-				console.log('THIS ACCOUNTSLIST === ',this.ACCOUNTSLIST)
+				//console.log('THIS ACCOUNTSLIST === ',this.ACCOUNTSLIST)
 				
 				this.SoftRefresh(this.ACCOUNTSLIST);
 			}
@@ -223,7 +223,7 @@ export class Viewer extends Component {
 			let results = [];
 			var json =  JSON.parse(target);
 			
-			console.log(json)
+			//console.log(json)
 			
 			if(json) {
 				if(this.type === 'stores' && !json.status) {

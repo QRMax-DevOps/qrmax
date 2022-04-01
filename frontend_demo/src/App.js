@@ -13,12 +13,12 @@ import Homepage from './components/Homepage';
 import Interactions from './components/Interactions';
 import DisplayMngr from './components/DisplayMngr';
 import AccountsManagement from './components/AccountsManagement/am_base';
+import MediaMngr from './components/MediaMngr';
 import TestEnv from './services/test_environment';
 import MediaMngr from './components/MediaMngr';
+import MarketingWebsite from './components/MarketingWebsite/mw_base';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-
-//const browserHistory = createBrowserHistory();
 
 function App() {
 	document.title = "Test Application";
@@ -39,6 +39,9 @@ function App() {
 			<Route path="/accounts" element={<AccountsManagement/>}/>
 			<Route path="/testenv" element={<TestEnv/>}/>
 			<Route path="/media_mngr" element={<MediaMngr/>}/>
+			
+			
+			<Route path="/marketing" element={<MarketingWebsite/>}/>
  		</Routes>
 	)
 }

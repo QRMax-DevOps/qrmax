@@ -41,7 +41,7 @@ export class Options extends Component {
 		let accountSelected = this.getParentState('curAccount');
 		
 		if(accountSelected != null) {
-			console.log('An account is selected!')
+			//console.log('An account is selected!')
 			this.setParentState('toDo', 'modifyaccount');
 		}
 	}
@@ -54,20 +54,23 @@ export class Options extends Component {
 		let accountSelected = this.getParentState('curStore');
 		
 		if(accountSelected != null) {
-			console.log('A store is selected!')
+			//console.log('A store is selected!')
 			this.setParentState('toDo', 'modifystore');
 		}
 	}
 
 	render() {
 		
-		if (this.getParentState('iscompany')) {
-			var createStoreTitle = 'Add Store';
+		//console.log(this.getParentState('iscompany'));
+		var createStoreTitle = 'Create Store';
+		if (this.getParentState('iscompany')===false) {
+			createStoreTitle = 'Add Store';
 
 		}
 		
 		
         return (
+		
 			<div className="FloatingContainer">
 				
 				<p>{this.title}</p>
@@ -80,10 +83,11 @@ export class Options extends Component {
 					<button onClick={() => this.modifyAccountCheck()} disabled={this.props.accountSelected ? true : false}>Modify Account</button> </>
 				}
 				{
-					this.type==='stores' && this.getParentState('iscompany') && <>
+					this.type==='stores' && <>
 					<button onClick={() => this.createStoreCheck()} className="InteractButton">{createStoreTitle}</button>
 					<button onClick={() => this.modifyStoreCheck()} disabled={this.props.accountSelected ? true : false}> Modify Store </button> </>
 				}
+				
 				</div>
 			</div>
         );

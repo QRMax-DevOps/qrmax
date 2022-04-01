@@ -8,8 +8,8 @@
 */
 
 import React, { useState, Component } from 'react';
-import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/am_middleware';
-import {getApiURL} from './../../services/middleware_core';
+import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/middleware/accounts_mw';
+import {getApiURL} from './../../services/core_mw';
 import {useLocation} from "react-router-dom";
 
 import {ListItem, Viewer} from './am_viewer';
@@ -55,12 +55,6 @@ class Modifications extends Component {
     }
 }
 
-
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 function IsJsonString(str) {
     try {
         JSON.parse(str);
@@ -74,24 +68,20 @@ function IsJsonString(str) {
 class AccountsManagement extends Component {
 	constructor(props) {
 		super(props);
+
+		var companynameParam = sessionStorage.companyName;
+		var usernameParam = sessionStorage.username;
 		
-		const queryString = window.location.search;
-		const urlParams = new URLSearchParams(queryString);
-		var isCompanyParam = urlParams.get('iscompany');
-		var companynameParam = urlParams.get('companyname');
-		var usernameParam = urlParams.get('username');
-		var isLocalhostParam = urlParams.get('localhost');
+		var isLocalhostParam = false;
+		if(sessionStorage.isLocalhost==='true' || sessionStorage.isLocalhost===true)
+		{ isLocalhostParam = true; }
 		
-		var userID_x = '';
-		if(isCompanyParam===true) {
-			userID_x = companynameParam;
-		}
-		else {
-			userID_x = usernameParam;
-		}
+		var isCompanyParam = false;
+		if(sessionStorage.isCompanyAccount==='true' || sessionStorage.isCompanyAccount===true)
+		{ isCompanyParam = true; }
 		
 		this.state = {
-			global : {isCompany:isCompanyParam, companyName:companynameParam, userID:userID_x, apiURL:getApiURL(isLocalhostParam)},
+			global : {isCompany:isCompanyParam, companyName:companynameParam, userID:usernameParam, apiURL:getApiURL(isLocalhostParam)},
 
 			toDo : null,
 			curAccount: null, //Currently selected account.
@@ -250,18 +240,15 @@ class AccountsManagement extends Component {
     render() {
 		if(this.state.global && !this.state.global.isCompany) {
 			return (
-				<div class="background">
+				<div className="background">
 				<div>
                     <Sidebar/>
                 </div>
 			
 				<div className="MainAccountsContainer">
 					<div className="FloatingContainer" style={{flexDirection:"row"}}>
-					
-					{ this.getParentState('iscompany') === true &&
-						<Options type='accounts' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
-					}
-						<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
+
+					<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					
 					</div>
 					
@@ -276,14 +263,18 @@ class AccountsManagement extends Component {
 		}
 		else if(this.state.global && this.state.global.isCompany) {
 			return (
-				<div class="background">			
+				<div className="background">	
+				<div>
+                    <Sidebar/>
+                </div>
+				
 				<div className="MainAccountsContainer">
 					<div className="FloatingContainer" style={{flexDirection:"row"}}>
 					
 					{ this.getParentState('iscompany') === true &&
 						<Options type='accounts' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					}
-						<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
+					<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
 					
 					</div>
 					
