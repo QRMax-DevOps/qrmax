@@ -428,16 +428,73 @@ class DisplayDAO {
   }
 
 
-  static async refreshAllQR(){
-  
+  static async refreshAllQR(company, store){
+    //find each display
+    let result = await Display.find({company:company, store:store}).toArray();
+    //loop through displays
+    for(let i=0; i<result.length;i++){
+      //store display name 
+      let dn = result[i].display;
+      //for each media in display generate and assign a new QR
+      for (let j=0; j<result[i].media.length; j++){
+        let newQRID = uuidv4(); 
+        let cleanQRID = "";
+	      for (let sub of newQRID) {
+		      if (sub != '-') {
+			      cleanQRID+=sub;
+		      }
+	      }
+	      cleanQRID = cleanQRID.slice(0,20);
+        newQRID = cleanQRID;
+        result[i].media[j].QRID = newQRID;
+      }
+      Display.updateOne({company:company, store:store, display:dn}, {$set:result[i]});
+    }  
   }
 
   static async refreshSingleQR(company, store, display, media){
-
+    //find specific media
+    let result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:media}}});
+    //generate new QRID
+    let newQRID = uuidv4(); 
+    let cleanQRID = "";
+	    for (let sub of newQRID) {
+		    if (sub != '-') {
+			    cleanQRID+=sub;
+		    }
+	    }
+	  cleanQRID = cleanQRID.slice(0,20);
+    newQRID = cleanQRID;
+    //Assign QRID to the media
+    for (let i=0; i<result.media.length; i++){
+      if (result.media[i].media == media){
+        result.media[i].QRID = newQRID;
+      }
+    }
+    //update record
+    Display.updateOne({company:company, store:store, display:display, media:{$elemMatch:{media:media}}}, {$set:result});
   }
 
   static async refreshDisplayQR(company, store, display){
-
+    //find store with specific display
+    let result = await Display.findOne({company:company, store:store, display:display})
+    //loop through media
+    console.log(result);
+    for (let i=0; i<result.media.length; i++){
+      //generate new QRID
+      let newQRID = uuidv4(); 
+      let cleanQRID = "";
+      for (let sub of newQRID) {
+        if (sub != '-') {
+          cleanQRID+=sub;
+        }
+      }
+      cleanQRID = cleanQRID.slice(0,20);
+      newQRID = cleanQRID;
+      //assign new QRID
+      result.media[i].QRID = newQRID;
+    }   
+    Display.updateOne({company:company, store:store, display:display}, {$set:result});
   }
 
 static async setSetting(company, store, display, fields, values){

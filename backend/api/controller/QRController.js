@@ -166,13 +166,12 @@ class QRController {
                 res.json({status:"failure", cause:"no such display"});
             }
         }
-        //otherwiase refesh all QR
+        //otherwise refesh all QR
         else {
             DisplayDAO.refreshAllQR(company, store);
             res.json({status:"success"});
         }
-        //return success
-        
+        //return success 
     }
 }
 
