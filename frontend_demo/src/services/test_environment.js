@@ -4,7 +4,7 @@ import {HandleMedia} from './middleware/media_mw';
 import GreenTickImage from '../graphics/tick.png';
 import {imageUploaded} from './utilities/base64_util';
 
-import {getSettings} from './middleware/settings_mw';
+import {RefreshQR} from './middleware/qr_mw';
 
 var param = {url:"stuffhere",live:true};
 
@@ -46,7 +46,7 @@ class TestEnv extends React.Component {
 		var global = new Array(2);
 		
 		//You don't have to use enums.
-		var test = getSettings(COMPANYACCOUNT, GETLIST, url, data, global);
+		var test = RefreshQR(url, data, global);
 		
 		
          return(

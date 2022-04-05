@@ -54,6 +54,19 @@ export function getBetterRejectionReason(res) {
 	}
 }
 
+function getHeadersString(headers) {
+	var str = "";
+	
+	if(headers.get('Content-Type')) {
+		str=str+"Content-Type : "+headers.get('Content-Type');
+	}
+	if(headers.get('Authorization')) {
+		str=str+",\nAuthorization : "+headers.get('Authorization')+"\n";
+	}
+	
+	return str;
+}
+
 export async function fetchAPI(address, requestOptions) {
 	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
 		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request \'method\' and/or \'body\' is unassigned.");
@@ -64,6 +77,8 @@ export async function fetchAPI(address, requestOptions) {
 		
 		//JSON.stringify({company:id});
 		
+		var headersShown = requestOptions.headers;
+		
 		if(checkLoginToken()===true) {
 			var loginToken = getLoginToken();
 			
@@ -71,13 +86,11 @@ export async function fetchAPI(address, requestOptions) {
 			requestOptions.headers.append('Authorization','Basic '+loginToken);
 			
 			var reducedToken = (loginToken.substring(0, 5)+"..."+loginToken.substring(loginToken.length-5,loginToken.length));
-			
-			var headersShown = {'Content-Type': 'application/json', 'Authorization':'Basic '+reducedToken};
+			headersShown = {'Content-Type': 'application/json', 'Authorization':'Basic '+reducedToken};
 			//console.log("updated: ", requestOptions);
 		}
 		
-		log("Attempting "+requestOptions.method+":\n    > At: "+address+"\n    > With body: "+requestOptions.body+"\n    > And headers: "+JSON.stringify(headersShown));
-		
+		log("Attempting "+requestOptions.method+":\n    > At: "+address+"\n    > With body: "+requestOptions.body+"\n    > And headers: "+getHeadersString(headersShown));
 		
 		return fetch(address, requestOptions)
 			.then((response) => response.json())

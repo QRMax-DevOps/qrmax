@@ -27,7 +27,8 @@ export function arrayToString(type,array){
 }
 
 export function getDefaultHeaders() {
-	var headersGen = new Headers();
-	headersGen.append('Content-Type', 'application/json');
+	var headersGen = new Headers({
+		'Content-Type' : 'application/json'
+	});
 	return headersGen;
 }
