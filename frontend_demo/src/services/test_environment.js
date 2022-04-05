@@ -1,11 +1,10 @@
 import React from "react";
-import {HandleDisplay} from './qr_middleware';
-import {HandleMedia} from './media_middleware';
+import {HandleDisplay} from './middleware/qr_mw';
+import {HandleMedia} from './middleware/media_mw';
 import GreenTickImage from '../graphics/tick.png';
-import {imageUploaded} from './base64_utilities';
-import {ListenTo} from './listener_middleware';
+import {imageUploaded} from './utilities/base64_util';
 
-import {getSettings} from './settings_mw';
+import {getSettings} from './middleware/settings_mw';
 
 var param = {url:"stuffhere",live:true};
 

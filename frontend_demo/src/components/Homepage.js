@@ -8,8 +8,8 @@ import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import GenerateQR from "./GenerateQR";
 import DisplayMngr from './DisplayMngr';
 import Login from "./Login/Login";
-import {getApiURL} from "./../services/middleware_core"
-import {HandleMedia} from "./../services/media_middleware"
+import {getApiURL} from "./../services/core_mw"
+import {HandleMedia} from "./../services/middleware/media_mw"
 
 class Homepage extends Component {
     constructor(props) {
@@ -35,10 +35,21 @@ class Homepage extends Component {
     }
 
 	getMedia() {
-		const queryString = window.location.search;
-		const urlParams = new URLSearchParams(queryString);
-		var companynameParam = urlParams.get('companyname');
-		var isLocalhostParam = urlParams.get('localhost');
+
+		//Marcus was here. Lol.
+		//I am no longer supplying the parameters through URL params. They're stored in "Session Storage" now.
+		var companynameParam = sessionStorage.companyName;
+		var usernameParam = sessionStorage.username;
+		
+		var isLocalhostParam = false;
+		if(sessionStorage.isLocalhost==='true' || sessionStorage.isLocalhost===true)
+		{ isLocalhostParam = true; }
+		
+		var isCompanyParam = false;
+		if(sessionStorage.isCompanyAccount==='true' || sessionStorage.isCompanyAccount===true)
+		{ isCompanyParam = true; }
+	
+	
 		var url = getApiURL(isLocalhostParam);
 		let data = {
 			company: companynameParam,
