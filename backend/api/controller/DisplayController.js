@@ -71,6 +71,34 @@ class StoreController {
             res.json({status:"failure",cause:e});
         }
     }
+	
+    static async patch(req, res){
+        try{
+            const company = req.body.company;
+            const store = req.body.store;
+		    const display = req.body.display;
+            const fields = req.body.fields;
+            const values = req.body.values;
+
+            const farray = fields.split(',');
+            const varray = values.split(',');
+		    //check if store exists
+            if(! await CompanyDAO.checkStore(company, store)){
+                res.json({status:"failure", cause:"no such store"});
+            }
+            //check if display already exists
+            else if(!await DisplayDAO.checkDisplay(company, store, display)){
+                res.json({status:"failure", cause:"no such display"});
+            }
+		    else {
+		    	DisplayDAO.patchDisplay(company, store, display, farray, varray);
+		    	res.json({status:"success"});
+		    }
+        }
+        catch(e){
+            res.json({status:"failure", cause:e});
+        }
+    }
 
     static async listen(req, res){
         try{

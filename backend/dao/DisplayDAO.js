@@ -46,10 +46,12 @@ class DisplayDAO {
         display:display, //gross
         mediaCount:0,
         media:[],
+		currentQRPositions:0,
         currentMedia:{
           media:"",
           liveTime: new Date(Date.now()),
-          TTL:"0"
+          TTL:"0",
+		  positions:[{x:0,y:0}]
         },
         settings:[]
       }
@@ -71,6 +73,20 @@ class DisplayDAO {
       return result;
     }
 	
+    static async patchDisplay(company, store, display, fields, values){
+      let i = -1;
+      for (let field of fields){
+        i++;
+        let value = values[i];
+        if(field == 'currentQRPositions'){
+          await Display.updateOne({company:company, store:store, display:display}, {$set:{currentQRPositions:parseInt(value)}}, {upsert:false});
+        }
+		else {
+			//return nothing
+		}
+      }
+	}
+	
     static async checkMedia(company, store, display, mediaName){
       const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
       if(result){
@@ -79,8 +95,8 @@ class DisplayDAO {
       return false;
     }
 
-    static async checkQR(company, store, display, mediaName){
-      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:mediaName}}});
+    static async checkQR(company, store, display, QRID){
+      const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{QRID:QRID}}});
       if(result){
         return true;
       }
@@ -122,7 +138,8 @@ class DisplayDAO {
         mediaID:cleanMediaID,
         media:mediaName,
         voteCount:0,
-        lifetimeVotes:0
+        lifetimeVotes:0,
+		positions:[{x:0,y:0}]
       }
 	    try {
       	//add qr
@@ -176,6 +193,7 @@ class DisplayDAO {
       for (let field of fields){
         i++;
         let value = values[i];
+		/*
         if(field == 'QRID'){
           //dont do anyhting lol just return a success anyway
         }
@@ -184,6 +202,22 @@ class DisplayDAO {
         }
         else if (field == 'linkedURI'){
           await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.linkedURI":value}}, {upsert:false});
+        }*/
+        if (field == 'currentQRPositions'){
+			try {
+	    	  var positions = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0, media:0, currentMedia:0}});
+	    	  let positionalVal = positions.currentQRPositions;
+	  		  var positionsArray = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{"media.$":1}});
+	  		  positionsArray = positionsArray.media[0].positions;
+			  const xyArray = value.split(':');
+			  positionsArray[positionalVal].x = parseInt(xyArray[0]);
+			  positionsArray[positionalVal].y = parseInt(xyArray[1]);
+	  		  console.log(positionsArray);
+	  		  await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.positions":positionsArray}}, {upsert:false});
+			}
+			catch (e) {
+				console.log("fail");
+			}
         }
 		else {
 		  await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(value)}}, {upsert:false});

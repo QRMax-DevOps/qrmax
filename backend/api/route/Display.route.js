@@ -8,5 +8,6 @@ router
     .put(DisplayController.add)
     .delete(DisplayController.delete)
     .post(DisplayController.list)
+	.patch(DisplayController.patch)
 
 module.exports = router;
