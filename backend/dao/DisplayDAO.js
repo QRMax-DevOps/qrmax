@@ -79,12 +79,13 @@ class DisplayDAO {
       for (let field of fields){
         i++;
         let value = values[i];
+		/*
         if(field == 'currentQRPositions'){
           await Display.updateOne({company:company, store:store, display:display}, {$set:{currentQRPositions:parseInt(value)}}, {upsert:false});
         }
 		else {
 			//return nothing
-		}
+		}*/
       }
 	}
 	
@@ -583,7 +584,10 @@ static async addPosition(company, store, display, QRID, position) {
 
 static async listPositions(company, store, display, QRID) {
 	var result = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{"media.$":1}});
-	var positionsArray = result.media[0].positions;
+    var index = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0, media:0, currentMedia:0}});
+    let positionalVal = parseInt(index.currentQRPositions);
+	var positionsArray = result.media[0].positions[positionalVal];
+	
 	return positionsArray;
 }
 
