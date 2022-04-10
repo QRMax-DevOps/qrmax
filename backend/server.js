@@ -15,6 +15,7 @@ const StoreAccountSettings = require("./api/route/StoreAccountSettings.route.js"
 const DisplaySettings = require("./api/route/DisplaySettings.route.js");
 const Interactions = require("./api/route/Interactions.route.js");
 const MediaRefresh = require("./api/route/MediaRefresh.route.js");
+const Positions = require("./api/route/QRPositions.route.js");
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/v1/Display", Display);
 //media management
 app.use("/api/v1/Display/Media", QR);
 app.use("/api/v1/Display/Media/file", Media);
+app.use("/api/v1/Display/Media/positions", Positions);
 
 //display listen
 app.use("/api/v1/Display/media/listen", Listen);

@@ -173,6 +173,96 @@ class QRController {
         }
         //return success 
     }
+	
+	static async addPosition(req, res) {
+        try{
+            //get company, store, display
+            const company = req.body.company;
+            const store = req.body.store;
+            const display = req.body.display;
+            const QRID = req.body.QRID;
+		    const position = req.body.position;
+			
+            //check if company/store exists
+            if(!await CompanyDAO.checkStore(company, store)){
+                res.json({status:"failure", cause:"no such store"});
+            }
+            //check if display already exists
+            else if(!await DisplayDAO.checkDisplay(company, store, display)){
+                res.json({status:"failure", cause:"no such display"});
+            }
+            else if(!await DisplayDAO.checkQR(company, store, display, QRID)){
+                res.json({status:"failure", cause:"no such QR"});
+            }
+            //create qr
+            else{
+                DisplayDAO.addPosition(company, store, display, QRID, position);
+                res.json({status:"success"});
+            }
+            return res;
+        }
+        catch(e){
+            res.json({status:"failure", cause:e});
+        }
+	}
+	
+	static async listPositions(req, res) {
+        try{
+            //get company name
+            const company = req.body.company;
+            const store = req.body.store;
+		    const display = req.body.display;
+			const QRID = req.body.QRID;
+            //check if comapny exists
+            if(! await CompanyDAO.checkStore(company, store)){
+                res.json({status:"failure", cause:"no such store"});
+            }
+            //check if display already exists
+            else if(!await DisplayDAO.checkDisplay(company, store, display)){
+                res.json({status:"failure", cause:"no such display"});
+            }
+            else if(!await DisplayDAO.checkQR(company, store, display, QRID)){
+                res.json({status:"failure", cause:"no such QR"});
+            }
+            else{
+                //get all stores list
+                const rjson = await DisplayDAO.listPositions(company, store, display, QRID);
+                //return list as json
+                res.json(rjson);
+            }
+            return res;
+        }
+        catch(e){
+            res.json({status:"failure", cause:e});
+        }
+	}
+	
+	static async deletePositions(req, res) {
+        try{
+            const company = req.body.company;
+            const store = req.body.store;
+		    const display = req.body.display;
+		    const QRID = req.body.QRID;
+            if(! await CompanyDAO.checkStore(company, store)){
+                res.json({status:"failure", cause:"no such store"});
+            }
+            //check if display exists
+            else if(!await DisplayDAO.checkDisplay(company, store, display)){
+                res.json({status:"failure", cause:"no such display"});
+            }
+            else if(!await DisplayDAO.checkQR(company, store, display, QRID)){
+                res.json({status:"failure", cause:"no such QR"});
+            }
+            //delete media
+            else{
+                DisplayDAO.deletePositions(company, store, display,QRID);
+                res.json({status:"success"});
+            }
+        }
+        catch(e){
+            res.json({status:"failure", cause:e});
+        }
+	}
 }
 
 
