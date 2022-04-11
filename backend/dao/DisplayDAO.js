@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
 const MediaDAO = require("./MediaDAO.js");
 const { setgroups } = require('process');
+const UserInputDAO = require('./UserInputDAO.js');
 
 let Display;
 
@@ -46,13 +46,13 @@ class DisplayDAO {
         display:display, //gross
         mediaCount:0,
         media:[],
-		currentQRPositions:0,
-		numberQRPositions:1,
+		    currentQRPositions:0,
+		    numberQRPositions:1,
         currentMedia:{
           media:"",
           liveTime: new Date(Date.now()),
           TTL:"0",
-		  positions:[{x:0,y:0}]
+		    positions:[{x:0,y:0}]
         },
         settings:[]
       }
@@ -135,13 +135,13 @@ class DisplayDAO {
       ID += 1;
       const insert = {
         QRID:cleanQRID,
-        QR_History:[QRID],
+        QR_History:[cleanQRID],
         TTL:TTL,
         mediaID:cleanMediaID,
         media:mediaName,
         voteCount:0,
         lifetimeVotes:0,
-		positions:[{x:0,y:0}]
+		    positions:[{x:0,y:0}]
       }
 	    try {
       	//add qr
@@ -240,14 +240,17 @@ class DisplayDAO {
 	static async addVote(company, store, display, QRID) {
     var result = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0}});
     let voteCount;
+    let lifetimeVotes;
 	  for(var i = 0; i < result.media.length; i++){
         if(result.media[i].QRID === QRID){
           voteCount = result.media[i].voteCount;
+          lifetimeVotes = result.media[i].lifetimeVotes;
         }
 	  }
       voteCount += 1;
+      lifetimeVotes += 1;
       //increment voteCount
-      await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(voteCount)}}, {upsert:false});
+      await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(voteCount), "media.$.lifetimeVotes":parseInt(lifetimeVotes)}}, {upsert:false});
 	  return true;
 	}
 
@@ -461,18 +464,65 @@ class DisplayDAO {
     }
   }
 
-  static async getStats(company, store, display, period){
+  static async getInteractions(company, store, display, period){
     let result = await Display.findOne({company:company, store:store, display:display});
+    let votes = [];
     if (period == 0){
-      let votes = [];
       const media = result.media;
-      for (m of media){
-        votes.push(m.lifetimeVotes);
+      for (let m of media){
+        votes.push([m.media, m.lifetimeVotes]);
       }
       return votes;
     }
+    else if (period == 1){
+      const media = result.media;
+      for (let m of media){
+        let voteCount = 0;
+        for (let m2 of m.QR_History){
+          let time = new Date(Date.now());
+          time.setHours(0);
+          time.setMinutes(0);
+          time.setSeconds(0);
+          time.setMilliseconds(0);
+          voteCount += await UserInputDAO.getVoteStats(time, m2)
+          console.log(voteCount);
+        }
+        votes.push([m.media, voteCount]);
+      }
+      return votes;
+    }
+    else if (period == 2){
+      const media = result.media;
+      for (let m of media){
+        let voteCount = 0;
+        for (let m2 of m.QR_History){
+          let time = new Date(Date.now());
+          time.setHours(time.getHours()-1);
+          voteCount += await UserInputDAO.getVoteStats(time, m2)
+          console.log(voteCount);
+        }
+        votes.push([m.media, voteCount]);
+      }
+      return votes;
+    }
+    else if (period == 3){
+      const media = result.media;
+      for (let m of media){
+        let voteCount = 0;
+        for (let m2 of m.QR_History){
+          let time = new Date(Date.now());
+          time.setMinutes(time.getMinutes()-10);
+          voteCount += await UserInputDAO.getVoteStats(time, m2)
+          console.log(voteCount);
+        }
+        votes.push([m.media, voteCount]);
+      }
+      return votes;
+    }
+    else{
+        return "no valid time given"
+    }
   }
-
 
   static async refreshAllQR(company, store){
     //find each display
@@ -493,6 +543,7 @@ class DisplayDAO {
 	      cleanQRID = cleanQRID.slice(0,20);
         newQRID = cleanQRID;
         result[i].media[j].QRID = newQRID;
+        result[i].media[j].QR_History.push(newQRID);
       }
       Display.updateOne({company:company, store:store, display:dn}, {$set:result[i]});
     }  
@@ -515,6 +566,7 @@ class DisplayDAO {
     for (let i=0; i<result.media.length; i++){
       if (result.media[i].media == media){
         result.media[i].QRID = newQRID;
+        result.media[i].QR_History.push(newQRID);
       }
     }
     //update record
@@ -539,6 +591,7 @@ class DisplayDAO {
       newQRID = cleanQRID;
       //assign new QRID
       result.media[i].QRID = newQRID;
+      result.media[i].QR_History.push(newQRID);
     }   
     Display.updateOne({company:company, store:store, display:display}, {$set:result});
   }

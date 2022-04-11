@@ -67,8 +67,6 @@ app.use("/api/v1/Display/Interactions", Interactions);
 //Display QR refresh
 app.use("/api/v1/Display/Media/Refresh", MediaRefresh);
 
-
-
 app.use("*", (req, res) => res.status(404).json({ error: "not found" }));
 
 module.exports = app;

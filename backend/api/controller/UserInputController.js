@@ -1,4 +1,5 @@
 const UserInputDAO = require("../../dao/UserInputDAO.js");
+const DisplayDAO = require("../../dao/DisplayDAO.js");
 const createDOMPurify = require("dompurify");
 const {JSDOM} = require("jsdom");
 const e = require("express");
@@ -29,6 +30,7 @@ class UserInputController {
           //Validation
           if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
             UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
+            DisplayDAO.addVote(company, store, display, QRID);
 		      	res.json({status:"success"});
           }
           else {

@@ -161,7 +161,21 @@ class StoreController {
     }
 
     static async getInteractions(req, res){
-        res.json({status:'alive'})
+            const company = req.body.company;
+            const store = req.body.store;
+            const display = req.body.display;
+            const period = req.body.period;
+            if(!(await CompanyDAO.checkStore(company, store))){
+                res.json({status:"failure", cause:"no such store"})
+            }
+            else if(!(await DisplayDAO.checkDisplay(company, store, display))){
+                res.json({status:"failure", cause:"no such display"})
+            }
+            else{
+                let result = await DisplayDAO.getInteractions(company, store, display, period);
+                res.json({status:"success", result:result});
+            }
+
     }
 
     static async getSettings(req, res){
