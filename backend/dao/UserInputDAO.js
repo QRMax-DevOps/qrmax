@@ -1,4 +1,3 @@
-const DisplayDAO = require("./DisplayDAO");
 let UserInput;
 
 class UserInputDAO {
@@ -19,15 +18,30 @@ class UserInputDAO {
     try{
       const UserInputDoc = {
         UserIdentifier: UserIdentifier,
-        URL: URL,
-		TimeOfInput: new Date(Date.now())
+        QRID: QRID,
+		    TimeOfInput: new Date(Date.now())
       }
-	  DisplayDAO.addVote(company, store, display, QRID);
       return await UserInput.insertOne(UserInputDoc)
     }
     catch(e){
       res.json({ status: "fail", cause: e });
     }
+  }
+
+  static async getVoteStats(time, QRID){
+    //for all user input where timeOfInput > current time - time
+    let result = await UserInput.find({QRID:QRID, TimeOfInput:{$gt:time}}).toArray();
+    let count = 0;
+    for(let i = 0; i<result.length;i++){
+      count++;
+    } 
+    console.log(count);
+    return count;
+    //return count
+  }
+
+  static async clearAllVotes(){
+    UserInput.deleteMany();
   }
 
   static async validate(company, display, store, QRID) {
