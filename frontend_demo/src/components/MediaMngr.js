@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
-import {HandleMedia} from '../services/middleware/media_mw';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
-import { getDisplays } from '../services/middleware/display_mw';
+import {handleDisplay} from '../services/middleware/display_mw';
 
 class MediaMngr extends Component {
     constructor(props) {
@@ -94,7 +93,7 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays(type, url, data, response); //Switched to displayMW
+        request = handleDisplay('display', type, url, data, response); //Switched to displayMW
         
 
         var interval = setInterval(function(){

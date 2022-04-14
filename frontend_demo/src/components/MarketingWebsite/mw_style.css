@@ -5,12 +5,16 @@ html{
 body{ 
     margin:0;
     padding:0;
-    overflow:scroll;
+    overflow-y:scroll;
+	overflow-x:hidden;
     height:100%;
 }
 
-p {
+* {
+	/*font-family: SSV,Tahoma,sans-serif;*/
 	font-family: Arial, sans-serif;
+	margin-top:10px;
+	margin-bottom:10px;
 }
 
 .baseContainer {
@@ -22,17 +26,13 @@ p {
 	flex-direction: column;
 	flex-wrap: nowrap; 
 	
-	background-image: url(../../graphics/website_background_blur.jpg);
+	background-image: linear-gradient(90deg, rgba(10,19,33,1) 0%, rgba(10,19,33,1) 6%, rgba(0,212,255,0) 100%), url(../../graphics/website_background_blur.jpg);
+	
 	background-size:     115%;
     background-repeat:   no-repeat;
     background-position: top center;
 	
 	align-items: center;
-	
-	
-	border-style: dashed;
-	border-width: 1px;
-	border-color: red;
 	
 	height: 100%;
 	min-width: 830px;
@@ -42,7 +42,7 @@ p {
 .screenHeaderContainer {
 	position:sticky;
 	
-	background-color: white;
+	background-color: rgb(10,19,33);
 	
 	z-index:1;
 	
@@ -51,38 +51,28 @@ p {
 	align-content: space-between;
 	flex-direction: row;
 	flex-wrap: nowrap; 
-
-	border-style: solid;
-	border-width: 1px;
-	border-color: blue;
 	
-	top:0;
+	height:60px;
+	top:-2px;
 	width:100%;
-	height:75px;
+	margin:0;
 }
 
 .screenBodyContainer {
-	border-style: solid;
-	border-width: 1px;
-	border-color: blue;
-	
 	width:100%;
 	height:100vh;
 }
-
 .screenHeaderContainer .logoContainer {
 	display: flex;
 	justify-content: space-around;
-	align-content: space-around;
+	align-content: center;
 	flex-direction: row;
 	flex-wrap: nowrap; 
 	
-	border-style: solid;
-	border-width: 2px;
-	border-color: green;
-	height:98%;
 	width:200px;
+	margin:0;
 	margin-left:50px;
+	
 }
 
 .screenHeaderContainer .buttonsContainer {
@@ -93,34 +83,49 @@ p {
 	flex-wrap: nowrap; 
 	align-items: center;
 	
-	border-style: solid;
-	border-width: 2px;
-	border-color: green;
-	height:98%;
-	width:55%;
+	margin-right: 50px;
+	
+	width:500px;
 }
-/*
-button {
-	width:120px;
-	height: 40px;
-}
-*/
 
-#overlaySplashButtons {
+#footer {
+	background-color: rgb(10,19,33);
+	
+	position: relative;
+	bottom: 0;
+	
 	display: flex;
 	justify-content: space-between;
 	align-content: space-between;
+	flex-direction: column;
+	flex-wrap: nowrap; 
+	align-items: center;
+}
+
+#quickAccessDivider {
+	margin:0 !important;
+	display: flex;
+	justify-content: center;
+	align-content: center;
 	flex-direction: row;
 	flex-wrap: nowrap; 
 	align-items: center;
+}
+
+#footer div {
+	margin-top:0 !important;
+	margin-bottom:0 !important;
+}
+
+#footer button {
+	margin-right: 10px;
+	border: none;
+	background-color: rgba(255,255,255,0);
 	
-	border-style: solid;
-	border-width: 2px;
-	border-color: green;
-	width:200px;
-	margin-top:50px;
-	margin-left: auto;
-	margin-right: auto;
+}
+
+#footer * {
+	color: white;
 }
 
 #mainSplash {
@@ -130,26 +135,186 @@ button {
     /*z-index:150;*/
 	padding:50px;
 	
-	border-style: solid;
-	border-width: 2px;
-	border-color: red;
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	flex-direction: column;
+	flex-wrap: nowrap; 
+	align-items: center;
+	
 	background-color: white;
 }
 
 #mainSplashInternal {
-	border-style: solid;
-	border-width: 2px;
-	border-color: green;
+	
+	max-width:1440px;
+	min-width:935px;
 	
 	overflow: hidden;
 	
+	width: 100%;
 	height:100%;
 	
 }
 
-#overlaySplash {
+.overlayHeaderText {
+	color: rgb(255, 208, 0);
+	font-size: 32px;
+}
+
+#overlaySplash br {
+   display: block;
+   margin: 5px;
+   line-height:5px;
+}
+
+.overlayStandardText {
+	margin-left: 40px;
+	padding:0;
+	margin-bottom:12px;
+	margin-top:12px;
+	color: white;
+	font-size: 20px;
+}
+
+.overlayEmphasisText {
+	padding:0;
+	margin-bottom:8px;
+	margin-top:8px;
+	color: rgb(255, 198, 23);
+	font-size: 20px;
+}
+
+.mainButton {
+	margin-bottom:5px;
+	margin-top:5px;
+	color: white;
+	font-size: 20px;
+
+	border: none;
+	background-color: rgba(0,0,0,0);
+
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.mainButton:hover {
+  color: rgb(255, 208, 0);
+}
+
+.overlayButton {
+	margin-bottom:20px;
+	margin-top:20px;
+	margin-right:20px;
+	color: black;
+	font-size: 20px;
+	
+	border: none;
+	border-radius: 4px;
+	
+	background-color: rgb(255, 198, 23);
+	
+	padding:10px;
+	padding-left:20px;
+	padding-right:20px;
+}
+
+.overlayButton:hover {
+	color: black;
+	background-color: rgb(255, 234, 138);
+	
+}
+
+.overlayButtonBlue {
+	margin-bottom:20px;
+	margin-top:20px;
+	margin-right:20px;
+	color: white;
+	font-size: 20px;
+	
+	border: none;
+	border-radius: 4px;
+	
+	background-color: #004A78;
+	
+	padding:10px;
+	padding-left:30px;
+	padding-right:30px;
+}
+
+.overlayButtonBlue:hover {
+	background-color: #0069AB;
+	/*box-shadow: 0 0 9px 1px rgba(0,0,0,0.5);*/
+	
+}
+
+#overlaySplashInternal div {
+	display: flex;
+	justify-content: flex-start;
+	align-content: space-between;
+	flex-direction: row;
+	flex-wrap: nowrap; 
+	align-items: center;
+}
+
+#mainSplashInternal h1 {
+	color: #00528F;
+	font-size: 32px;
+}
+
+.sideBySide {
+	margin-bottom: 50px;
+	display: flex;
+	justify-content: space-around;
+	align-content: space-around;
+	flex-direction: row;
+	flex-wrap: nowrap; 
+	align-items: flex-start;
+}
+
+.sideBySideCenter {
+	margin-bottom: 50px;
+	display: flex;
+	justify-content: space-around;
+	align-content: space-around;
+	flex-direction: row;
+	flex-wrap: nowrap; 
+	align-items: center;
+}
+
+.sideBySideCenter img {
+	border: none;
+	border-radius: 10px;
+}
+
+.sideBySideCenter div {
+	margin-left:30px;
+	margin-right:30px;
+	width:400px;
+	height:100%;
+	max-height:600px;
+}
+
+.sideBySide div {
+	margin-left:30px;
+	margin-right:30px;
+	width:400px;
+	height:100%;
+	max-height:600px;
+}
+
+.center{
 	display: flex;
 	justify-content: center;
+	align-content: center;
+	flex-direction: column;
+	flex-wrap: nowrap; 
+	align-items: center;
+}
+
+#overlaySplash {
+	display: flex;
+	justify-content: flex-start;
 	align-items: center; 
 	
 	
@@ -159,11 +324,9 @@ button {
 }
 
 #overlaySplashInternal {
+	margin-left: 10%;
 	width:735px;
 	min-width:735px;
-	border-style: solid;
-	border-width: 2px;
-	border-color: green;
 }
 
 #overlaySplashInternal h1 {
@@ -173,11 +336,14 @@ button {
 
 #overlaySplashInternal p {
 	text-align: left;
-	color: white;
 }
 
 
 #mainSplashInternal h1 {
+	text-align: left;
+}
+
+#mainSplashInternal h2 {
 	text-align: left;
 }
 

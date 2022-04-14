@@ -1,3 +1,7 @@
+Note:
+ The "helpers" folder contains middleware utilities for generating request data (bodies, headers, methods, etc.).
+ These utility files will be full of switch cases.
+
 Common arguments used in functions:
 
       - Any "url parameters" described are usually produced automatically
