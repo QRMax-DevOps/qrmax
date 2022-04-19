@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
-import {HandleMedia} from '../services/middleware/media_mw';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
-import { getDisplays } from '../services/middleware/display_mw';
+import { HandleMedia } from '../services/middleware/media_mw';
 
 class MediaMngr extends Component {
     constructor(props) {
@@ -18,20 +17,16 @@ class MediaMngr extends Component {
         this.setSelectedFile = this.setSelectedFile.bind(this);
     }
     state = {
+        currentCompany: "mediaCompany",
+        currentStore: "mediaStore",
         currentDisplay: "Display1",
-        currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
-        //also got rid of all "medias" mentions and replaced with the actual field name from DB
+        currentObj: {media: [{name: ''}]}, 
         selectedMedia: 0,
         mediaInput: 'default',
         createNewMediaName: null,
         open: false,
         selectedFile: null,
         imgString: null
-    }
-
-    
-    getMediaList() {
-
     }
 
     getCurrentDisplayObj(){
@@ -63,7 +58,7 @@ class MediaMngr extends Component {
     }
 
     updateMedia(){
-        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.mediaInput};
         this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
     }
@@ -74,12 +69,12 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName, src: this.state.imgString};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: newName};
         this.fetchMedia("CREATE", data);
     }
 
     deleteMedia() {
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.currentObj.media[this.state.selectedMedia].media};
         this.fetchMedia("DELETE", data);
     }
 
@@ -94,7 +89,7 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays(type, url, data, response); //Switched to displayMW
+        request = HandleMedia(type, url, data, response); //Switched to displayMW
         
 
         var interval = setInterval(function(){
@@ -136,7 +131,7 @@ class MediaMngr extends Component {
 
     componentDidMount() {
         var data;
-        this.fetchMedia("GETLIST", data = {company: "displayCompany", store: "displayStore", display: "display1"});
+        this.fetchMedia("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay});
         console.log("did mount");
     }
 
@@ -152,8 +147,8 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
                         <ul id='media-list'>
-                            {console.log(this.state.currentObj)}
-                            {this.state.currentObj.displays[0].media.map((val, key) => {
+                        {console.log(this.state.currentObj)}
+                            {this.state.currentObj.media.map((val, key) => {
                                 return (
                                  <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
                                 );
