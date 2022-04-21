@@ -1,9 +1,8 @@
 export default class Media{
-    constructor(id, name, file, Qr) {
+    constructor(id, name, file) {
         this.id = id;
         this.name = name;
         this.file = file;
-        this.Qr = Qr;
     }
 
     getName() {
@@ -23,7 +22,6 @@ export default class Media{
         this.id = id;
     }
 
-
     getFile() {
         return this.file;
     }
@@ -31,15 +29,6 @@ export default class Media{
     setFile(file) {
         this.file = file;
     }
-
-    getQr() {
-        return this.Qr;
-    }
-
-    setQR(Qr) {
-        this.Qr = Qr;
-    }
-
 
     toString() {
         return this.id + " " + this.name + " " + this.file;

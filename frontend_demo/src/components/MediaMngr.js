@@ -19,13 +19,11 @@ class MediaMngr extends Component {
     state = {
         currentCompany: "mediaCompany",
         currentStore: "mediaStore",
-        currentDisplay: "Display1",
-        currentObj: {media: [{name: ''}]}, 
+        currentDisplay: "display1",
+        currentObj: {media: [{name: 'testing'},{name: 'testingtwo'}]}, 
         selectedMedia: 0,
         mediaInput: 'default',
-        createNewMediaName: null,
         open: false,
-        selectedFile: null,
         imgString: null
     }
 
@@ -69,12 +67,13 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: newName};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: newName, mediaFile: this.state.imgString};
+        {console.log(data)}
         this.fetchMedia("CREATE", data);
     }
 
     deleteMedia() {
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.currentObj.media[this.state.selectedMedia].media};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.currentObj.mediaInput};
         this.fetchMedia("DELETE", data);
     }
 
@@ -89,7 +88,7 @@ class MediaMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = HandleMedia(type, url, data, response); //Switched to displayMW
+        request = HandleMedia(type, url, data, response); 
         
 
         var interval = setInterval(function(){
@@ -154,12 +153,14 @@ class MediaMngr extends Component {
                                 );
                              })}
                         </ul>
-                        {console.log(this.state.currentObj)}
+                        {console.log(this.state.selectedMedia)}
                         <div id='settings-box'>
                             <h5 id='settings-box-header'></h5>
                             <label htmlFor='name-field'>Name</label>
                             <input id='name-field' type='text' onChange={this.changeCurrentMediaInput}></input>
+                            {console.log(this.state.mediaInput)}
                             <input type="file" onChange={this.setSelectedFile}/>
+                            <button type="button">Generate QR</button>
                         </div>
                         <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update</button>
                         <br/>
