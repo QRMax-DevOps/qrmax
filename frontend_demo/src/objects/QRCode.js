@@ -1,4 +1,4 @@
-import Media from "./MediaObject.js";
+/*import Media from "./MediaObject.js";
 
 export default class QRCode {
     constructor(codeIndex, code) {
@@ -24,4 +24,4 @@ export default class QRCode {
     setIndex(codeIndex) {
         this.codeIndex = codeIndex;
     }
-}
+}*/

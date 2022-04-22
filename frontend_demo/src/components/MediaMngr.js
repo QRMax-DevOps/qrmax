@@ -37,7 +37,8 @@ class MediaMngr extends Component {
 
     selectMedia(e) {
         this.setState({
-            selectedMedia: e.target.value
+            selectedMedia: e.target.value,
+            mediaInput: e.target.innerHTML
         });
     }
 
@@ -157,7 +158,7 @@ class MediaMngr extends Component {
                         <div id='settings-box'>
                             <h5 id='settings-box-header'></h5>
                             <label htmlFor='name-field'>Name</label>
-                            <input id='name-field' type='text' onChange={this.changeCurrentMediaInput}></input>
+                            <input id='name-field' type='text' onChange={this.changeCurrentMediaInput} value={this.state.mediaInput}></input>
                             {console.log(this.state.mediaInput)}
                             <input type="file" onChange={this.setSelectedFile}/>
                             <button type="button">Generate QR</button>
