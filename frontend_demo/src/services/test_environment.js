@@ -39,10 +39,10 @@ class TestEnv extends React.Component {
 		//Where our response data is held!
 		var global = new Array(2);
 		
-		//You don't have to use enums.
-		var test = handleDisplay('display/medifresh', 'POST', url, data, global);
 		
-		
+		var test = handleDisplay('display/media/file', 'PATCH', url, data, global);
+
+	
          return(
 			<div style={{padding:"40px"}}>
 			
@@ -54,14 +54,4 @@ class TestEnv extends React.Component {
     }
 }
  
- export default TestEnv;
- 
- /*
- 
- 				<input id="upload" ref="upload" type="file" accept="image/*"
-					onChange={(event)=> { 
-						imageUploaded();
-					}}
-				/>
-				<button onClick={()=> { param.live = false; }}> Stop subscription </button>
- */
+export default TestEnv;

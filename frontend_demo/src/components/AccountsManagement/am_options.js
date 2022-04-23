@@ -1,5 +1,13 @@
+/* This file, as well as its code, respective design, layout,
+ * and structure (etc.) has been developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React, { Component } from 'react';
 import {Viewer} from './am_viewer';
+import "./am_style.css";
 
 export class Options extends Component {
 	constructor(props) {
@@ -29,33 +37,36 @@ export class Options extends Component {
 	}
 	
 	componentDidUpdate(prevProps, prevState) {
-		this.ACCOUNTSLIST = this.getParentState('accountslist');
-		this.STORESLIST = this.getParentState('storeslist');
+		this.ACCOUNTSLIST = this.getParentState('primaryAccountsList');
+		this.STORESLIST = this.getParentState('primaryStoresList');
 	}
 	
 	createAccountCheck() {
-		this.setParentState('toDo', 'createaccount');
+		this.setParentState('currentForm', 'createaccount');
 	}	
 
 	modifyAccountCheck() {
-		let accountSelected = this.getParentState('curAccount');
+		let accountSelected = this.getParentState('currentAccount');
 		
 		if(accountSelected != null) {
 			//console.log('An account is selected!')
-			this.setParentState('toDo', 'modifyaccount');
+			this.setParentState('currentForm', 'modifyaccount');
 		}
 	}
 	
 	createStoreCheck() {
-		this.setParentState('toDo', 'createstore');
+		this.setParentState('currentForm', 'createstore');
 	}	
 
 	modifyStoreCheck() {
-		let accountSelected = this.getParentState('curStore');
+		console.log("Performing store mod");
+		
+		let accountSelected = this.getParentState('currentStore');
 		
 		if(accountSelected != null) {
-			//console.log('A store is selected!')
-			this.setParentState('toDo', 'modifystore');
+			console.log('A store is selected!')
+			console.log(accountSelected);
+			this.setParentState('currentForm', 'modifystore');
 		}
 	}
 
@@ -68,26 +79,31 @@ export class Options extends Component {
 
 		}
 		
+		console.log("disabled? "+this.type+" "+this.props.accountSelected);
 		
         return (
 		
-			<div className="FloatingContainer">
-				
-				<p>{this.title}</p>
-				
-				{ <Viewer Fetch={this.Fetch.bind(this)} type={this.type} STORESLIST={this.STORESLIST} ACCOUNTSLIST={this.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)}/> }
-				<div className="SubmitButtonContainer">
-				{
-					this.type==='accounts' && <>
-					<button onClick={() => this.createAccountCheck()} className="InteractButton">Create Account</button>
-					<button onClick={() => this.modifyAccountCheck()} disabled={this.props.accountSelected ? true : false}>Modify Account</button> </>
-				}
-				{
-					this.type==='stores' && <>
-					<button onClick={() => this.createStoreCheck()} className="InteractButton">{createStoreTitle}</button>
-					<button onClick={() => this.modifyStoreCheck()} disabled={this.props.accountSelected ? true : false}> Modify Store </button> </>
-				}
-				
+			
+			
+			<div style={{width:"100%"}}>
+				<div className="ViewerTitle">{this.title}</div>
+				<div className="InternalViewerContainer">
+					
+					
+					{ <Viewer Fetch={this.Fetch.bind(this)} type={this.type} STORESLIST={this.STORESLIST} ACCOUNTSLIST={this.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)}/> }
+					<div className="SubmitButtonContainer">
+					{
+						this.type==='accounts' && <>
+						<button className="ViewerBtn" onClick={() => this.createAccountCheck()}>Create Account</button>
+						<button className="ViewerBtn" onClick={() => this.modifyAccountCheck()} disabled={this.props.accountSelected ? true : false}>Modify Account</button> </>
+					}
+					{
+						this.type==='stores' && <>
+						<button className="ViewerBtn" onClick={() => this.createStoreCheck()}>{createStoreTitle}</button>
+						<button className="ViewerBtn" onClick={() => this.modifyStoreCheck()} disabled={this.props.accountSelected ? true : false}> Modify Store </button> </>
+					}
+					
+					</div>
 				</div>
 			</div>
         );

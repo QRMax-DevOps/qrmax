@@ -1,3 +1,10 @@
+/* This file, as well as its code, respective design, layout,
+ * and structure (etc.) has been developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import {log, logWarn} from '../core_mw';
 
 //If is symbol, will take e.g., Symbol("data") and return "data".
@@ -13,6 +20,26 @@ export function enumToString(value) {
 		default:
 			return null;
 	}
+}
+
+export function stringToBool(value) {
+	if(typeof(value) === 'string') {
+		if(value === 'true') {return true;}
+		else {return false;}
+	}
+	else if (typeof(value) === 'boolean') {
+		return value;
+	}
+}
+
+export function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+		console.log(e);
+        return false;
+    }
+    return true;
 }
 
 export function getUnsupportedMethodMessage(type, endpoint) {

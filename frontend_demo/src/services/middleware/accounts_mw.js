@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
 import {log, fetchAPI, getApiURL} from '../core_mw';
-import {getDefaultHeaders} from '../utilities/common_util';
+import {isEmptyOrSpaces, getDefaultHeaders} from '../utilities/common_util';
 
 // ...................................................................................................
 // ...................................................................................................
@@ -88,7 +88,7 @@ export async function RunFetch_CreateCompanyAccount(url,newCompanyAccount, globa
 }
 
 export async function RunFetch_CreateStoreAccount(url, isCompany, user, companyName, userName, userStores, userPassword, global) {
-	//console.log("creating store acount w/ ",companyName,userName,userPassword)
+	console.log("creating store acount w/ ",companyName,userName,userPassword,userStores)
 
 	var betterStores = generateStoresList(userStores);
 	
@@ -177,28 +177,23 @@ export async function RunFetch_DeleteCompanyAccount(url,account, global) {
 	});
 	return RunFetch_DeleteAccount(url,'companyaccount',body,global);
 }
+
+
 export async function RunFetch_DeleteStoreAccount( url, isCompany, user, companyName, userName, global) {
 	var body = JSON.stringify ({	
 		company		: companyName,
 		username	: userName
 	});
 	
-	//console.log("RunFetch_DeleteStoreAccount:  ",body)
-	
 	return RunFetch_DeleteAccount(url, isCompany, 'storeaccount',body,global);
 }
 
-//url, user, data.company, data.store, response
 
 export async function RunFetch_DeleteStore( url, isCompany, userID, data, global) {
 	
-	//console.log('RunFetch_DeleteStore',  url, isCompany, userID, data);
+	isCompany = (isCompany === "true" || isCompany === true);
 	
-	//Values are converted to JSON, which casts bools into strings
-	//Therefor, bools need to be cast back to boolean-type
-	isCompany = (isCompany == "true");
 	
-	//console.log('Global is:',global);
 	
 	var body = null;
 	
@@ -281,6 +276,21 @@ export async function RunFetch_UpdateCompanyAccount(oldAccount, newAccount, glob
 function generateStoresList(stores) {
 	var result = '[';
 	
+	console.log(stores);
+	
+	if(typeof stores === 'string') {
+		try {
+			stores = JSON.parse(stores);
+		}
+		catch(e) {
+			
+		}
+	}
+	
+	
+	if(!stores || stores.length < 1) {
+		return "[]";
+	}
 	
 	for (var i = 0; i < stores.length; i++) {
         result = result+('{ID:'+stores[i].ID+',store:'+stores[i].store+'}');
@@ -304,15 +314,20 @@ export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAcco
 		
 		//console.log('stores===',stores);
 		
+		var passwordField = '';
+		var passwordValue = '';
+		
+		if(!isEmptyOrSpaces(newAccount.password)) {
+			passwordField='password,';
+			passwordValue=newAccount.password+",";
+		}
 		
 		var body = JSON.stringify({
 			company:oldAccount.company,
 			username:oldAccount.username,
-			fields:('company,username,password,stores'),
-			values:(newAccount.company+','+newAccount.username+','+newAccount.password+","+stores)
+			fields:('company,username,'+passwordField+'stores'),
+			values:(newAccount.company+','+newAccount.username+','+passwordValue+stores)
 		})
-		
-		//console.log("BODY===",body);
 		
 		return RunFetch_UpdateAccount(url, 'storeAccount',body,global);
 }
