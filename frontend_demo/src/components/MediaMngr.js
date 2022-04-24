@@ -24,7 +24,8 @@ class MediaMngr extends Component {
         selectedMedia: 0,
         mediaInput: 'default',
         open: false,
-        imgString: null
+        imgString: null,
+        mediaCount: 0
     }
 
     getCurrentDisplayObj(){
@@ -57,9 +58,13 @@ class MediaMngr extends Component {
     }
 
     updateMedia(){
+        if(this.state.selectedMedia < this.state.mediaCount){
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.mediaInput};
         this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
+        }else{
+            console.log("can't update new media")
+        }
     }
 
     getNewName() {
@@ -69,7 +74,6 @@ class MediaMngr extends Component {
     createMedia() {
         let newName = this.getNewName();
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: newName, mediaFile: this.state.imgString};
-        {console.log(data)}
         this.fetchMedia("CREATE", data);
     }
 
@@ -149,10 +153,13 @@ class MediaMngr extends Component {
                         <ul id='media-list'>
                         {console.log(this.state.currentObj)}
                             {this.state.currentObj.media.map((val, key) => {
+                                {this.state.mediaCount = key + 1}
                                 return (
                                  <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
-                                );
+                                 );
                              })}
+                             <li className='media-list-item' key={this.state.mediaCount} value={this.state.mediaCount} onClick={this.selectMedia}>+New Media</li>
+                             
                         </ul>
                         {console.log(this.state.selectedMedia)}
                         <div id='settings-box'>
@@ -163,7 +170,7 @@ class MediaMngr extends Component {
                             <input type="file" onChange={this.setSelectedFile}/>
                             <button type="button">Generate QR</button>
                         </div>
-                        <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update</button>
+                        <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update Media</button>
                         <br/>
                         <button type="button" id="create-button" className='buttons' onClick={this.createMedia}>Create New Media</button>   
                         <br/>
