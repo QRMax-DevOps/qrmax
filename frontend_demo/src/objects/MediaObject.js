@@ -3,7 +3,6 @@ export default class Media{
         this.id = id;
         this.name = name;
         this.file = file;
-        
     }
 
     getName() {
@@ -22,7 +21,6 @@ export default class Media{
     setId(id) {
         this.id = id;
     }
-
 
     getFile() {
         return this.file;

@@ -17,20 +17,15 @@ class MediaMngr extends Component {
         this.setSelectedFile = this.setSelectedFile.bind(this);
     }
     state = {
-        currentDisplay: "Display1",
-        currentObj: {displays: [{media: [{name: ''}]}]}, //needs displays array when using displayMW
-        //also got rid of all "medias" mentions and replaced with the actual field name from DB
+        currentCompany: "mediaCompany",
+        currentStore: "mediaStore",
+        currentDisplay: "display1",
+        currentObj: {media: [{name: 'testing'},{name: 'testingtwo'}]}, 
         selectedMedia: 0,
         mediaInput: 'default',
-        createNewMediaName: null,
         open: false,
-        selectedFile: null,
-        imgString: null
-    }
-
-    
-    getMediaList() {
-
+        imgString: null,
+        mediaCount: 0
     }
 
     getCurrentDisplayObj(){
@@ -43,7 +38,8 @@ class MediaMngr extends Component {
 
     selectMedia(e) {
         this.setState({
-            selectedMedia: e.target.value
+            selectedMedia: e.target.value,
+            mediaInput: e.target.innerHTML
         });
     }
 
@@ -62,9 +58,13 @@ class MediaMngr extends Component {
     }
 
     updateMedia(){
-        var data = {id: "623974c3aeefa6f0c1ccb22e", company: "displayCompany", store: "displayStore", display: "display1", media: this.state.mediaInput};
+        if(this.state.selectedMedia < this.state.mediaCount){
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.mediaInput};
         this.fetchMedia("UPDATE", data);
         console.log("inside updateMedia");
+        }else{
+            console.log("can't update new media")
+        }
     }
 
     getNewName() {
@@ -73,12 +73,12 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: newName, src: this.state.imgString};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: newName, mediaFile: this.state.imgString};
         this.fetchMedia("CREATE", data);
     }
 
     deleteMedia() {
-        var data = {company: "displayCompany", store: "displayStore", display: "display1", media: this.state.currentObj.media[this.state.selectedMedia].media};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.currentObj.mediaInput};
         this.fetchMedia("DELETE", data);
     }
 
@@ -92,7 +92,7 @@ class MediaMngr extends Component {
 
         var me = this;
         var timer = {elapsed: 0};
-
+      
         request = handleDisplay('display', type, url, data, response); //Switched to displayMW
         
 
@@ -135,7 +135,7 @@ class MediaMngr extends Component {
 
     componentDidMount() {
         var data;
-        this.fetchMedia("GETLIST", data = {company: "displayCompany", store: "displayStore", display: "display1"});
+        this.fetchMedia("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay});
         console.log("did mount");
     }
 
@@ -151,21 +151,26 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
                         <ul id='media-list'>
-                            {console.log(this.state.currentObj)}
-                            {this.state.currentObj.displays[0].media.map((val, key) => {
+                        {console.log(this.state.currentObj)}
+                            {this.state.currentObj.media.map((val, key) => {
+                                {this.state.mediaCount = key + 1}
                                 return (
                                  <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
-                                );
+                                 );
                              })}
+                             <li className='media-list-item' key={this.state.mediaCount} value={this.state.mediaCount} onClick={this.selectMedia}>+New Media</li>
+                             
                         </ul>
-                        {console.log(this.state.currentObj)}
+                        {console.log(this.state.selectedMedia)}
                         <div id='settings-box'>
                             <h5 id='settings-box-header'></h5>
                             <label htmlFor='name-field'>Name</label>
-                            <input id='name-field' type='text' onChange={this.changeCurrentMediaInput}></input>
+                            <input id='name-field' type='text' onChange={this.changeCurrentMediaInput} value={this.state.mediaInput}></input>
+                            {console.log(this.state.mediaInput)}
                             <input type="file" onChange={this.setSelectedFile}/>
+                            <button type="button">Generate QR</button>
                         </div>
-                        <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update</button>
+                        <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update Media</button>
                         <br/>
                         <button type="button" id="create-button" className='buttons' onClick={this.createMedia}>Create New Media</button>   
                         <br/>
