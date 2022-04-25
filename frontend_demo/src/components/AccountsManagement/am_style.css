@@ -1,0 +1,348 @@
+.FormButtonsContainer {
+	background-color:white;
+	padding-bottom:20px;
+	width:100%;
+}
+
+.AmBackground {
+	background-color:#E5E5E5;
+    height:100vh;
+	width:100hw;
+}
+
+.FormBase {
+	width:100%;
+	
+	box-shadow: 0 0 10px #5A5A5A;
+	
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+.FormHeader {
+	background-color: #003B75;
+	height:50px;
+	width:100%;
+}
+
+.FormTitle {
+	width:875px;
+	line-height:50px;
+	font-size:20px;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	text-align:left;
+}
+
+.FormInputContainer {
+	background-color: white;
+	
+	padding:20px;
+	width:100%;
+	min-width: 450px;
+	height: 350px;
+	
+	display: flex;
+    justify-content: flex-start;
+	align-items: center;
+	flex-direction: column;
+}
+
+.StoreTableTitle {
+	background-color: #0E326A;
+	border: solid transparent;
+	padding-left:25px;
+	border-top-right-radius: 10px;
+	border-top-left-radius: 10px;
+}
+.StoreTableTitle p {
+	padding:0;
+	margin:1px;
+	font-size:20px;
+	color:white;
+	text-align:left;
+}
+
+.SideBySide {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+.StoreRecord {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	align-items: center;
+	align-content: center;
+	
+	height:30px;
+	
+	padding-left:10px;
+	padding-right:4px;
+	
+	margin-top:2px;
+	margin-left:10px;
+	margin-right:5px;
+	margin-bottom:2px;
+	
+	background-color: white;
+	
+	border-radius: 7px;
+	border: hidden;	
+}
+
+.removeButton {
+	background-color: #CE0000;
+	width:30px;
+	height:24px;
+	color: white;
+	
+	border-radius: 7px;
+	border: none;
+}
+
+.removeButton img{
+	height:17px;
+	width: 17px;
+	
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.addButton {
+	background-color: green;
+	width:30px;
+	height:24px;
+	color: white;
+	
+	border-radius: 7px;
+	border: none;	
+}
+
+
+.addButton img{
+	height:13px;
+	width: 13px;
+	
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.StoreRecordData {
+	margin-left:3px;
+	margin-right:3px;
+	line-height: 25px;
+	
+	color: #373737;
+	font-size:16px;
+}
+
+.StoreRecordData img {
+	height: 22px;
+	width: 22px;
+}
+
+.validity {
+	margin-left:10px;
+}
+
+.strike {
+	color: #A2A2A2;
+	text-decoration: line-through;
+	text-decoration-color: #CE0000;
+}
+
+.faded {
+	color: rgb(0, 59, 117);
+	font-style: italic;
+}
+
+.EditorMainButton {
+	margin-left:10px;
+	margin-right:10px;
+	width: 180px;
+	height:40px;
+	
+	border-radius: 7px;
+	border: hidden;
+}
+
+.GreenButton {
+	background-color: green;
+	color: white;
+}
+.RedButton {
+	background-color: #CE0000;
+	color: white;
+}
+.GreyButton {
+	background-color: #D8D8D8;
+	color: black;
+}
+
+.GreenButton:disabled {
+	opacity:0.5;
+	background-color: grey !important;
+}
+.GreenButton:hover {
+	background-color: #43BC43;
+}
+.GreenButton:active {
+	background-color: green;
+}
+.RedButton:hover {
+	background-color: #FF6666;
+}
+.RedButton:active {
+	background-color: #CE0000;
+}
+.GreyButton:hover {
+	background-color: #B1B1B1;
+}
+.GreyButton:active {
+	background-color: #D8D8D8;
+}
+
+.ViewerBtn {
+	margin-left:5px;
+	margin-right:5px;
+	width: 180px;
+	height:40px;
+	
+	background-color:#D8D8D8;
+	color: black;
+	
+	border-radius: 7px;
+	border: hidden;
+}
+.ViewerBtn:hover {
+	background-color: #B1B1B1;
+}
+.ViewerBtn:active {
+	background-color: #D8D8D8;
+}
+
+#StoresField {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+#StoresField button {
+	background: url("../../graphics/pencil.png") no-repeat;
+	background-size: 35px;
+	background-position: center;
+	cursor: pointer;
+	
+	background-color: #DDDDDD;
+	
+	height: 50px;
+	width: 60px;
+	
+	border-radius: 10px;
+	border: 1px solid transparent;
+}
+
+.scroll {
+	background-color:#ECECEC;
+    width: 100%;
+    border-spacing: 0;
+	height:175px;
+	padding-top:300px;
+	border-top: solid transparent 8px;
+	border-bottom: solid transparent 8px;
+	border-bottom-right-radius: 10px;
+	border-bottom-left-radius: 10px;
+}
+
+thead, tbody, tr, th, td { display: block; }
+
+tr:after {  /* clearing float */
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+tbody {
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+tbody td, thead th {
+    width: 100%;
+    float: left;
+}
+
+.InputContainer label {
+	margin-top:7px;
+}
+
+.InputContainer input {
+	margin-right:10px;
+	width:100%;
+	background-color: #ECECEC;
+	border-radius: 3px;
+	border: 1px solid transparent;
+}
+
+.InputContainer div {
+	width:75%;
+}
+
+.InputContainer input:disabled {
+	background-color: #ECECEC;
+	color: #B8B8B8;
+}
+
+.InputContainer input:focus {
+	outline: 1px solid black !important;
+}
+
+.InputContainer {
+	margin-top:10px;
+	margin-left:10px;
+	margin-right:10px;
+	margin-bottom:0px;
+	padding:0px;
+	
+	width:100%;
+	
+	display: flex;
+    justify-content: space-between;
+	align-items: top;
+	flex-direction: row;
+}
+
+.ViewerSearch {
+	border-radius:5px;
+}
+
+.ViewerNav {
+	border: solid 4px #E5E5E5;
+	border-right: solid 2px white;
+	background-color:white;
+	border-radius:5px;
+}
+
+.fill {
+	width:100%;
+	height:100%;
+	background-color: white;
+}

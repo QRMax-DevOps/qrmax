@@ -1,53 +1,129 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="./mw_style.css">
+	<link rel="stylesheet" href="./mw_style.css">
+	<title>Official Site | QRMAX Management Software</title>
+	<script>
+		function goToInteralLink(path){
+			var myDomain = window.location.hostname;
+			window.location.href = myDomain + "/" + path;
+		}
+	</script>
 </head>
 <body>
-
 			<div class="baseContainer">
 
 				<div class="screenHeaderContainer">
 					<div class="logoContainer">
-						<div>
-							<img src='../../graphics/updated_logo_bare.PNG' style='height:68px;'/>
-						</div>
-						<div>
-							<p style='margin:auto; margin-top:18px; color:#174980; font-size:30px; font-weight: bold;'>QRMAX</p>
-						</div>
+
+							<img src='../../graphics/logo_bare.PNG' style='height:40px; margin:auto;'/>
+
+							<p style='margin:auto; color:white; font-size:30px; font-weight: 500;'>QRMAX</p>
+
 					</div>
 					
 					<div class="buttonsContainer">
-						<button>Home</button>
-						<button>Features</button>
-						<button>Downloads</button>
-						<button>Contact</button>
+						<a href="mw_base.html"><button class="mainButton">Home</button></a>
+						<a href="pages/mw_features.html"><button class="mainButton">Features</button></a>
+						<a href="pages/mw_features.html"><button class="mainButton">Downloads</button></a>
+						<a href="pages/mw_features.html"><button class="mainButton">Contact</button></a>
 					</div>
 				</div>
 				
 				<div class="screenBodyContainer">
 					<div id="overlaySplash">
 						<div id="overlaySplashInternal">
-							<p style={{textAlign:"left"}}>An innovative, organised approach<br/>to QR management</p>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquet leo at lacus fringilla, a congue felis consectetur. Morbi nec dolor congue, convallis diam at, cursus erat.</p>
-						
-							<div id="overlaySplashButtons">
-								<button>Go Left</button>
-								<button>Go Right</button>
+							<p class="overlayHeaderText">An innovative, organised approach<br/>to QR kiosk management</p>
+							<p style='height:1px;'/>
+							<p class="overlayStandardText">Want QR operated kiosks to call your own?</p>
+							<p class="overlayStandardText">Want a personalized service unique to your business?</p>
+							<p class="overlayStandardText">Want safety, reliability and dedicated support?</p>
+							<p style='height:1px;'/>
+							<div>
+								<button class="overlayButton">Choose QRMAX</button>
+								
+								<p class="overlayEmphasisText">We're here to help.</p>
 							</div>
+							
 						</div>
 					</div>
 					
 					<div id="mainSplash">
 						<div id="mainSplashInternal">
-							<h1>QRMAX</h1>
-							<h1>An improved alternative.</h1>
-							<br/>
-							<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquet leo at lacus fringilla, a congue felis consectetur. Morbi nec dolor congue, convallis diam at, cursus erat. Suspendisse eleifend odio vel faucibus ultricies. Quisque cursus, metus vitae eleifend faucibus, velit eros scelerisque est, et congue diam tortor et sem. Nunc molestie, ipsum eget vestibulum blandit, arcu purus placerat sapien, suscipit tincidunt neque purus vitae ante. Nullam euismod auctor neque ornare malesuada. Nullam sit amet dui interdum, viverra est sit amet, vulputate nisl. Morbi eget magna tellus. Quisque suscipit quam in nisi accumsan, sed semper turpis placerat. Suspendisse facilisis varius elementum. Aliquam maximus, nisl a volutpat dapibus, erat eros sodales metus, quis egestas leo ligula vitae libero. Duis dictum est tellus, a tincidunt eros iaculis nec. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Integer at eros ultrices, tincidunt velit in, viverra ante.
-
-Sed eget nibh sem. Morbi in lobortis lacus. Ut luctus tincidunt nisi, sit amet sollicitudin mi luctus posuere. Nam auctor, est at facilisis scelerisque, felis ex ultrices turpis, vitae tincidunt justo ipsum eu enim. Sed sit amet leo faucibus, iaculis sem in, suscipit sem. Fusce nec ante nec odio aliquet feugiat in in sapien. Cras eget elit eu sem hendrerit sodales eget et lacus. Sed maximus ultricies mauris, a fermentum sapien. Maecenas tortor nulla, commodo cursus semper ut, hendrerit vel tellus. Proin ut augue id nisl accumsan tempor at eu mauris. Cras accumsan pulvinar dolor, hendrerit ullamcorper orci dapibus ut. Nunc quis nunc vitae erat elementum rutrum.</p>
+							<div class="sideBySideCenter">
+								<div>
+								
+									<p style='font-size:18px; margin-bottom:15px; font-weight:600'>DIVE RIGHT IN</p>
+									<h2 style='font-size:34px; margin-bottom:20px;  font-weight:300;'>Be a part of the future of safe kiosk design.</h2>
+									<p>The future of any successful, safety-paramount kiosk system relies on reliable and safe contactless technology.<br/><br/>The QRMAX software suite will take care of that without any hard work, IT team or huge budget.<br/></p>
+									<button class="overlayButtonBlue">Get started</button>
+								</div>
+								<div>
+									<img src='../../graphics/stock_demo1.jpg' style='height:350px;'/>
+								</div>
+							</div>
+							
+							<div class="sideBySideCenter">
+								<div>
+									<img src='../../graphics/stock_demo2.jpg' style='height:350px;'/>
+								</div>
+								<div>
+									<p style='font-size:18px; margin-bottom:15px; font-weight:600'>SOFTWARE FEATURES</p>
+									<h2 style='font-size:34px; margin-bottom:20px; font-weight:300;'>Streamlined and comprehensive software</h2>
+									<p>
+										Our revolutionary software steamlines the development process for your new QR operated kiosk, from design through to implementation. We've got you covered!
+										<br/><br/>No scary budgets, no dedicated IT team, no hastle.
+										<br/><br/>Our software allows you to fully customise your kiosk design, complete with path trees, links between screens and designs unique to your business.<br/>
+									</p>
+									<button class="overlayButtonBlue">Read more</button>
+								</div>
+							</div>
+							<div class="sideBySideCenter">
+								<div>
+									<p style='font-size:18px; margin-bottom:15px; font-weight:600'>THEY'LL LOVE YOU FOR IT</p>
+									<h2 style='font-size:34px; margin-bottom:20px; font-weight:300;'>Safe and fully interactive. </h3>
+									<p>Without any time-consuming enquiries, questions or awkwardly looking for a staff member to help them, your customers can use this technology to:</p>
+									<p>Navigate through your store, see what's in stock, see any specials or sales, or maybe just learn a thing or two?</p>
+									<p>All the while remaining safe and hygenic. All they need is a smartphone to scan the QR codes!<br/></p>
+									<button class="overlayButtonBlue">Read more</button>
+								</div>
+								<div>
+									<img src='../../graphics/stock_demo3.jpg' style='height:350px;'/>
+								</div>
+							</div>
 						</div>
+						<div id="mainSplashInternal">
+							<div class="sideBySide">
+								<div class="center" style="width:300px;">
+									<p style='font-weight:bold; text-align:center; font-size:20px;'> We are here to support you 24/7 including email chat support.</p>
+									<img src='../../graphics/icon_support.png' style='height:200px;'/>
+									<button class="overlayButtonBlue">Contact</button>
+								</div>
+								<div class="center" style="width:300px;">
+									<p style='font-weight:bold; text-align:center; font-size:20px;'> You can count on us, final-year students from a prestigous Australian university.</p>
+									<img src='../../graphics/icon_trust.png' style='height:200px;'/>
+									<button class="overlayButtonBlue">Developer portfolios</button>
+								</div>
+							</div>
 					</div>
+				</div>
+				<div id="footer">
+					<div style="width:100%">
+						<hr size="1.5" width="95%" color="white">  
+						<div id="quickAccessDivider">
+							<p style="margin:0; padding:0; margin-left:10px; margin-right:20px;">Quick access:</p> 
+							<button>User manual</button><button>technical manual</button><button>Home</button><button>Features</button><button>Downloads</button><button>Contact</button><button>Developer portfolios</button>
+						</div>
+						<hr size="1.5" width="95%" color="white">  
+					</div>
+					<div class="sideBySide" style="width:100%">
+						<div style="width:100%">
+							<p>Designed by: Marcus Hickey, last revised: 07/04/2022, 1:30PM</p>
+						</div>
+						<div style='text-align:right; width:100%; margin:0; margin-right:30px; padding:0; padding-bottom:20px';>
+						<p>© 2022 QRMAX Inc. All rights reserved.</p>
+					</div>
+					
 				</div>
 			</div>
 </body>

@@ -1,11 +1,9 @@
-/*search for account
-   - Search (checks all - given, middle and surnames, company names, positions, usernames, etc.)
-   - Admins of a company can only view that are A. accounts belonging to their own company (unless they're a system admin),
-		and can only modify if they are also lower permission than them, so not including themselves (unless they are highest
-		current permission in the company)
-   
-   -  all relevant details can be modified as long as the above is satisfied.
-*/
+/* This file, as well as its code, respective design, layout,
+ * and structure (etc.) has been developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
 
 import React, { useState, Component } from 'react';
 import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/middleware/accounts_mw';
@@ -14,61 +12,25 @@ import {useLocation} from "react-router-dom";
 
 import {ListItem, Viewer} from './am_viewer';
 import {Options} from './am_options';
-import {CreateAccountForm, ModifyAccountForm, CreateStoreForm, ModifyStoreForm} from './am_forms';
+import {CreateAccountForm, ModifyAccountForm, CreateStoreForm, ModifyStoreForm, ErrorOccured} from './am_forms';
 import {Account} from './am_account';
 import Sidebar from '../Sidebar';
 
+import {isEmptyOrSpaces, IsJsonString, stringToBool} from './../../services/utilities/common_util';
 import '../UniversalStyle.css';
+import "./am_style.css";
 
-class Modifications extends Component {
-	constructor(props) {
-		super(props);
-		this.setParentState = this.props.setParentState;
-		this.getParentState = this.props.getParentState;
-		
-				
-		this.state = {account:this.props.curAccount}
-	}
 
-	
-	render() {
-		
-        return (
-			<div className="FloatingContainer" style={{height:"100%", width:"100%"}}>
-				{this.props.toDo === "createaccount" &&
-					<CreateAccountForm global={this.getParentState('global')} account={this.state.account}/>
-				}
-				{this.props.toDo === "modifyaccount" &&
-					<ModifyAccountForm global={this.getParentState('global')} account={this.state.account}/>
-				}
-				{this.props.toDo === "createstore" &&
-					<CreateStoreForm global={this.getParentState('global')} store={this.state.account}/>
-				}
-				{this.props.toDo === "modifystore" &&
-					<ModifyStoreForm global={this.getParentState('global')} store={this.state.account}/>
-				}
-				<div className="SubmitButtonContainer">
-					<button onClick={() => this.setParentState('toDo', null)}>Close</button>
-				</div>
-			</div>
-        );
-    }
-}
-
-function IsJsonString(str) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-		console.log(e);
-        return false;
-    }
-    return true;
-}
-
+/* ACCOUNTS MANAGEMENT FOUNDATION COMPONENT
+ *
+ * The primary/foundational component for the accounts management screen.
+ * Stores all important properties and components.
+ */
 class AccountsManagement extends Component {
 	constructor(props) {
 		super(props);
 
+		//Getting vitals from session storage (generated upon login)
 		var companynameParam = sessionStorage.companyName;
 		var usernameParam = sessionStorage.username;
 		
@@ -83,14 +45,15 @@ class AccountsManagement extends Component {
 		this.state = {
 			global : {isCompany:isCompanyParam, companyName:companynameParam, userID:usernameParam, apiURL:getApiURL(isLocalhostParam)},
 
-			toDo : null,
-			curAccount: null, //Currently selected account.
+			currentForm:			null,	//Current form to be displayed (create account, modify store, etc.)
+			currentAccount:	 		null,	//Currently selected account
+			currentStore:			null,	//Currently selected store
 			
-			ACCOUNTSLIST:null,
-			STORESLIST:null,
+			primaryAccountsList:	null,	//The primary generated accounts list
+			primaryStoresList:		null,	//The primary generated stores list
 			
-			loading:false,
-			needSoftRefresh:false //Refresh the UI after fetching new data from the API.
+			isLoading:				false,	//Is the screen currently loading/awaiting information from a request?
+			queueSoftRefresh:		false	//Refresh the UI after fetching new data from the API.
 		};
 		
 		this.setParentState = this.setParentState.bind(this)
@@ -99,11 +62,13 @@ class AccountsManagement extends Component {
 		
 		this.Fetch('accounts');
 		this.Fetch('stores');
-		
-		
-		
 	}
 
+
+	/* This function is used to request and retrieve the stores and/or accounts
+	 * from the database.
+	 * Depending on what "type" argument it is provided, the function will either
+	 * fetch a stores list or an accounts list. */
 	Fetch(type) {
 		if(this.state.global) {
 			var username = this.state.global.userID;
@@ -112,183 +77,173 @@ class AccountsManagement extends Component {
 			var isCompany = this.state.global.isCompany;
 			
 			let request = null;
-			let response = [null,null];
+			let requestResponse = [null,null];
 
-			if(!this.state.loading && type==='accounts') {
-				request = RunFetch_GetAccounts(isCompany,apiURL,username,companyName,response);
-			}
-			else if(!this.state.loading && type==='stores') {
-				request = RunFetch_GetStores(isCompany,apiURL,username,companyName,response);
-			}
+			if(!this.state.isLoading && type==='accounts') //Run an API request to fetch the accounts list
+			{ request = RunFetch_GetAccounts(isCompany,apiURL,username,companyName,requestResponse); }
+		
+			else if(!this.state.isLoading && type==='stores') //Run an API request to fetch the stores list
+			{ request = RunFetch_GetStores(isCompany,apiURL,username,companyName,requestResponse); }
 			
-			var timer = { eclapsed: 0 };
+			
+			var stopwatch = { eclapsed: 0 };
 			var me = this;
 			
 			var interval = setInterval(function() {
-				timer.eclapsed++;
-				
-				//console.log(timer)
-				
-				if(response[0] !== null) {
-					clearInterval(interval);
-					me.setState({loading:false});
+				stopwatch.eclapsed++;
 
-					if(response[0] === true && type==='accounts'){
-						
-						var json = JSON.parse(response[1]);
+				if(requestResponse[0] !== null) {
+					clearInterval(interval);
+					me.setState({isLoading:false});
+
+					//Good response for accounts (set accountslist)
+					if(requestResponse[0] === true && type==='accounts'){
+						var json = JSON.parse(requestResponse[1]);
 						
 						for(var i = 0; i < json.length; i++) {
 							json[i].type = 'storeaccount';
-							
 							var storesValid=IsJsonString(JSON.stringify(json[i].stores));
-							
-							
-							if(!storesValid) {
-								json[i].stores=null;
-							}
+							if(!storesValid)
+								{ json[i].stores=null; }
 						}
 						
-						
-						me.setParentState('accountslist',JSON.stringify(json));
-						me.setState({needSoftRefresh:true});
+						me.setParentState('primaryAccountsList',JSON.stringify(json));
+						me.setState({queueSoftRefresh:true});
 					}
-					if(response[0] === true && type==='stores'){
-						me.setParentState('storeslist',response[1]);
-						me.setState({needSoftRefresh:true});
+					//Good response for stores (set storeslist)
+					if(requestResponse[0] === true && type==='stores'){
+						me.setParentState('primaryStoresList',requestResponse[1]);
+						me.setState({queueSoftRefresh:true});
 					}
-					
 				}
-
-				//timeout after 3 seconds
-				if(timer.eclapsed == 24) {
+				//timeout after 12 seconds
+				if(stopwatch.eclapsed == 24) {
 					console.log("Fetch-loop timeout!");
-					me.setState({loading:false});
+					me.setState({isLoading:false});
 					clearInterval(interval);
 				}
 			}, 500);
 		}
 	}
 	
-
+	
+	/* This function is passed to child components, enabling them to
+	 * SET primary/parent state variables. */
 	setParentState(target, newValue) {
-		if(target.toLowerCase()==='todo') {
-			this.setState( () => ({
-			 toDo : newValue
-			}));
+		switch(target.toLowerCase()) {	
+			case 'currentform':			this.setState(()=>({ currentForm : newValue})); 			break;
+			case 'currentaccount': 		this.setState(()=>({ currentAccount : newValue}));			break;
+			case 'currentstore': 		this.setState(()=>({ currentStore : newValue}));			break;
+			case 'primaryaccountslist':	this.setState(()=>({ primaryAccountsList : newValue}));		break;
+			case 'primarystoreslist':	this.setState(()=>({ primaryStoresList : newValue}));		break;
+			case 'queuesoftrefresh':	this.setState(()=>({ queueSoftRefresh : newValue}));		break;
+			
+			default: //Debug
+				console.log("Warning: variable request ("+target+")"
+				+ " not recognised with new Value ("+newValue+")");
+				break;
+			
 		}
-		if(target.toLowerCase()==='curaccount') {
-			this.setState( () => ({
-			 curAccount : newValue
-			}));
-		}
-		if(target.toLowerCase()==='accountslist') {
-			this.setState( () => ({
-			 ACCOUNTSLIST : newValue
-			}));
-		}
-		if(target.toLowerCase()==='storeslist') {
-			this.setState( () => ({
-			 STORESLIST : newValue
-			}));
-		}
-		if(target.toLowerCase()==='needsoftrefresh') {
-			this.setState( () => ({
-			 needSoftRefresh : newValue
-			}));
-		}
-		//console.log("State set to: ",this.state);
 	}
 	
+	
+	/* This function is passed to child components, enabling them to
+	 * GET primary/parent state variables. */
 	getParentState(target) {
-		if(target.toLowerCase()==='todo') {
-			return this.state.toDo;
-		}
-		if(target.toLowerCase()==='curaccount') {
-			return this.state.curAccount;
-		}
-		if(target.toLowerCase()==='accountslist') {
-			return this.state.ACCOUNTSLIST;
-		}
-		if(target.toLowerCase()==='storeslist') {
-			return this.state.STORESLIST;
-		}
-		if(target.toLowerCase()==='needsoftrefresh') {
-			return this.state.needSoftRefresh;
-		}
-		if(target.toLowerCase()==='global') {
-			return this.state.global;
-		}
-		if(target.toLowerCase()==='iscompany') {
+		switch(target.toLowerCase()) {	
+			case 'currentform':			return this.state.currentForm;
+			case 'currentaccount': 		return this.state.currentAccount;
+			case 'currentstore': 		return this.state.currentStore;
+			case 'primaryaccountslist':	return this.state.primaryAccountsList;
+			case 'primarystoreslist':	return this.state.primaryStoresList;
+			case 'queuesoftrefresh':	return this.state.queueSoftRefresh;
+			case 'global':				return this.state.global;
+			case 'iscompany': 			return stringToBool(this.state.global.isCompany);
 			
-			if(typeof(this.state.global.isCompany) === 'string') {
-				if(this.state.global.isCompany.toLowerCase() === 'true') {
-					return true;
-				}
-				else if(this.state.global.isCompany.toLowerCase() === 'false') {
-					return false;
-				}
-			}
-			else if (typeof(this.state.global.isCompany) === 'boolean'){
-				return this.state.global.isCompany;
-			}
-		}
-		else {
-			return this.state;
+			default: //Debug
+				console.log("Warning: variable request ("+target+")"
+				+ " not recognised");
+				return null;
 		}
 	}
+	
 	
     render() {
+		//If NOT a company account
 		if(this.state.global && !this.state.global.isCompany) {
 			return (
-				<div className="background">
-				<div>
-                    <Sidebar/>
-                </div>
-			
-				<div className="MainAccountsContainer">
-					<div className="FloatingContainer" style={{flexDirection:"row"}}>
-
-					<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
-					
+				<div className="AmBackground SideBySide">
+					<div> <Sidebar/> </div>
+					<div className="MainAccountsContainer">
+						<div className="FloatingContainer" style={{flexDirection:"row"}}>
+							<Options
+								type='stores'
+								Fetch={this.Fetch.bind(this)}
+								STORESLIST={this.state.primaryAccountsList}
+								getParentState={this.getParentState.bind(this)}
+								setParentState={this.setParentState.bind(this)}
+								accountSelected={this.state.currentstore == null}
+							/>
+						</div>
+						
+						{this.state.currentForm != null &&
+							<Modifications 
+								curAccount={this.state.currentAccount}
+								curStore={this.state.currentStore}
+								getParentState={this.getParentState.bind(this)}
+								setParentState={this.setParentState.bind(this)}
+								currentForm={this.state.currentForm}
+							/>
+						}
 					</div>
-					
-					<div className="FloatingContainer">
-					{this.state.toDo != null &&
-						<Modifications curAccount={this.state.curAccount} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} toDo={this.state.toDo}/>
-					}
-					</div>
-				</div>
 				</div>
 			);
 		}
+		//If IS a company account
 		else if(this.state.global && this.state.global.isCompany) {
+			
 			return (
-				<div className="background">	
-				<div>
-                    <Sidebar/>
-                </div>
-				
-				<div className="MainAccountsContainer">
-					<div className="FloatingContainer" style={{flexDirection:"row"}}>
+				<div className="AmBackground SideBySide">	
+					<div style={{height:"100%"}}> <Sidebar/> </div>
 					
-					{ this.getParentState('iscompany') === true &&
-						<Options type='accounts' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
-					}
-					<Options type='stores' Fetch={this.Fetch.bind(this)} ACCOUNTSLIST={this.state.ACCOUNTSLIST} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} accountSelected={this.state.curAccount == null}/>
-					
+					<div className="MainAccountsContainer">
+						<div className="MainViewerContainer" style={{flexDirection:"row"}}>
+							{ this.getParentState('iscompany') === true &&
+								<Options
+									type='accounts'
+									Fetch={this.Fetch.bind(this)}
+									ACCOUNTSLIST={this.state.primaryAccountsList}
+									getParentState={this.getParentState.bind(this)}
+									setParentState={this.setParentState.bind(this)}
+									accountSelected={this.state.currentAccount == null}
+								/>
+							}
+							<Options
+								type='stores'
+								Fetch={this.Fetch.bind(this)}
+								STORESLIST={this.state.primaryAccountsList}
+								getParentState={this.getParentState.bind(this)}
+								setParentState={this.setParentState.bind(this)}
+								accountSelected={this.state.currentStore == null}
+							/>
+						</div>
+						
+
+						{this.state.currentForm != null &&
+							<Modifications
+								curAccount={this.state.currentAccount}
+								curStore={this.state.currentStore}
+								getParentState={this.getParentState.bind(this)}
+								setParentState={this.setParentState.bind(this)}
+								currentForm={this.state.currentForm}
+							/>
+						}
+
 					</div>
-					
-					<div className="FloatingContainer">
-					{this.state.toDo != null &&
-						<Modifications curAccount={this.state.curAccount} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} toDo={this.state.toDo}/>
-					}
-					</div>
-				</div>
 				</div>
 			);
 		}
 		else {
-			
 			console.log('No global variable was provided, (I.e., user details from login, API address, etc.)'
 			+'\n\nThe global variable is produced and provided via successful login. If you do not log in properly, the web-app will not function correctly.');
 			
@@ -300,5 +255,43 @@ class AccountsManagement extends Component {
 		}
     }
 }
-
 export default AccountsManagement;
+
+
+
+/* MODIFICATIONS PANE
+ *
+ * Holds and manages the forms for creating and modifying account information
+ * On creation, is to be provided a "currentForm" property variable, which will be
+ * used to determine what form it will be displaying.
+ */
+class Modifications extends Component {
+	constructor(props) {
+		super(props);
+		this.setParentState = this.props.setParentState;
+		this.getParentState = this.props.getParentState;
+	}
+	
+	render() {
+		//Making sure that the "currentForm" variable is a string and is not null.
+		if(typeof this.props.currentForm === 'string' && !isEmptyOrSpaces(this.props.currentForm)) {
+			var formToDisplay;
+			
+			//Determining which form to display
+			switch(this.props.currentForm.toLowerCase()) {
+				case 'createaccount':	formToDisplay = <CreateAccountForm 	setParentState={this.setParentState.bind(this)} global={this.getParentState('global')} account	= {this.props.curAccount} companyStoresList = {this.getParentState('primarystoreslist')}/>; break;
+				case 'modifyaccount':	formToDisplay = <ModifyAccountForm 	setParentState={this.setParentState.bind(this)} global={this.getParentState('global')} account	= {this.props.curAccount} companyStoresList = {this.getParentState('primarystoreslist')}/>;	break;
+				case 'createstore':		formToDisplay = <CreateStoreForm 	setParentState={this.setParentState.bind(this)} global={this.getParentState('global')} store	= {this.props.curStore}/>; 	break;
+				case 'modifystore':		formToDisplay = <ModifyStoreForm 	setParentState={this.setParentState.bind(this)} global={this.getParentState('global')} store	= {this.props.curStore}/>;	break;
+				
+				default: formToDisplay = <ErrorOccured reason={'Unrecognised "currentForm" value ('+this.props.currentForm+')'}/>; break;
+			}
+			//Rendering interface elements
+			return(
+				<div className="FloatingContainer" style={{marginTop:"30px"}}>
+					{formToDisplay}
+				</div>
+			);
+		}
+	}
+}

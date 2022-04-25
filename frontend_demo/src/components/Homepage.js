@@ -9,7 +9,7 @@ import GenerateQR from "./GenerateQR";
 import DisplayMngr from './DisplayMngr';
 import Login from "./Login/Login";
 import {getApiURL} from "./../services/core_mw"
-import {HandleMedia} from "./../services/middleware/media_mw"
+import {handleDisplay} from "./../services/middleware/display_mw"
 
 class Homepage extends Component {
     constructor(props) {
@@ -58,7 +58,7 @@ class Homepage extends Component {
 			mediaName: this.mediaName
 		};
 		let response = [null, null];
-		HandleMedia("GETMEDIAFILE", url, data, response);
+		handleDisplay('display/media/file', 'POST', url, data, response);
 		
 		var timer = { eclapsed: 0 };
 		var me = this;

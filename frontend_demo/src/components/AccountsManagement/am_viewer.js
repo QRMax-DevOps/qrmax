@@ -1,4 +1,12 @@
+/* This file, as well as its code, respective design, layout,
+ * and structure (etc.) has been developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React, { Component } from 'react';
+import "./am_style.css";
 
 function IsJsonString(str) {
 		try {
@@ -16,7 +24,7 @@ class ListItem_Account extends Component {
 		
 		this.setParentState = this.props.setParentState;
 		this.getParentState = this.props.getParentState;
-		this.UpdateCurrentSelectedAccount = this.props.UpdateCurrentSelectedAccount;
+		this.UpdateCurrentSelected = this.props.UpdateCurrentSelected;
 		this.buildAccountComponent = this.buildAccountComponent.bind(this);
 		
 		//console.log('Constructing ACCOUNT object from data: ',this.account);
@@ -66,11 +74,10 @@ class ListItem_Account extends Component {
 			
 			return (
 				<button		
-					style={{backgroundColor: this.state.bgColor }}
-					onClick={() => this.setState({selected:this.UpdateCurrentSelectedAccount(this.state.account,this.state.selected)})}
+					onClick={() => this.setState({selected:this.UpdateCurrentSelected('account', this.state.account)})}
 					className="AccountDisplayButton">
 					
-					<label id="usernameField" className="DataField">{account.username}</label>
+					<label id="usernameField" className="DataField"><fade>Username:</fade> {account.username}</label>
 					<label id="storeIdField" className="DataField"> {stores} </label>
 				</button>
 			);
@@ -92,7 +99,7 @@ class ListItem_Store extends Component {
 		
 		this.setParentState = this.props.setParentState;
 		this.getParentState = this.props.getParentState;
-		this.UpdateCurrentSelectedAccount = this.props.UpdateCurrentSelectedAccount;
+		this.UpdateCurrentSelected = this.props.UpdateCurrentSelected;
 		
 		//console.log('Constructing STORE object from data: ',this.storeData);
 	}
@@ -104,11 +111,10 @@ class ListItem_Store extends Component {
 		return(
 		
 			<button		
-				style={{backgroundColor: bgColor }}
-				onClick={() => this.UpdateCurrentSelectedAccount(this.storeData)}
+				onClick={() => this.setState({selected:this.UpdateCurrentSelected('store', this.storeData)})}
 				className="AccountDisplayButton">
-				<label id="storeID" className="DataField">ID: {this.storeData.ID}</label>
-				<label id="storeName" className="DataField">Store: {this.storeData.store}</label>
+				<label id="storeID" className="DataField"><fade>ID:</fade> {this.storeData.ID}</label>
+				<label id="storeName" className="DataField"><fade>Store:</fade> {this.storeData.store}</label>
 			</button>
 
 		);
@@ -122,7 +128,7 @@ export class Viewer extends Component {
 		
 		this.BuildList = this.BuildList.bind(this);
 		this.BuildListItem = this.BuildListItem.bind(this);
-		this.UpdateCurrentSelectedAccount = this.UpdateCurrentSelectedAccount.bind(this);
+		this.UpdateCurrentSelected = this.UpdateCurrentSelected.bind(this);
 		
 		this.setParentState = this.props.setParentState;
 		this.getParentState = this.props.getParentState;
@@ -135,25 +141,30 @@ export class Viewer extends Component {
 		
 	}
 	
-	UpdateCurrentSelectedAccount(account, selected) {
+	UpdateCurrentSelected(type, account) {
 		let result = false;
-		let stopLoop = false;
+		
+		console.log("Setting current: ",type,account);
 
-		if(this.getParentState('toDo') !== null) {
-			this.setParentState('toDo', null);
+		if(this.getParentState('currentForm') !== null) {
+			this.setParentState('currentForm', null);
 		}
-
-		this.setParentState('curAccount',account);
-
+		
+		if(type.toLowerCase() ===  'store') {
+			this.setParentState('currentStore',account);
+			console.log(this.getParentState('currentStore'));
+		}
+		
+		else if(type.toLowerCase() ===  'account') {
+			this.setParentState('currentAccount',account);
+			console.log(this.getParentState('currentAccount'));
+		}
 		
 		return result;
 	}
 
 	
 	BuildList(type, source) {
-		
-		//console.log("BUILDING LIST FROM: ",type,source)
-		
 		if(source!=null) {
 			return {ListItems:source.map((data) => this.BuildListItem(type, data))};
 		} else {
@@ -167,21 +178,21 @@ export class Viewer extends Component {
 		
 		if(this.type==='accounts') {
 			return  <li key={data.username}>
-			<ListItem_Account UpdateCurrentSelectedAccount={this.UpdateCurrentSelectedAccount.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} account={data}/>
+			<ListItem_Account UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} account={data}/>
 		</li>;
 		}
 		if(this.type==='stores') {
 			return  <li key={data.ID}>
-			<ListItem_Store UpdateCurrentSelectedAccount={this.UpdateCurrentSelectedAccount.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} storeData={data}/>
+			<ListItem_Store UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} storeData={data}/>
 		</li>;
 		}
 	}
 	
 	componentDidUpdate(prevProps, prevState) {
-		this.ACCOUNTSLIST = this.getParentState('accountslist');
-		this.STORESLIST = this.getParentState('storeslist');
+		this.ACCOUNTSLIST = this.getParentState('primaryaccountslist');
+		this.STORESLIST = this.getParentState('primarystoreslist');
 		
-		if(this.getParentState('needsoftrefresh') === true) {
+		if(this.getParentState('queueSoftRefresh') === true) {
 			
 			if(this.type === 'stores') {
 				this.SoftRefresh(this.STORESLIST);
@@ -193,16 +204,16 @@ export class Viewer extends Component {
 				this.SoftRefresh(this.ACCOUNTSLIST);
 			}
 			
-			this.setParentState('needsoftrefresh',false);
+			this.setParentState('queueSoftRefresh',false);
 		}
 	}
 	
 	HardRefresh() {
-			if(this.getParentState('toDo') != 'createaccount' && this.getParentState('toDo') != null) {
-				this.setParentState('toDo',null);
+			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
+				this.setParentState('currentForm',null);
 			}
-			if(this.getParentState('curAccount') != null) {
-				this.setParentState('curAccount',null);
+			if(this.getParentState('currentAccount') != null) {
+				this.setParentState('currentAccount',null);
 			}
 			
 			
@@ -212,12 +223,12 @@ export class Viewer extends Component {
 	
 	SoftRefresh(target) {
 		if(IsJsonString(target)) {		
-			if(this.getParentState('toDo') != 'createaccount' && this.getParentState('toDo') != null) {
-				this.setParentState('toDo',null);
+			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
+				this.setParentState('currentForm',null);
 			}
 			
-			if(this.getParentState('curAccount') != null) {
-				this.setParentState('curAccount',null);
+			if(this.getParentState('currentAccount') != null) {
+				this.setParentState('currentAccount',null);
 			}
 			
 			let results = [];
@@ -275,14 +286,13 @@ export class Viewer extends Component {
 		return(
 			<div id="ViewerContainer">
 				<div id="SearchContainer">
-					<label htmlFor="searchaccount">Search</label>
-					<input disabled={true} onChange={(e) => this.SearchAccounts(e.target.value)} type="text" id="searchaccount" name="searchaccount"/>
+					<input className="ViewerSearch" disabled={true} onChange={(e) => this.SearchAccounts(e.target.value)} type="text"/>
 					
-					<button onClick={() => this.HardRefresh()} style={{marginLeft:"10px", marginTop:"10px"}}>Refresh</button>
+					<button className="ViewerBtn" onClick={() => this.HardRefresh()} style={{marginLeft:"10px", marginTop:"10px", width:"100px"}}>Refresh</button>
 					
 				</div>
-				<nav>
-					<ul>
+				<nav >
+					<ul className="ViewerNav">
 						{this.state.ListItems.length > 0 ? this.state.ListItems : "None"}
 					</ul>
 				</nav>

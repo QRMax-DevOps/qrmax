@@ -173,7 +173,7 @@ class StoreController {
             }
             else{
                 let result = await DisplayDAO.getInteractions(company, store, display, period);
-                res.json({status:"success", result:result});
+                res.json({status:"success", interactions:result});
             }
 
     }

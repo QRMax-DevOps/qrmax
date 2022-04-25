@@ -153,8 +153,8 @@ export default class Page extends React.Component {
 				clearInterval(interval);
 				
 				if(GLOBAL[0]==false) {
-					me.setState({loginError : getNiceError(GLOBAL[1])});
-					
+					me.setState({loginError : GLOBAL[1]});
+
 				}
 				
 				if(GLOBAL[0]==true) {
