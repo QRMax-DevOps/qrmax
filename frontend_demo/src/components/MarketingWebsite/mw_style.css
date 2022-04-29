@@ -24,6 +24,14 @@ hr.bright {
 	width:75%;
 }
 
+.downloadLink {
+	text-decoration: underline;
+}
+
+.downloadLink:hover {
+	color: rgb(255, 208, 0);
+}
+
 .baseContainer {
 	margin: auto;
 	
@@ -81,6 +89,136 @@ hr.bright {
 	min-height:100vh;
 	max-height:100vh;
 }
+
+#contactForm {
+	
+	height:430px;
+	width:500px;
+	padding:30px;
+	border-radius:10px;
+	border: 0;
+}
+
+#contactForm div.normal {
+	display:flex;
+	flex-direction:row;
+	margin:0;
+	margin-bottom:30px;
+}
+
+#contactForm div.normal label {
+	display:inline-block;
+	width:125px;
+	
+	background-color: #273852;
+	
+	color:white;
+	margin:0;
+	text-align:right;
+	height:35px;
+	line-height:35px;
+	border-top-left-radius: 7px;
+	border-bottom-left-radius: 7px;
+	padding-right:10px;
+}
+
+
+#contactForm div.normal input {
+	padding-left:10px;
+	display:inline-block;
+	margin:0;
+}
+
+#contactForm input.standard {
+	width:350px;
+	border-radius: 0;
+	border: solid 1px grey;
+	border-top-right-radius: 7px;
+	border-bottom-right-radius: 7px;
+}
+
+#contactForm textarea.message {
+	text-align:left;
+	overflow-y:scroll;
+	overflow-x:none;
+	resize:none;
+	width:494px;
+	height:100px;
+	margin:0;
+	border: solid 1px grey;
+	border-bottom-left-radius: 7px;
+}
+
+
+
+#contactForm input.submit {
+	text-decoration: none;
+	
+	margin-bottom:20px;
+	margin-top:20px;
+	margin-right:20px;
+	color: rgb(255, 198, 23);
+	font-size: 20px;
+	
+	width:300px;
+	
+	border: solid 2px rgb(255, 198, 23);
+	border-radius: 6px;
+	
+	background-color: transparent;
+	
+	padding:10px;
+	padding-left:20px;
+	padding-right:20px;
+}
+
+#contactForm input.submit:hover {
+	color: rgb(255, 234, 138);
+	border: solid 2px rgb(255, 234, 138);
+	box-shadow: 0 0 10px rgb(255, 198, 23);
+	
+}
+
+#contactMessageContainer {
+	margin:0;
+	
+	display: flex;
+	justify-content: space-around;
+	align-content: space-around;
+	align-items: center;
+	flex-direction: column;
+	flex-wrap: nowrap;
+}
+
+#contactMessageContainer label {
+	width:100%;
+	text-align:center;
+
+	background-color: #273852;
+
+	color:white;
+	margin:0;
+	text-align:center;
+	height:35px;
+	line-height:35px;
+	border:0;
+	border-top-left-radius: 7px;
+	border-top-right-radius: 7px;
+}
+
+
+
+#contactFormContainer {
+	height:100%;
+	width:100%;
+	
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	flex-direction: row;
+	flex-wrap: nowrap; 
+}
+
 .screenHeaderContainer .logoContainer {
 	display: flex;
 	justify-content: space-around;
@@ -108,12 +246,12 @@ hr.bright {
 }
 
 #footer {
-	background-color: rgb(10,19,33);
+	background-color: white;;
 	
 	position: relative;
 	
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-end;
 	align-content: space-between;
 	flex-direction: column;
 	flex-wrap: nowrap; 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="../mw_style.css">
+	<title>Official Site | QRMAX Management Software</title>
+	<script>
+		function goToInteralLink(path){
+			var myDomain = window.location.hostname;
+			window.location.href = myDomain + "/" + path;
+		}
+	</script>
+</head>
+</head>
+<body>
+			<div class="baseContainer setBackgroundFadeRight">
+
+				<div class="screenHeaderContainer">
+					<div class="logoContainer">
+
+							<img src='../../../graphics/logo_bare.PNG' style='height:40px; margin:auto;'/>
+
+							<p style='margin:auto; color:white; font-size:30px; font-weight: 500;'>QRMAX</p>
+
+					</div>
+					
+										<div class="buttonsContainer">
+						<a href="../mw_base.html"><button class="mainButton">Home</button></a>
+						<a href="./mw_features.html"><button class="mainButton">Features</button></a>
+						<a href="./mw_downloads.html"><button class="mainButton" >Downloads</button></a>
+						<a href="./mw_contact.html"><button class="mainButton" style="color:rgb(255, 198, 23);">Contact</button></a>
+					</div>
+				</div>
+				
+				<div class="screenBodyContainer">
+					<div id="overlaySplash" style=" height:350px; justify-content:flex-end; align-content:center;">
+						<div id="overlaySplashInternal" class="overlayRight" style="margin-left:0; margin-right:10%;">
+							<p class="overlayHeaderText" style="text-align:right; margin-right:0px;">Lets get you started!</p>
+							<p style='height:1px;'/>
+							<p class="overlayStandardText" style="width:70%;">Use this form to send us an email and we'll get back to you within 24 hours.</p>
+						</div>
+					</div>
+					
+				<div id="mainSplash" style='margin-top:400px; background-color: rgba(10,19,33,1);'>
+					<div id="mainSplashInternal">
+						<div id="contactFormContainer">
+							<form id="contactForm">
+							<div class='normal'>
+								<label for="fname">First name:</label>
+								<input placeholder='John' class='standard' type="text" id="fname" name="fname">
+							</div>
+							  
+							<div class='normal'>
+								<label for="lname">Last name:</label>
+								<input placeholder='Doe' class='standard' type="text" id="lname" name="lname">
+							</div>
+							
+							<div class='normal'>
+								<label for="lname">Contact email:</label>
+								<input placeholder='John.Joe1@email.com' class='standard' type="text" id="lname" name="lname">
+							</div>
+							 
+							  <div id="contactMessageContainer">
+							  <label for="lname">Message:</label>
+							  <textarea placeholder='Hey, I am interested in the QRMAX application and would like to discuss more!' class='message' type="text" id="lname" name="lname"></textarea>
+							  </div>
+							  
+							  <div class="center" style='margin-top:20px;'>
+							  <input class='submit' type="submit" value="Submit">
+							  </div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div id="footer" style='height:100%; background-color:rgba(10,19,33,1);'>
+					<div style="background-color: rgb(10,19,33); width:100%">
+						<div style="width:100%;">
+							<hr size="1.5" width="95%" color="white">  
+							<div id="quickAccessDivider">
+								<p style="margin:0; padding:0; margin-left:10px; margin-right:20px;">Quick access:</p> 
+								<button>User manual</button><button>technical manual</button><button>Home</button><button>Features</button><button>Downloads</button><button>Contact</button><button>Developer portfolios</button>
+							</div>
+							<hr size="1.5" width="95%" color="white">  
+						</div>
+						<div class="sideBySide" style="width:100%; padding-bottom:20px;">
+							<div style="width:100%">
+								<p>Designed by: Marcus Hickey, last revised: 07/04/2022, 1:30PM</p>
+							</div>
+							<div style='text-align:right; width:100%; margin:0; margin-right:30px;'>
+								<p>© 2022 QRMAX Inc. All rights reserved.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	</body>
+</html>
