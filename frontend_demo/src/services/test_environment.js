@@ -20,9 +20,9 @@ class TestEnv extends React.Component {
 		const DELETE = Symbol("DELETE")
 		
 		//To go in "data"
-		var storex = "store1";
-		var companyx = "testCompany";
-		var displayx = "display1";
+		var storex = "displayStore";
+		var companyx = "displayCompany";
+		var displayx = "display3";
 		
 		var mediax = "media1";
 		var mediaName = "media1";
@@ -33,14 +33,14 @@ class TestEnv extends React.Component {
 		var fieldsx = ["setting1","setting2"];
 		var valuesx = ["updatedValue1","updatedValue2"];
 		//value1_updatedbymarcus
-		var data = {company:companyx, store:storex, display:displayx, mediaName, fields:fieldsx, values:valuesx };
+		var data = {company:companyx, store:storex, display:displayx, mediaName:mediaName, mediaFile:'testData', fields:fieldsx, values:valuesx };
 		var url = "http://localhost:80/";
 		
 		//Where our response data is held!
 		var global = new Array(2);
 		
 		
-		var test = handleDisplay('display/media/file', 'PATCH', url, data, global);
+		var test = handleDisplay('display/media', 'PATCH', url, data, global);
 
 	
          return(

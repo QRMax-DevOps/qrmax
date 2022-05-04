@@ -4,7 +4,7 @@ import Media from '../objects/MediaObject';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
-import {handleDisplay} from '../services/middleware/display_mw';
+import { handleDisplay } from '../services/middleware/display_mw';
 
 class MediaMngr extends Component {
     constructor(props) {
@@ -20,9 +20,10 @@ class MediaMngr extends Component {
         currentCompany: "mediaCompany",
         currentStore: "mediaStore",
         currentDisplay: "display1",
-        currentObj: {media: [{name: 'testing'},{name: 'testingtwo'}]}, 
+        currentObj: {media: [{mediaName: ''}]}, 
         selectedMedia: 0,
         mediaInput: 'default',
+        mediaUpdate: 'default',
         open: false,
         imgString: null,
         mediaCount: 0
@@ -39,7 +40,8 @@ class MediaMngr extends Component {
     selectMedia(e) {
         this.setState({
             selectedMedia: e.target.value,
-            mediaInput: e.target.innerHTML
+            mediaInput: e.target.innerHTML,
+            mediaUpdate: e.target.innerHTML
         });
     }
 
@@ -59,9 +61,13 @@ class MediaMngr extends Component {
 
     updateMedia(){
         if(this.state.selectedMedia < this.state.mediaCount){
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.mediaInput};
-        this.fetchMedia("UPDATE", data);
+        var newName = this.getNewName();
+        var nameVar = "media";
+        var fileVar = "mediaFile";
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaUpdate, fields: ["media", "mediaFile"], values: [newName, this.state.imgString]};
+        this.fetchMedia("patch", data);
         console.log("inside updateMedia");
+        console.log(data);
         }else{
             console.log("can't update new media")
         }
@@ -73,27 +79,33 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: newName, mediaFile: this.state.imgString};
-        this.fetchMedia("CREATE", data);
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: newName, mediaFile: this.state.imgString};
+        this.fetchMedia("put", data);
     }
 
     deleteMedia() {
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, media: this.state.currentObj.mediaInput};
-        this.fetchMedia("DELETE", data);
+        if(this.state.selectedMedia < this.state.mediaCount){
+            var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaInput};
+            this.fetchMedia("delete", data);
+        }else{
+          console.log("can't delete null media")
+        }
     }
 
 
     fetchMedia(type, data) {
         var url = "http://localhost:80/";
-        
+        var target = "display/media";
 
         let request = null;
         let response = [null,null];
 
         var me = this;
         var timer = {elapsed: 0};
-      
-        request = handleDisplay('display', type, url, data, response); //Switched to displayMW
+
+        request = handleDisplay(target, type, url, data, response); 
+        console.log("HEY THIS IS FOR TESTING PURPOSES SO MAKE SURE TO CHECK HERE");
+        console.log(type, url, data);
         
 
         var interval = setInterval(function(){
@@ -135,7 +147,7 @@ class MediaMngr extends Component {
 
     componentDidMount() {
         var data;
-        this.fetchMedia("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay});
+        this.fetchMedia("post", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay});
         console.log("did mount");
     }
 
@@ -155,7 +167,7 @@ class MediaMngr extends Component {
                             {this.state.currentObj.media.map((val, key) => {
                                 {this.state.mediaCount = key + 1}
                                 return (
-                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.name}</li>
+                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
                                  );
                              })}
                              <li className='media-list-item' key={this.state.mediaCount} value={this.state.mediaCount} onClick={this.selectMedia}>+New Media</li>
@@ -168,7 +180,6 @@ class MediaMngr extends Component {
                             <input id='name-field' type='text' onChange={this.changeCurrentMediaInput} value={this.state.mediaInput}></input>
                             {console.log(this.state.mediaInput)}
                             <input type="file" onChange={this.setSelectedFile}/>
-                            <button type="button">Generate QR</button>
                         </div>
                         <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update Media</button>
                         <br/>

@@ -17,7 +17,7 @@ export function prepMediaCall(target, type, url, data, global) {
 						company		: data.company,
 						store		: data.store,
 						display		: data.display,
-						media		: data.media,
+						mediaName	: data.mediaName,
 						mediaFile	: data.mediaFile
 					});
 					break;
@@ -34,22 +34,22 @@ export function prepMediaCall(target, type, url, data, global) {
 				case 'PATCH':
 					methodGen = 'PATCH';
 					inputGen  = JSON.stringify({
-						company	: data.company,
-						store	: data.store,
-						display	: data.display,
-						media	: data.media,
-						fields	: arrayToString('BASIC',data.fields),
-						values	: arrayToString('BASIC',data.values)
+						company		: data.company,
+						store		: data.store,
+						display		: data.display,
+						mediaName	: data.mediaName,
+						fields		: arrayToString('BASIC',data.fields),
+						values		: arrayToString('BASIC',data.values)
 					});
 					break;
 					
 				case 'DELETE':
-					methodGen = 'PUT';
+					methodGen = 'DELETE';
 					inputGen  = JSON.stringify({
 						company		: data.company,
 						store		: data.store,
 						display		: data.display,
-						media		: data.media,
+						mediaName	: data.mediaName,
 						
 					});
 					break;
@@ -90,7 +90,7 @@ export function prepMediaCall(target, type, url, data, global) {
 						company	: data.company,
 						store	: data.store,
 						display	: data.display,
-						media	: data.media
+						mediaName	: data.mediaName
 					});
 					break;
 					

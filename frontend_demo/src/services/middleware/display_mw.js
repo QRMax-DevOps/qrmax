@@ -42,7 +42,7 @@ export async function handleDisplay(target, type, url, data, global) {
 	} else if(typeValid[0] === true) {
 		type = typeValid[2];
 	}
-	
+
 	var requestOptions = null;
 	
 	switch(target.toLowerCase()) {

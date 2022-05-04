@@ -4,7 +4,7 @@ import '../UniversalStyling.css';
 import { Dropdown, DropdownButton, Button } from 'react-bootstrap';
 
 import Sidebar from './Sidebar';
-import { getDisplays } from '../services/middleware/display_mw';
+import { handleDisplay } from '../services/middleware/display_mw';
 
 
 
@@ -18,17 +18,34 @@ class Interactions extends Component {
         currentCompany: "mediaCompany",
         currentStore: "mediaStore",
         currentObj: {displays: [{display: ""}]},
-        currentDisplay: "display1"
+        currentObjInt: {interactions: [{media: ""}]},
+        currentDisplay: "None Selected",
+        currentPeriod: "All Time",
+        currentInteractions: "0"
     }
     
     selectDisplay(e){
+        {console.log(e.target.value)}
         this.setState({
-            currentDisplay: e.target.value
+            currentDisplay: e.target.innerHTML,
+            currentValue: e.target.value
         });
+        this.getInteractions();
     }
 
-    fetchDisplay(type, data) {
+    getInteractions(){
+        var data;
+        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentInteractions}, 1);
+        console.log("THIS IS PART OF THE GETLIST");
+        console.log(data);
+    }
+
+    fetchDisplay(type, data, objectCount) {
         var url = "http://localhost:80/";
+        if(objectCount == 0)
+        var target = "display";
+        else
+        var target = "display/interactions";
 
         let request = null;
         let response = [null,null];
@@ -36,7 +53,7 @@ class Interactions extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays(type, url, data, response);
+        request = handleDisplay(target, type, url, data, response);
 
         var interval = setInterval(function(){
             timer.elapsed++;
@@ -47,8 +64,10 @@ class Interactions extends Component {
 
                 if(response[0] === true){
                     var json = JSON.parse(response[1]);
-
+                    if(objectCount == 0)
                     me.setState({currentObj: json});
+                    if(objectCount == 1)
+                    me.setState({currentObjInt: json});
                     
                 }
             }
@@ -62,7 +81,8 @@ class Interactions extends Component {
 
     componentDidMount() {
         var data;
-        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore});
+        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore}, 0);
+        //this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentPeriod}, 1);
         console.log("did mount");
     }
 
@@ -84,46 +104,24 @@ class Interactions extends Component {
 
     render() { 
         return (
-            <div class="background">
+            <div className="background">
                 <div>
                     <Sidebar/>
                 </div>
-                <div class="MainContainer">
-                    <div class="DisplayContainer">
+                <div className="MainContainer">
+                    <div className="DisplayContainer">
                         <div>
                             <p>Current Display:</p>
                             <p>{this.state.currentDisplay}</p>
-                            {console.log(this.state.currentDisplay)}
                         </div>
                         <DropdownButton id="displayDrop" title="Display">
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
-                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay}>{val.display}</Dropdown.Item>
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.display}</Dropdown.Item>
                                 );
                             })}
                         </DropdownButton>
-                        <div id="InteractionDisplayOne">
-                            <p id="InteractionNames">Code 1 Interactions</p>
-                            <br/>
-                            <p>2</p>
-                        </div>
-                        <div id="InteractionDisplayTwo">
-                            <p id="InteractionNames">Code 2 Interactions</p>
-                            <br/>
-                            <p>5</p>
-                        </div>
-                        <div id="InteractionDisplayThree">
-                            <p id="InteractionNames">Code 3 Interactions</p>
-                            <br/>
-                            <p>10</p>
-                        </div>
-                        <div id="InteractionDisplayFour">
-                            <p id ="InteractionNames">Code 4 Interactions</p>
-                            <br/>
-                            <p>110</p>
-                        </div>
                         
-                       
                     </div>
                 </div>
                 </div>

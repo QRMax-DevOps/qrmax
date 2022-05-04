@@ -53,14 +53,8 @@ export function isEmptyOrSpaces(str){
 //Might seem unnecessary, but will be expanded upon later.
 export function arrayToString(type,array){
 	var strArray = array.toString();
-	
-	if(type.toUpperCase === 'BASIC') {
-		return strArray;
-	}
-	else {
-		strArray = "["+strArray+"]";
-		return strArray;
-	}
+
+	return strArray;
 }
 
 export function getDefaultHeaders() {
