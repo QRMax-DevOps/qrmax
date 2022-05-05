@@ -16,6 +16,7 @@ body{
 	font-family: Arial, sans-serif;
 	margin-top:10px;
 	margin-bottom:10px;
+
 }
 
 hr.bright {
@@ -30,7 +31,6 @@ hr.bright {
 
 .downloadLink:hover {
 	color: rgb(255, 208, 0);
-}
 
 .baseContainer {
 	margin: auto;
@@ -78,6 +78,7 @@ hr.bright {
 }
 
 .screenBodyContainer {
+
 	display:flex;
 	justify-content:space-between;
 	flex-direction:column;
@@ -222,6 +223,7 @@ hr.bright {
 .screenHeaderContainer .logoContainer {
 	display: flex;
 	justify-content: space-around;
+
 	align-content: center;
 	flex-direction: row;
 	flex-wrap: nowrap; 
@@ -246,10 +248,11 @@ hr.bright {
 }
 
 #footer {
+
 	background-color: white;;
 	
 	position: relative;
-	
+
 	display: flex;
 	justify-content: flex-end;
 	align-content: space-between;
@@ -478,6 +481,7 @@ hr.bright {
 	margin-bottom: 50px;
 	margin-left:auto;
 	margin-right:auto;
+
 	display: flex;
 	justify-content: space-around;
 	align-content: space-around;
@@ -486,6 +490,7 @@ hr.bright {
 	align-items: center;
 }
 
+
 .featureImgBackground {
 	border-radius: 15px;
 	background-image: linear-gradient(90deg, rgba(10,19,33,1) 0%, rgba(10,19,33,0.8) 35%, rgba(0,212,255,0) 100%), url(./images/demo_feature.png);
@@ -493,7 +498,6 @@ hr.bright {
     background-repeat:   no-repeat;
     background-position: top right;
 }
-
 
 .sideBySideCenter img {
 	border: none;
@@ -548,7 +552,6 @@ hr.bright {
 	align-items: flex-end; 
 	flex-direction:column;
 	flex-wrap: nowrap; 
-	
 }
 
 #overlaySplashInternal h1 {

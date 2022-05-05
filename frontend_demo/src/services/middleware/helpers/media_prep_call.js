@@ -18,6 +18,7 @@ export function prepMediaCall(target, type, url, data, global) {
 						store		: data.store,
 						display		: data.display,
 						mediaName	: data.mediaName,
+
 						mediaFile	: data.mediaFile
 					});
 					break;
@@ -40,6 +41,7 @@ export function prepMediaCall(target, type, url, data, global) {
 						mediaName	: data.mediaName,
 						fields		: arrayToString('BASIC',data.fields),
 						values		: arrayToString('BASIC',data.values)
+
 					});
 					break;
 					
