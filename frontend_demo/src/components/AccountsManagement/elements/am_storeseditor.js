@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React, { Component } from 'react';
 import tick_icon from '../../../graphics/tick.png'; 
 import cross_icon from '../../../graphics/cross.png'; 

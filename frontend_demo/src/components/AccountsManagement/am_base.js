@@ -1,5 +1,4 @@
-/* This file, as well as its code, respective design, layout,
- * and structure (etc.) has been developed by:
+/* This file and all contained code was developed by:
  * 
  * Developer information:
  *  - Full name: Marcus Hickey
@@ -60,6 +59,7 @@ class AccountsManagement extends Component {
 		this.getParentState = this.getParentState.bind(this)
 		this.Fetch = this.Fetch.bind(this)
 		
+		//Perform "fetch" (Call the API and request information)
 		this.Fetch('accounts');
 		this.Fetch('stores');
 	}
@@ -173,9 +173,9 @@ class AccountsManagement extends Component {
 		if(this.state.global && !this.state.global.isCompany) {
 			return (
 				<div className="AmBackground SideBySide">
-					<div> <Sidebar/> </div>
+					<div style={{height:"100%"}}> <Sidebar/> </div>
 					<div className="MainAccountsContainer">
-						<div className="FloatingContainer" style={{flexDirection:"row"}}>
+						<div className="FloatingContainer" style={{flexDirection:"row", boxShadow:"0 0 10px #5A5A5A"}}>
 							<Options
 								type='stores'
 								Fetch={this.Fetch.bind(this)}
@@ -201,13 +201,11 @@ class AccountsManagement extends Component {
 		}
 		//If IS a company account
 		else if(this.state.global && this.state.global.isCompany) {
-			
 			return (
-				<div className="AmBackground SideBySide">	
+				<div className="AmBackground SideBySide">
 					<div style={{height:"100%"}}> <Sidebar/> </div>
-					
 					<div className="MainAccountsContainer">
-						<div className="MainViewerContainer" style={{flexDirection:"row"}}>
+						<div className="FloatingContainer" style={{flexDirection:"row", boxShadow:"0 0 10px #5A5A5A"}}>
 							{ this.getParentState('iscompany') === true &&
 								<Options
 									type='accounts'

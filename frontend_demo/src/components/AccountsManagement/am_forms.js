@@ -1,5 +1,4 @@
-/* This file, as well as its code, respective design, layout,
- * and structure (etc.) has been developed by:
+/* This file and all contained code was developed by:
  * 
  * Developer information:
  *  - Full name: Marcus Hickey

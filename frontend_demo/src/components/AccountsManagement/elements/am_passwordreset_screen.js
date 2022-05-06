@@ -1,10 +1,13 @@
-import React, { Component } from 'react';
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
 
+import React, { Component } from 'react';
 import {isEmptyOrSpaces, enumToString} from './../../../services/utilities/common_util';
 import {log, logWarn} from './../../../services/core_mw';
-
 import "../am_style.css";
-
 import PasswordResetInputField from "./am_forms_passwordreset_input";
 
 class PasswordResetScreen extends Component {

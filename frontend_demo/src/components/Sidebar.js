@@ -8,7 +8,7 @@ import {Link} from 'react-router-dom';
 
 function Sidebar() {
     return(
-        <div className="sidebar">
+        <div className="sidebar" style={{height:"100%"}}>
             <div>
                 <h6 className="SidebarTitle">Dashboard</h6>
             </div>

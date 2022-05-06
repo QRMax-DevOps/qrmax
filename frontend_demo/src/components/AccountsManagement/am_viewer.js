@@ -1,5 +1,4 @@
-/* This file, as well as its code, respective design, layout,
- * and structure (etc.) has been developed by:
+/* This file and all contained code was developed by:
  * 
  * Developer information:
  *  - Full name: Marcus Hickey
@@ -29,7 +28,7 @@ class ListItem_Account extends Component {
 		
 		//console.log('Constructing ACCOUNT object from data: ',this.account);
 		
-		this.state = {selected:false, account:this.account, bgColor:'#E7E7E7'};
+		this.state = {account:this.account};
 	}
 	
 	getStoresString(stores) {
@@ -65,19 +64,22 @@ class ListItem_Account extends Component {
 		
 		var account = this.props.account;
 		var stores = this.getStoresString(account.stores);
-		
-		//console.log('account===',account);
-		
+
 		if(account.type.toLowerCase()==='storeaccount') {
 			
+			let classDesc = "";
 			
+			if(this.props.selected === true) {
+				classDesc = "Selected"
+			}
 			
 			return (
-				<button		
-					onClick={() => this.setState({selected:this.UpdateCurrentSelected('account', this.state.account)})}
-					className="AccountDisplayButton">
+				<button
+					id="AccountDisplayButton"
+					onClick={() => this.UpdateCurrentSelected('account', this.state.account)}
+					className={classDesc}>
 					
-					<label id="usernameField" className="DataField"><fade>Username:</fade> {account.username}</label>
+					<label id="usernameField" className="DataField"><span style={{color:"rgb(0, 59, 117)", fontStyle:"italic"}}>Username:</span> {account.username}</label>
 					<label id="storeIdField" className="DataField"> {stores} </label>
 				</button>
 			);
@@ -105,16 +107,23 @@ class ListItem_Store extends Component {
 	}
 	
 	render() {
-		//let bgColor = this.state.selected ? '#5EC0FF' : '#E7E7E7';
-		let bgColor='#E7E7E7';
+		let bgColor = '#E7E7E7';
+
+		let classDesc = "";
+
+		if(this.props.selected === true) {
+			classDesc = "Selected"
+		}
+		
 		
 		return(
 		
 			<button		
-				onClick={() => this.setState({selected:this.UpdateCurrentSelected('store', this.storeData)})}
-				className="AccountDisplayButton">
-				<label id="storeID" className="DataField"><fade>ID:</fade> {this.storeData.ID}</label>
-				<label id="storeName" className="DataField"><fade>Store:</fade> {this.storeData.store}</label>
+				id="AccountDisplayButton"
+				onClick={() => this.UpdateCurrentSelected('store', this.storeData)}
+				className={classDesc}>
+				<label id="storeID" className="DataField"><span style={{color:"rgb(0, 59, 117)", fontStyle:"italic"}}>ID:</span> {this.storeData.ID}</label>
+				<label id="storeName" className="DataField"><span style={{color:"rgb(0, 59, 117)", fontStyle:"italic"}}>Store:</span> {this.storeData.store}</label>
 			</button>
 
 		);
@@ -137,60 +146,82 @@ export class Viewer extends Component {
 		this.ACCOUNTSLIST = this.props.ACCOUNTSLIST;
 		this.STORESLIST = this.props.STORESLIST;
 		this.type = this.props.type;
-		this.state = {ListItems:[]};
-		
+		this.state = {ListItems:[], currentlySelected:''};
 	}
-	
-	UpdateCurrentSelected(type, account) {
-		let result = false;
-		
-		console.log("Setting current: ",type,account);
 
+	UpdateCurrentSelected(type, account) {
+		//Close all forms (prevent data clashes when doing reselection)
 		if(this.getParentState('currentForm') !== null) {
 			this.setParentState('currentForm', null);
 		}
-		
 		if(type.toLowerCase() ===  'store') {
-			this.setParentState('currentStore',account);
-			console.log(this.getParentState('currentStore'));
+			//If record is already selected, then deselect
+			if(this.state.currentlySelected && (this.state.currentlySelected.ID === account.ID)) {
+				this.setParentState('currentStore',null);
+				this.setState({currentlySelected:null});
+			}
+			//Else, select record
+			else {
+				this.setParentState('currentStore',account);
+				this.setState({currentlySelected:account});
+			}
 		}
-		
 		else if(type.toLowerCase() ===  'account') {
-			this.setParentState('currentAccount',account);
-			console.log(this.getParentState('currentAccount'));
+			if(this.state.currentlySelected && (this.state.currentlySelected.username === account.username)) {
+				this.setParentState('currentaccount',null);
+				this.setState({currentlySelected:null});
+			}
+			else {
+				this.setParentState('currentaccount',account);
+				this.setState({currentlySelected:account});
+			}
 		}
-		
-		return result;
 	}
-
 	
+	//Returns a mapped list of "ListItem" objects.
 	BuildList(type, source) {
-		if(source!=null) {
+		if(source && source.length > 0) {
 			return {ListItems:source.map((data) => this.BuildListItem(type, data))};
 		} else {
 			return 'none';
 		}
 	}
 	
+	//Used in the above "BuildList" function.
 	BuildListItem(type, data) {
-		
-		//console.log("BUILDING ITEM FROM: ",type,data)
+		var isSelected = false;
 		
 		if(this.type==='accounts') {
-			return  <li key={data.username}>
-			<ListItem_Account UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} account={data}/>
-		</li>;
+			//Checking if the record is currently selected
+			if(this.state.currentlySelected && (data.username === this.state.currentlySelected.username)) 
+			{ isSelected = true; }
+		
+			//Construct and return the list item
+			return (
+				<li key={data.username}>
+					<ListItem_Account UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} selected={isSelected} account={data}/>
+				</li>
+			);
 		}
 		if(this.type==='stores') {
-			return  <li key={data.ID}>
-			<ListItem_Store UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} storeData={data}/>
-		</li>;
+			if(this.state.currentlySelected && (data.ID === this.state.currentlySelected.ID))
+			{ isSelected = true; }
+			
+			return  (
+				<li key={data.ID}>
+					<ListItem_Store UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} selected={isSelected} storeData={data}/>
+				</li>
+			);
 		}
 	}
 	
 	componentDidUpdate(prevProps, prevState) {
 		this.ACCOUNTSLIST = this.getParentState('primaryaccountslist');
 		this.STORESLIST = this.getParentState('primarystoreslist');
+
+		if(prevState.currentlySelected !== this.state.currentlySelected) {
+			this.setParentState('queueSoftRefresh',true);
+		}
 		
 		if(this.getParentState('queueSoftRefresh') === true) {
 			
@@ -212,12 +243,6 @@ export class Viewer extends Component {
 			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
 				this.setParentState('currentForm',null);
 			}
-			if(this.getParentState('currentAccount') != null) {
-				this.setParentState('currentAccount',null);
-			}
-			
-			
-
 			this.Fetch(this.type);
 	}
 	
@@ -225,10 +250,6 @@ export class Viewer extends Component {
 		if(IsJsonString(target)) {		
 			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
 				this.setParentState('currentForm',null);
-			}
-			
-			if(this.getParentState('currentAccount') != null) {
-				this.setParentState('currentAccount',null);
 			}
 			
 			let results = [];

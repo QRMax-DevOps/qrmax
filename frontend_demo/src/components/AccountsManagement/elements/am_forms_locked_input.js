@@ -1,5 +1,10 @@
-import React, { Component } from 'react';
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
 
+import React, { Component } from 'react';
 import "./am_forms_components_style.css"
 
 class LockedInputField extends Component {
@@ -108,7 +113,7 @@ class LockedInputField extends Component {
 					onMouseEnter={ (event)=>this.setFocus(true) }
 					onMouseLeave={ (event)=>this.setFocus(false) }>
 					
-					<div className="inputElement" style={{color:"#003B75", textAlign:"left", width:"100px"}}>{this.props.title}</div>
+					<div className="inputElement" style={{color:"#003B75", textAlign:"left", width:"100px", fontStyle:"italic"}}>{this.props.title}</div>
 					<div className="inputElement" style={{color:"#003B75", textAlign:"center", width:"25px"}}>:</div>
 					<input className={this.state.inputStyle} style={{width:"100%"}} id="inputField"
 						spellCheck="false"

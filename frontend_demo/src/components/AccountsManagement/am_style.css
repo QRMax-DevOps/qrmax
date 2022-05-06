@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 .FormButtonsContainer {
 	background-color:white;
 	padding-bottom:20px;
@@ -193,8 +199,9 @@
 }
 
 .GreenButton:disabled {
-	opacity:0.5;
-	background-color: grey !important;
+	opacity:0.33;
+	color:black;
+	background-color: #D8D8D8 !important;
 }
 .GreenButton:hover {
 	background-color: #43BC43;
@@ -227,12 +234,16 @@
 	border-radius: 7px;
 	border: hidden;
 }
-.ViewerBtn:hover {
+.ViewerBtn:disabled {
+	opacity: 0.33;
+}
+.ViewerBtn:hover:enabled {
 	background-color: #B1B1B1;
 }
-.ViewerBtn:active {
+.ViewerBtn:active:enabled {
 	background-color: #D8D8D8;
 }
+
 
 #StoresField {
 	display: flex;

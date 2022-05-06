@@ -1,5 +1,4 @@
-/* This file, as well as its code, respective design, layout,
- * and structure (etc.) has been developed by:
+/* This file and all contained code was developed by:
  * 
  * Developer information:
  *  - Full name: Marcus Hickey
@@ -22,6 +21,7 @@ export function enumToString(value) {
 	}
 }
 
+//Used to convert strings to bools, symbols to bools, etc.
 export function stringToBool(value) {
 	if(typeof(value) === 'string') {
 		if(value === 'true') {return true;}
@@ -32,6 +32,8 @@ export function stringToBool(value) {
 	}
 }
 
+
+//Check if string is in correct json formatting
 export function IsJsonString(str) {
     try {
         JSON.parse(str);
@@ -46,14 +48,13 @@ export function getUnsupportedMethodMessage(type, endpoint) {
 	return ("Forced rejection of request:\n      > Request method/type ("+type+") is unsupported by endpoint: "+endpoint);
 }
 
-export function isEmptyOrSpaces(str){
-    return str === null || str.match(/^ *$/) !== null;
+export function isEmptyOrSpaces(str) {
+    return str == null || (typeof str === 'string' && str.match(/^ *$/) !== null);
 }
 
 //Might seem unnecessary, but will be expanded upon later.
 export function arrayToString(type,array){
 	var strArray = array.toString();
-
 	return strArray;
 }
 
@@ -63,8 +64,6 @@ export function getDefaultHeaders() {
 	});
 	return headersGen;
 }
-
-
 
 export function verifyFetchMethod(method) {
 	if(typeof method === 'symbol') {
