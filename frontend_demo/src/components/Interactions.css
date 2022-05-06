@@ -9,56 +9,19 @@
     width: 100%;
 }
 
-#InteractionDisplayOne {
-    height: 150px;
-    width: 300px;
-    background-color: silver;
-    margin-left: 2%;
-    margin-top: 2%;
-    position: fixed;
-    top: 1;
-    left: 250px;
-    
-}
-
-#InteractionDisplayTwo {
-    height: 150px;
-    width: 300px;
-    background-color: silver;
-    margin-left: 2%;
-    margin-top: 2%;
-    position: fixed;
-    top: 1;
-    left: 600px;
-    
-}
-
-#InteractionDisplayThree {
-    height: 150px;
-    width: 300px;
-    background-color: silver;
-    margin-left: 2%;
-    margin-top: 2%;
-    position: fixed;
-    top: 1;
-    left: 950px;
-   
-}
-
-#InteractionDisplayFour {
-    height: 150px;
-    width: 300px;
-    background-color: silver;
-    margin-left: 2%;
-    margin-top: 2%;
-    position: fixed;
-    top: 1;
-    left: 1300px;
-}
-
 #InteractionNames {
     font-size:24px;
 	font-weight:bold;
 	
+}
+
+#interactions-list {
+    height: 200px;
+    width: 500px;
+    overflow: hidden;
+    overflow-y: scroll;
+    border: 2px solid white;
+    list-style: none;
+    margin: auto;
 }
 
