@@ -28,7 +28,7 @@ export function getApiURL(localhost) {
 		}
 	}
 	else {
-		return 'https://api.qrmax.app/endpoint/';
+		return 'https://api.qrmax.app/';
 	}
 }
 

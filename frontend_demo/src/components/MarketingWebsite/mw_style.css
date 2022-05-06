@@ -31,6 +31,7 @@ hr.bright {
 
 .downloadLink:hover {
 	color: rgb(255, 208, 0);
+}
 
 .baseContainer {
 	margin: auto;
@@ -495,6 +496,13 @@ hr.bright {
 	border-radius: 15px;
 	background-image: linear-gradient(90deg, rgba(10,19,33,1) 0%, rgba(10,19,33,0.8) 35%, rgba(0,212,255,0) 100%), url(./images/demo_feature.png);
 	background-size:     800px;
+    background-repeat:   no-repeat;
+    background-position: top right;
+}
+
+.missionImgBackground {
+	border-radius: 15px;
+	background-size:     900px;
     background-repeat:   no-repeat;
     background-position: top right;
 }
