@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React from 'react';
 import { createBrowserHistory } from "history";
 import {Routes, Route} from "react-router-dom";
