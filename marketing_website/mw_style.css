@@ -42,7 +42,7 @@ hr.bright {
 	flex-direction: column;
 	flex-wrap: nowrap; 
 	
-	background-image: linear-gradient(90deg, rgba(10,19,33,1) 0%, rgba(10,19,33,1) 6%, rgba(0,212,255,0) 100%), url(../../graphics/website_background_blur.jpg);
+	background-image: linear-gradient(90deg, rgba(10,19,33,1) 0%, rgba(10,19,33,1) 6%, rgba(0,212,255,0) 100%), url(./images/website_background_blur.jpg);
 	
 	background-size:     115%;
     background-repeat:   no-repeat;
@@ -56,7 +56,7 @@ hr.bright {
 }
 
 .setBackgroundFadeRight {
-	background-image: linear-gradient(270deg, rgba(10,19,33,1) 0%, rgba(10,19,33,1) 15%, rgba(0,212,255,0) 100%), url(../../graphics/website_background_blur.jpg);
+	background-image: linear-gradient(270deg, rgba(10,19,33,1) 0%, rgba(10,19,33,1) 15%, rgba(0,212,255,0) 100%), url(./images/website_background_blur.jpg);
 }
 
 .screenHeaderContainer {

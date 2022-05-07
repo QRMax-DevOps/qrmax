@@ -115,7 +115,7 @@ export default function InputResponse() {
 					
 					}
 					else if(formatState === true && GLOBAL[0] === null) {
-						ActionQRID(data,GLOBAL,true);
+						ActionQRID(data,GLOBAL,false);
 						GLOBAL[1] = "wait";
 					}
 					else if(formatState === true && (GLOBAL[0] === true || GLOBAL[0] === false)) {
