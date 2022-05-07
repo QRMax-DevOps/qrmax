@@ -13,29 +13,54 @@ class Interactions extends Component {
     constructor(props) {
         super(props);
         this.selectDisplay = this.selectDisplay.bind(this);
+        this.selectPeriod = this.selectPeriod.bind(this);
     }
     state = {
         currentCompany: "mediaCompany",
         currentStore: "mediaStore",
         currentObj: {displays: [{display: ""}]},
-        currentObjInt: {interactions: [{media: ""}]},
+        currentObjInt: {interactions: [["", 0]]},
         currentDisplay: "None Selected",
         currentPeriod: "All Time",
-        currentInteractions: "0"
+        currentPeriodCode: 0
     }
     
+   
+
     selectDisplay(e){
         {console.log(e.target.value)}
         this.setState({
-            currentDisplay: e.target.innerHTML,
-            currentValue: e.target.value
+            currentDisplay: e.target.innerHTML
         });
-        this.getInteractions();
+        this.getInteractions(e);
     }
 
-    getInteractions(){
+    selectPeriod(e){
         var data;
-        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentInteractions}, 1);
+        var codeString = e.target.innerHTML;
+        var code;
+        if(codeString == "All Time"){
+            code = 0;
+        }else if(codeString == "Today"){
+            code = 1;
+        }else if(codeString == "One Hour"){
+            code = 2;
+        }else if(codeString == "Last 10 Minutes"){
+            code = 3;
+        }
+        this.setState({
+            currentPeriod: e.target.innerHTML,
+             currentPeriodCode: code
+        });
+
+      this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: code}, 1);
+      {console.log("HEY THIS IS A THING WOOHOO YAY YAY")}
+      
+    }
+
+    getInteractions(e){
+        var data;
+        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: e.target.innerHTML, period: this.state.currentPeriodCode}, 1);
         console.log("THIS IS PART OF THE GETLIST");
         console.log(data);
     }
@@ -64,11 +89,15 @@ class Interactions extends Component {
 
                 if(response[0] === true){
                     var json = JSON.parse(response[1]);
+
                     if(objectCount == 0)
                     me.setState({currentObj: json});
+
                     if(objectCount == 1)
                     me.setState({currentObjInt: json});
-                    
+
+                    {console.log("we reach this point")}
+                    {console.log(json)}
                 }
             }
             if(timer.elapsed == 24) {
@@ -82,28 +111,14 @@ class Interactions extends Component {
     componentDidMount() {
         var data;
         this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore}, 0);
-        //this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentPeriod}, 1);
+        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentPeriodCode}, 1);
         console.log("did mount");
-    }
-
-    getBase64(file) {
-        return new Promise(function(resolve, reject){
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                resolve(reader.result);
-            };
-
-            reader.onerror = (error) => {
-                reject(error);
-            }
-        });
     }
 
 
     render() { 
         return (
+            
             <div className="background">
                 <div>
                     <Sidebar/>
@@ -111,9 +126,12 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                            <p>Current Display:</p>
-                            <p>{this.state.currentDisplay}</p>
+                            <p>Current Display: {this.state.currentDisplay}</p>
+                            
+                            <p>Current Period: {this.state.currentPeriod}</p>
+
                         </div>
+                        <div>
                         <DropdownButton id="displayDrop" title="Display">
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
@@ -121,6 +139,20 @@ class Interactions extends Component {
                                 );
                             })}
                         </DropdownButton>
+                        <DropdownButton id="periodDrop" title="Period">
+                            <Dropdown.Item onClick={this.selectPeriod}>All Time</Dropdown.Item>
+                            <Dropdown.Item onClick={this.selectPeriod}>Today</Dropdown.Item>
+                            <Dropdown.Item onClick={this.selectPeriod}>One Hour</Dropdown.Item>
+                            <Dropdown.Item onClick={this.selectPeriod}>Last 10 Minutes</Dropdown.Item>
+                        </DropdownButton>
+                        </div>
+                        <ul id='interactions-list'>
+                            {this.state.currentObjInt.interactions.map((val, key) => {
+                                return (
+                                 <li className='interactions-list-item' width={500} key={key} value={key}>{val[0]} intertactions:    {val[1]}</li>
+                                 );
+                             })}
+                        </ul>
                         
                     </div>
                 </div>

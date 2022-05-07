@@ -6,7 +6,6 @@ import { ImageToBase64 } from '../services/utilities/base64_util';
 import Sidebar from './Sidebar';
 import { handleDisplay } from '../services/middleware/display_mw';
 
-
 class MediaMngr extends Component {
     constructor(props) {
         super(props);
@@ -103,8 +102,8 @@ class MediaMngr extends Component {
 
         var me = this;
         var timer = {elapsed: 0};
-      
-        request = handleDisplay('display', type, url, data, response); //Switched to displayMW
+
+        request = handleDisplay(target, type, url, data, response); 
         
 
         var interval = setInterval(function(){
@@ -162,6 +161,7 @@ class MediaMngr extends Component {
                     <h4 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h4>
                     <div id="styled-container">
                         <ul id='media-list'>
+                        {console.log("This is for testing purposes: currentObj")}
                         {console.log(this.state.currentObj)}
                             {this.state.currentObj.media.map((val, key) => {
                                 {this.state.mediaCount = key + 1}
