@@ -10,7 +10,7 @@ class QRController {
             const display = req.body.display;
             const media = req.body.mediaName;
 		    const mediaFile = req.body.mediaFile;
-		    //const linkedURITime = red.body.linkedURITime;
+            const TTL = req.body.TTL;
             //check if company/store exists
             if(!await CompanyDAO.checkStore(company, store)){
                 res.json({status:"failure", cause:"no such store"});
@@ -21,7 +21,7 @@ class QRController {
             }
             //create qr
             else{
-                DisplayDAO.addQR(company, store, display, media, mediaFile);
+                DisplayDAO.addQR(company, store, display, media, mediaFile, TTL);
                 res.json({status:"success"});
             }
             return res;
