@@ -1,14 +1,16 @@
 const CompanyDAO = require("../../dao/CompanyDAO.js");
 const DisplayDAO = require("../../dao/DisplayDAO.js");
 
-class StoreController {
+class DisplayController {
     static async add(req, res){
         try{
             //get company, store, display
             const company = req.body.company;
             const store = req.body.store;
             const display = req.body.display;
-
+            const displayType = req.body.displayType;
+            const location = req.body.location
+            
             //check if company/store exists
             if(!(await CompanyDAO.checkStore(company, store))){
                 res.json({status:"failure", cause:"no such store"})
@@ -18,8 +20,11 @@ class StoreController {
                 res.json({status:"failure", cause:"Display already exists"})
             }
             //create display(add to store as callback)
+            else if (!(displayType == 'static' || displayType == 'dynamic')){
+                res.json({status:"failure", cause:"Invalid display type"});
+            }
             else{
-                DisplayDAO.newDisplay(company, store, display, CompanyDAO.addDisplay);
+                DisplayDAO.newDisplay(company, store, display, displayType, location);
                 res.json({status:"success"})
             }
             return res;
@@ -101,39 +106,17 @@ class StoreController {
     }
 
     static async listen(req, res){
-        try{
+        //try{
             //get company, store, display
             const company = req.body.company;
             const store = req.body.store;
             const display = req.body.display;
             let rJson = await DisplayDAO.listen(company, store, display);
             res.json({status:"success", display:rJson});
-        }
-        catch(e){
-            res.json({status:"failure",cause:e});
-        }
-    }
-
-    static async getSettings(req, res){
-        try{
-            const company = req.body.company;
-            const store = req.body.store;
-            const display = req.body.display;
-
-            if(!(await CompanyDAO.checkStore(company, store))){
-                res.json({status:"failure", cause:"no such store"})
-            }
-            else if(!(await DisplayDAO.checkDisplay(company, store, display))){
-                res.json({status:"failure", cause:"no such display"})
-            }
-            else{
-                let settingsR = await DisplayDAO.getSettings(company, store, display);
-                res.json({status:"success", settings:settingsR.settings});
-            }
-        }
-        catch(e){
-            res.json({status:"failure", cause:e})
-        }
+        //}
+        //catch(e){
+        //    res.json({status:"failure",cause:e});
+        //}
     }
 
     static async changeSettings(req, res){
@@ -223,6 +206,52 @@ class StoreController {
             res.json({status:"failure", cause:e})
         }
     }
+
+    static async newBaseMedia(req, res){
+        try{
+            const company = req.body.company;
+            const store = req.body.store;
+            const display = req.body.display;
+            const baseMedia = req.body.baseMedia;
+            const baseMediaFile = req.body.baseMediaFile;
+            const TTL = req.body.TTL;
+
+            if(!(await CompanyDAO.checkStore(company, store))){
+                res.json({status:"failure", cause:"no such store"})
+            }
+            else if(!(await DisplayDAO.checkDisplay(company, store, display))){
+                res.json({status:"failure", cause:"no such display"})
+            }
+            else{
+                DisplayDAO.newBaseMedia(company, store, display, baseMedia, baseMediaFile, TTL);
+                res.json({status:"success"});
+            }
+        }
+        catch(e){
+            res.json({status:"failure", cause:e})
+        }
+    }
+
+    static async getBaseMedia(req, res){
+        try{
+            const company = req.body.company;
+            const store = req.body.store;
+            const display = req.body.display;
+            if(!(await CompanyDAO.checkStore(company, store))){
+                res.json({status:"failure", cause:"no such store"})
+            }
+            else if(!(await DisplayDAO.checkDisplay(company, store, display))){
+                res.json({status:"failure", cause:"no such display"})
+            }
+            else{
+                let result = await DisplayDAO.getBaseMedia(company, store, display);
+                res.json({status:"success", baseMedia:result});
+            }
+        }
+        catch(e){
+            //res.json({status:"failure", cause:e})
+        }
+    }
 }
 
-module.exports = StoreController;
+module.exports = DisplayController;

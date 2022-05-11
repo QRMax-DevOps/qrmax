@@ -30,7 +30,7 @@ class UserInputController {
           //Validation
           if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
             UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
-            DisplayDAO.addVote(company, store, display, QRID);
+            DisplayDAO.addVote(QRID);
 		      	res.json({status:"success"});
           }
           else {

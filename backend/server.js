@@ -16,6 +16,7 @@ const DisplaySettings = require("./api/route/DisplaySettings.route.js");
 const Interactions = require("./api/route/Interactions.route.js");
 const MediaRefresh = require("./api/route/MediaRefresh.route.js");
 const Positions = require("./api/route/QRPositions.route.js");
+const baseMedia = require("./api/route/baseMedia.route.js");
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -66,6 +67,9 @@ app.use("/api/v1/Display/Interactions", Interactions);
 
 //Display QR refresh
 app.use("/api/v1/Display/Media/Refresh", MediaRefresh);
+
+//display base media
+app.use("/api/v1/Display/Media/baseMedia", baseMedia);
 
 app.use("*", (req, res) => res.status(404).json({ error: "not found" }));
 
