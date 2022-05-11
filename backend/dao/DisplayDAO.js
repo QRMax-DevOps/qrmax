@@ -2,8 +2,6 @@ const { v4: uuidv4 } = require('uuid');
 const MediaDAO = require("./MediaDAO.js");
 const { setgroups } = require('process');
 const UserInputDAO = require('./UserInputDAO.js');
-const { rmSync } = require('fs');
-const { VirtualConsole } = require('jsdom');
 
 let Display;
 
@@ -37,7 +35,7 @@ class DisplayDAO {
       return false;
     }
 
-    static async newDisplay(company, store, display, displayType, location){
+    static async newDisplay(company, store, display, addDisplay){
       //generate display id
       const id = uuidv4();
       //generate document
@@ -46,20 +44,17 @@ class DisplayDAO {
         company: company, //gross
         store: store, //gross
         display:display, //gross
-        displayType:displayType,
-        location:location,
         mediaCount:0,
         media:[],
 		    currentQRPositions:0,
 		    numberQRPositions:1,
-        positions:[{x:0,y:0}],
-        baseMedia:{},
         currentMedia:{
           media:"",
           liveTime: new Date(Date.now()),
           TTL:"0",
+		    positions:[{x:0,y:0}]
         },
-        settings:[],
+        settings:[]
       }
       //insert doc
       try{
@@ -110,7 +105,7 @@ class DisplayDAO {
       return false;
     }
 	
-    static async addQR(company, store, display, media, mediaFile, TTL){
+    static async addQR(company, store, display, media, mediaFile){
       
       //generate qr id
 	    const QRID = uuidv4();
@@ -132,6 +127,8 @@ class DisplayDAO {
 		    }
 	    }
 	    cleanMediaID = cleanMediaID.slice(0,20);
+	  
+	    const TTL = 15;
 
       let ID = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, mediaCount:1}})
       ID = ID.mediaCount;
@@ -236,8 +233,8 @@ class DisplayDAO {
       }
 	}
 	
-	static async addVote(QRID) {
-    let result = await Display.findOne({media:{$elemMatch:{QRID:QRID}}}, {projection:{_id:0, company:0, store:0, displayID:0, display:0, mediaCount:0}});
+	static async addVote(company, store, display, QRID) {
+    var result = await Display.findOne({company:company, store:store, display:display, "media.QRID":QRID}, {projection:{_id:0, company:0, store:0, displayID:0,display:0, mediaCount:0}});
     let voteCount;
     let lifetimeVotes;
 	  for(var i = 0; i < result.media.length; i++){
@@ -249,7 +246,7 @@ class DisplayDAO {
       voteCount += 1;
       lifetimeVotes += 1;
       //increment voteCount
-      await Display.updateOne({media:{$elemMatch:{QRID:QRID}}}, {$set:{"media.$.voteCount":parseInt(voteCount), "media.$.lifetimeVotes":parseInt(lifetimeVotes)}}, {upsert:false});
+      await Display.updateOne({company:company, store:store, display:display, "media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(voteCount), "media.$.lifetimeVotes":parseInt(lifetimeVotes)}}, {upsert:false});
 	  return true;
 	}
 
@@ -282,25 +279,14 @@ class DisplayDAO {
       display:display,
     });
     let highest = -1;
-    let highestMedia = -1;
+    let highestMedia = 0;
     //loop through media & select one with highest voteCount
-    if (result.displayType != 'static'){
-      for(var i = 0; i < result.media.length; i++){
-        if(result.media[i].voteCount > highest){
-          highest = result.media[i].voteCount;
-          highestMedia = i;
-        }
+    for(var i = 0; i < result.media.length; i++){
+      if(result.media[i].voteCount > highest){
+        highest = result.media[i].voteCount;
+        highestMedia = i;
       }
     }
-    else{
-      for(var i = 0; i < result.media.length; i++){
-        if(result.media[i].voteCount > highest && result.media[i].voteCount > 0){
-          highest = result.media[i].voteCount;
-          highestMedia = i;
-        }
-      }
-    }
-    
     //return mediaID
     return highestMedia;
   }
@@ -348,7 +334,7 @@ class DisplayDAO {
     return result;
   }
 
-  static async setCurrentMedia(company, store, display, highestMedia, desiredDisplay, _static){
+  static async setCurrentMedia(company, store, display, highestMedia, desiredDisplay){
     const result = await Display.findOne(
       {
         company:company,
@@ -362,15 +348,7 @@ class DisplayDAO {
     // pull all the necessary info out, make new timestamp
     const media = selectedMedia.media;
     const liveTime = new Date(Date.now());
-    let  TTL = selectedMedia.TTL;
-    if(_static){
-      let foundDisplay = await Display.findOne({
-        company:company,
-        store:store,
-        display:display
-      });
-      TTL = foundDisplay.baseMedia.TTL;
-    }
+    const TTL = selectedMedia.TTL;
     //set as current media
     Display.updateOne(
       {
@@ -391,10 +369,8 @@ class DisplayDAO {
   }
 
   //used to set media to message that it should currently show the QR
-  static async setCurrentMediaBase(company, store, display, baseMediaTime){
+  static async setCurrentMediaQR(company, store, display){
     const liveTime = new Date(Date.now());
-    if (!baseMediaTime)
-      baseMediaTime = 10;
     Display.updateOne(
       {
         company:company,
@@ -403,9 +379,9 @@ class DisplayDAO {
       },
       {
         $set:{
-          "currentMedia.media": "Base", // set media to special code to displayQR
+          "currentMedia.media": "displayQR", // set media to special code to displayQR
           "currentMedia.liveTime":liveTime,
-          "currentMedia.TTL":baseMediaTime //set ttl to base media time
+          "currentMedia.TTL":10 //set ttl to 10 seconds
         }
       }
     )
@@ -420,38 +396,26 @@ class DisplayDAO {
       let liveTime = display.currentMedia.liveTime;
       liveTime = new Date(liveTime);
       liveTime = new Date(liveTime.getTime() + (display.currentMedia.TTL * 1000))
-  
-      if (cTime >= liveTime || display.displayType === 'static'){
-        const company = display.company; 
-        const store = display.store;
-        const desiredDisplay = display.display;
-        const baseMediaTime = display.baseMedia.TTL;
-        const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
-        if (display.displayType === 'static'){
-          //if they're all 0 do nothing
-          if (cTime >= liveTime){
-            this.setCurrentMediaBase(company, store, desiredDisplay, 9999999999999)
-            return "base";
-          }
-          else if (highestMedia == -1){
-            return null
-          }
-          //if any are one set new media to that
-          else{
-            this.setCurrentMedia(company, store, desiredDisplay, highestMedia, desiredDisplay, true);
-            return "new";
-          }
-        }
-        else if(display.currentMedia.media === "displayBase"){
+
+      if (cTime >= liveTime){
+        if(display.currentMedia.media === "displayQR"){
+          const company = display.company; 
+          const store = display.store;
+          const desiredDisplay = display.display;
+          const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
           //switch to new media
           this.setCurrentMedia(company, store, desiredDisplay, highestMedia, desiredDisplay);
           //send message to display new media
-          return "new";
+          return "newMedia";
         }
         else{
-          this.setCurrentMediaBase(company, store, desiredDisplay, baseMediaTime);
+          const company = display.company; 
+          const store = display.store;
+          const desiredDisplay = display.display;
+          const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
+          this.setCurrentMediaQR(company, store, desiredDisplay, highestMedia);
           //send message to display QR
-          return "base";
+          return "QR";
         }
       }
     }
@@ -701,26 +665,6 @@ static async deletePositions(company, store, display,QRID) {
 	}
 }
 
-static async newBaseMedia(company, store, display, baseMedia, baseMediaFile, TTL){
-  const mediaID = uuidv4();
-  let cleanMediaID = "";
-	for (let sub of mediaID) {
-	  if (sub != '-') {
-	    cleanMediaID+=sub;
-	  }
-	}
-	cleanMediaID = cleanMediaID.slice(0,20);
-  MediaDAO.newMedia(cleanMediaID, baseMediaFile);
-  Display.updateOne({company:company, store:store, display:display}, {$set:{"baseMedia.mediaName":baseMedia, "baseMedia.mediaID":cleanMediaID, "baseMedia.TTL":TTL}});
-}
-
-static async getBaseMedia(company, store, display){
-  let result = await Display.findOne({company:company, store:store, display:display}, {projection:{_id:0, baseMedia:1}});
-  let baseMediaName = result.baseMedia.mediaName
-  let baseMediaFile = await MediaDAO.retrieveMedia(result.baseMedia.mediaID);
-  baseMediaFile = baseMediaFile.mediaFile;
-  return {baseMediaName, baseMediaFile};
-}
 
 
 }
