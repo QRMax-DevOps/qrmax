@@ -106,17 +106,17 @@ class DisplayController {
     }
 
     static async listen(req, res){
-        //try{
+        try{
             //get company, store, display
             const company = req.body.company;
             const store = req.body.store;
             const display = req.body.display;
             let rJson = await DisplayDAO.listen(company, store, display);
             res.json({status:"success", display:rJson});
-        //}
-        //catch(e){
-        //    res.json({status:"failure",cause:e});
-        //}
+        }
+        catch(e){
+            res.json({status:"failure",cause:e});
+        }
     }
 
     static async changeSettings(req, res){
@@ -249,7 +249,7 @@ class DisplayController {
             }
         }
         catch(e){
-            //res.json({status:"failure", cause:e})
+            res.json({status:"failure", cause:e})
         }
     }
 }

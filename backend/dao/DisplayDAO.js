@@ -81,9 +81,18 @@ class DisplayDAO {
 	
     static async patchDisplay(company, store, display, fields, values){
       let i = -1;
+      let restricted = ['company', 'store', 'displayID', 'mediaCount', 'baseMedia', 'currentMedia', 'settings'];
       for (let field of fields){
         i++;
         let value = values[i];
+        if (restricted.includes(field)){
+          return;
+        }
+        else{
+          Display.updateOne({company:company, store:store, display:display}, {$set:{[field]:value}}, {upsert:false});
+        }
+      }
+    }
 		/*
         if(field == 'currentQRPositions'){
           await Display.updateOne({company:company, store:store, display:display}, {$set:{currentQRPositions:parseInt(value)}}, {upsert:false});
@@ -91,9 +100,7 @@ class DisplayDAO {
 		else {
 			//return nothing
 		}*/
-      }
-	}
-	
+
     static async checkMedia(company, store, display, media){
       const result = await Display.findOne({company:company, store:store, display:display, media:{$elemMatch:{media:media}}});
       if(result){

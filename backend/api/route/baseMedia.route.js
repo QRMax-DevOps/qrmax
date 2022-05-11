@@ -5,7 +5,7 @@ const router = express.Router();
 
 router
     .route("/")
-    .post(DisplayController.newBaseMedia)
-    .get(DisplayController.getBaseMedia);
+    .put(DisplayController.newBaseMedia)
+    .post(DisplayController.getBaseMedia);
 
 module.exports = router;
