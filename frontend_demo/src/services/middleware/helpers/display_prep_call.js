@@ -14,9 +14,11 @@ export function prepDisplayCall(target, type, url, data, global) {
 				case 'PUT':
 					methodGen = 'PUT';
 					inputGen  = JSON.stringify({
-						company	: data.company,
-						store	: data.store,
-						display	: data.display
+						company		: data.company,
+						store		: data.store,
+						display		: data.display,
+						location	: data.location,
+						displayType	: data.displayType
 					});
 					break;
 

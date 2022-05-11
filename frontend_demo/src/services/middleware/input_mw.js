@@ -15,9 +15,6 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 	var url = getApiURL(isLocalHost);
 	var endpoint = url+'api/v1/QR/';
 	var bodyGen = JSON.stringify({
-		company: data.company,
-		store: data.store,
-		display: data.display,
 		QRID: data.QRID
 	})
 	
