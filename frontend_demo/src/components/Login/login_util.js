@@ -7,9 +7,9 @@ export function getNiceError(input) {
 	console.log(input);
 	
 	switch(json.cause.toLowerCase()) {
-		case 'incorrect password': return "Incorrect password";
+		case 'incorrect password': return 'Incorrect details. Please try again.';
 		case 'no such company': return "This company does not exist.";
 		case 'no such account': return "Username does not exist in company records.";
-		default: return json.cause;
+		default: return 'Incorrect details. Please try again.';
 	}
 }

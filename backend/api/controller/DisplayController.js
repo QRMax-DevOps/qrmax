@@ -1,16 +1,14 @@
 const CompanyDAO = require("../../dao/CompanyDAO.js");
 const DisplayDAO = require("../../dao/DisplayDAO.js");
 
-class DisplayController {
+class StoreController {
     static async add(req, res){
         try{
             //get company, store, display
             const company = req.body.company;
             const store = req.body.store;
             const display = req.body.display;
-            const displayType = req.body.displayType;
-            const location = req.body.location
-            
+
             //check if company/store exists
             if(!(await CompanyDAO.checkStore(company, store))){
                 res.json({status:"failure", cause:"no such store"})
@@ -20,11 +18,8 @@ class DisplayController {
                 res.json({status:"failure", cause:"Display already exists"})
             }
             //create display(add to store as callback)
-            else if (!(displayType == 'static' || displayType == 'dynamic')){
-                res.json({status:"failure", cause:"Invalid display type"});
-            }
             else{
-                DisplayDAO.newDisplay(company, store, display, displayType, location);
+                DisplayDAO.newDisplay(company, store, display, CompanyDAO.addDisplay);
                 res.json({status:"success"})
             }
             return res;
@@ -118,7 +113,6 @@ class DisplayController {
             res.json({status:"failure",cause:e});
         }
     }
-
     static async changeSettings(req, res){
         try{
             const company = req.body.company;
@@ -254,4 +248,4 @@ class DisplayController {
     }
 }
 
-module.exports = DisplayController;
+module.exports = StoreController;
