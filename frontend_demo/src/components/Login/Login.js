@@ -67,20 +67,81 @@ export default class Page extends React.Component {
 			passwordBox : '',
 			companyBox : '',
 			usernameBox : '',
+			rememberMeCheck : false,
 			companyAccount : false,
 			localhost : false,
 			loginError : '',
 		}
 		
-		this.navigateToHome = this.navigateToHome.bind(this)
-		this.SubmitLoginRequest = this.SubmitLoginRequest.bind(this)
+		var recalled_username = localStorage.getItem('login_recall_username');
+		var recalled_company = localStorage.getItem('login_recall_company');
+		var recalled_companyChecked = localStorage.getItem('login_recall_companyChecked');
+		var recalled_localhostChecked = localStorage.getItem('login_recall_localhostChecked');
+		
+		if(recalled_username != null && recalled_username.length > 0) {
+			this.state.usernameBox = recalled_username;
+			this.state.rememberMeCheck = true;
+		}
+		if(recalled_company != null && recalled_company.length > 0) {
+			this.state.companyBox = recalled_company; 
+		}
+		if(recalled_companyChecked != null) {
+			this.state.companyAccount = true;
+		}
+		if(recalled_localhostChecked != null) {
+			this.state.localhost = true;
+		}
+		
+		this.updateRememberedValues = this.updateRememberedValues.bind(this);
+		this.setRememberMe = this.setRememberMe.bind(this);
+		this.navigateToHome = this.navigateToHome.bind(this);
+		this.SubmitLoginRequest = this.SubmitLoginRequest.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+	}
+	
+	showHelp() {
+		alert("Forgotten your password? No worries!\n\nWe suggest that you contact your organisation's administrator to assist you with the password reset process.\nIf you are the administrator, then please contact QRMAX support and we will guide you through this process.");
+	}
+	
+	setRememberMe(newState) {
+		if(newState === true) {
+			this.setState({rememberMeCheck : true});
+			this.updateRememberedValues();
+		}
+		else {
+			this.setState({rememberMeCheck : false});
+			this.clearRememberedValues();
+		}
+	}
+	
+	updateRememberedValues() {
+		localStorage.setItem("login_recall_username", this.state.usernameBox);
+		localStorage.setItem("login_recall_company", this.state.companyBox);
+		
+		if(this.state.companyAccount === true) {
+			localStorage.setItem("login_recall_companyChecked", true);
+		}
+		else {
+			localStorage.removeItem('login_recall_companyChecked');
+		}
+		
+		if(this.state.localhost === true) {
+			localStorage.setItem("login_recall_localhostChecked", true);
+		}
+		else {
+			localStorage.removeItem('login_recall_localhostChecked');
+		}
+	}
+	
+	clearRememberedValues() {
+		localStorage.removeItem('login_recall_username');
+		localStorage.removeItem('login_recall_company');
+		localStorage.removeItem('login_recall_companyChecked');
+		localStorage.removeItem('login_recall_localhostChecked');
 	}
 	
 	navigateToHome() {
 		sessionStorage.setItem('companyName',this.state.companyBox);
-		
-		sessionStorage.setItem('username',this.state.usernameBox);
 		
 		if(this.state.companyAccount) {
 			sessionStorage.setItem('username',this.state.companyBox);
@@ -101,11 +162,38 @@ export default class Page extends React.Component {
 		window.location.href = window.location.protocol + '//' + window.location.host + '/homepage';
 	}
 	
-	handleChange({ target }) {
-		this.setState({
-			[target.name]: target.value,
-			loginError : ''
-		});
+	handleChange({ target }, checkboxType) {
+		if(!checkboxType) {
+			this.setState({
+				[target.name]: target.value,
+				loginError : ''
+			});
+			if(this.state.rememberMeCheck === true) {
+				this.updateRememberedValues();
+			}
+		}
+		else {
+			this.setState({[target.name] : target.checked})
+			
+			
+			if(target.name === 'companyAccount') {
+				if(target.checked === true && this.state.rememberMeCheck === true) {
+					localStorage.setItem("login_recall_companyChecked", true);
+				}
+				else {
+					localStorage.removeItem('login_recall_companyChecked');
+				}
+			}
+			
+			if(target.name === 'localhost') {
+				if(target.checked === true && this.state.rememberMeCheck === true) {
+					localStorage.setItem("login_recall_localhostChecked", true);
+				}
+				else {
+					localStorage.removeItem('login_recall_localhostChecked');
+				}
+			}
+		}
 	}
 	
 	SubmitLoginRequest() {
@@ -116,6 +204,8 @@ export default class Page extends React.Component {
 		const me = this;
 
 		var timer = { eclapsed: 0 };
+		
+		var detailsValid = false;
 		
 		var response = {dataSent:false,username:null,passcode:null}
 		
@@ -130,7 +220,7 @@ export default class Page extends React.Component {
 				
 				//do fetch
 					
-				let detailsValid = checkDetails(me.state.companyAccount, me.state.companyBox, me.state.usernameBox, me.state.passwordBox);
+				detailsValid = checkDetails(me.state.companyAccount, me.state.companyBox, me.state.usernameBox, me.state.passwordBox);
 
 				
 				if(detailsValid) {
@@ -146,6 +236,7 @@ export default class Page extends React.Component {
 					
 					RunFetch_Login(getApiURL(me.state.localhost), me.state.companyAccount, data, GLOBAL);
 				}
+
 			}
 			
 			else if(response.dataSent==true && GLOBAL[0] != null) {
@@ -153,8 +244,14 @@ export default class Page extends React.Component {
 				clearInterval(interval);
 				
 				if(GLOBAL[0]==false) {
-					me.setState({loginError : GLOBAL[1]});
-
+					
+					if(!detailsValid) {
+						me.setState({loginError : GLOBAL[1]});
+					}
+					else {
+						var niceError = getNiceError(GLOBAL[1]);
+						me.setState({loginError : niceError});
+					}
 				}
 				
 				if(GLOBAL[0]==true) {
@@ -213,12 +310,12 @@ export default class Page extends React.Component {
 							  
 								  <div id="Checkbox_Container">
 									<div id="RememberMe_Container" className="form-check">
-										<input type="checkbox" className="form-check-input" id="CompanyAccountCheck" onChange={e => this.setState({companyAccount : e.target.checked})}/>
-										<label style={{color:'white', marginLeft:'10px'}}>Company Account</label>
+										<input name="companyAccount" type="checkbox" className="form-check-input" id="CompanyAccountCheck" checked={this.state.companyAccount} onChange={e => this.handleChange(e, true)}/>
+										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Company Account</label>
 									</div>
 									<div id="RememberMe_Container" className="form-check">
-										<input type="checkbox" className="form-check-input" id="LocalHostCheck" onChange={e => this.setState({localhost : e.target.checked})}/>
-										<label style={{color:'white', marginLeft:'10px'}}>Localhost</label>
+										<input name="localhost" type="checkbox" className="form-check-input" id="LocalHostCheck" checked={this.state.localhost} onChange={e => this.handleChange(e, true)}/>
+										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Localhost</label>
 									</div>
 								</div>
 							  
@@ -265,18 +362,18 @@ export default class Page extends React.Component {
 											/>
 										</div>
 										<div className="col-auto">
-											<button type="button" id="forgotPasswordButton">?</button>
+											<button type="button" onClick={this.showHelp} id="forgotPasswordButton">?</button>
 										</div>
 								  </div>
 								  </div>
 								  <div id="Checkbox_Container">
 									  <div id="RememberMe_Container" className="form-check">
-										<input type="checkbox" className="form-check-input" id="rememberMeCheck"/>
-										<label style={{color:'white', marginLeft:'10px'}}>Remember me</label>
+										<input style={{width:"22px"}} type="checkbox" checked={this.state.rememberMeCheck} onChange={() => this.setRememberMe(!this.state.rememberMeCheck)} className="form-check-input"/>
+										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Remember me</label>
 									  </div>
 								  </div>
 							  </div>
-							  <button type="button" onClick={this.SubmitLoginRequest} className="btn" id="submitButton" style={{color:"rgb(51, 142, 240)", fontWeight:"bold", width:"100%"}}>Submit</button>
+							  <button type="button" onClick={this.SubmitLoginRequest} className="btn" id="submitButton">Submit</button>
 							</form>
 						</div>
 					</div>

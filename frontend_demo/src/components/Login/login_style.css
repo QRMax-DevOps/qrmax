@@ -23,7 +23,7 @@
 	transform: translate(-50%, -50%);
 	
 	width: 60%;
-	min-width: 595px;
+	min-width: 685px;
 	max-width: 1500px;
 }
 
@@ -32,7 +32,7 @@
 	margin-top:10px;
 	margin-bottom:20px;
 	display: flex;
-	flex-direction:row;
+	flex-direction:column;
 	align-items: flex-start;
 	justify-content: flex-start;
 }
@@ -90,9 +90,14 @@ label {
 }
 
 #submitButton {
+	color:rgb(51, 142, 240);
+	font-size:18px;
+	font-weight:bold;
+	width:100%;
 	outline: none;
 	background-color: #fff;
 	transition: box-shadow 0.2s ease-in-out;
+	box-shadow: 0 0 15px #134782;
 }
 
 #submitButton:hover {
@@ -118,7 +123,7 @@ label {
 	width:40px;
 	
 	font-size: 20px;
-	font-weight: 500;
+	font-weight: bold;
 	color: rgb(51, 142, 240);
 	
 	transition: 0.2s box-shadow ease-in-out;
@@ -126,6 +131,8 @@ label {
 	border-style: none;
 	border-radius: 10px;
 	background-color: #fff;
+	
+	box-shadow: 0 0 10px #134782;
 }
 
 #forgotPasswordButton:hover {
