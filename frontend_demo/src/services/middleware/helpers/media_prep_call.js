@@ -18,7 +18,8 @@ export function prepMediaCall(target, type, url, data, global) {
 						store		: data.store,
 						display		: data.display,
 						mediaName	: data.mediaName,
-						mediaFile	: data.mediaFile
+						mediaFile	: data.mediaFile,
+						TTL			: data.TTL
 					});
 					break;
 
@@ -153,7 +154,36 @@ export function prepMediaCall(target, type, url, data, global) {
 					break;
 			}
 			break;
-			
+		case 'display/media/basemedia':
+			endpointGen = url+'api/v1/display/media/basemedia';
+			switch(type.toUpperCase()) {
+				case 'PUT':
+					methodGen = 'PUT';
+					inputGen  = JSON.stringify({
+						company			: data.company,
+						store			: data.store,
+						display			: data.display,
+						baseMedia		: data.baseMedia,
+						baseMediaFile	: data.baseMediaFile,
+						TTL				: data.TTL
+					});
+					break;
+					
+				case 'POST':
+					methodGen = 'POST';
+					inputGen  = JSON.stringify({
+						company		: data.company,
+						store		: data.store,
+						display		: data.display
+					});
+					break;
+					
+				default:
+					global[0] = false;
+					global[1] = getUnsupportedMethodMessage(type, endpointGen);
+					break;
+			}
+			break;
 		default:
 			global[0] = false;
 			global[1] = "Forced rejection of request:\n      > In function --> \"handleDisplay()\" --> \"prepMediaCall()\": Unrecognised \"target\" ("+target+")";	

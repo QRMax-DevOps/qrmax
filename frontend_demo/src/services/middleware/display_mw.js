@@ -56,6 +56,7 @@ export async function handleDisplay(target, type, url, data, global) {
 		case 'display/media/file':
 		case 'display/media/refresh':
 		case 'display/media/positions':
+		case 'display/media/basemedia':
 			requestOptions = prepMediaCall(target, type, url, data, global);
 			break;
 		

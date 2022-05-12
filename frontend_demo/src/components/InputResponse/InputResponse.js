@@ -83,12 +83,12 @@ export default function InputResponse() {
 	
 	//json:{company, store, display, QRID}
 	
-	const company = useQuery().get("company");
-	const store = useQuery().get("store");
-	const display = useQuery().get("display");
+	//const company = useQuery().get("company");
+	//const store = useQuery().get("store");
+	//const display = useQuery().get("display");
 	const QRID = useQuery().get("qrid");
 	
-	const data = {company, store, display, QRID};
+	const data = {QRID};
 	
 	  useInterval(() => {
 		  
