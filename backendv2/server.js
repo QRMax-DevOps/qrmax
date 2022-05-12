@@ -16,16 +16,18 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 //User input
-app.use("/api/v2/QR", require('./routes/userInputRoutes'));
+app.use("/api/v2/QR", require('./routes/QRRoutes'));
 
 //Company Account
-app.use("/api/v2/Company", require('./routes/companyAccountRoutes'));
+app.use("/api/v2/Company", require('./routes/companyRoutes'));
 
 //Store Account
-app.use("/api/v2/Store/Account", require('./routes/storeAccountRoutes'));
+app.use("/api/v2/Store", require('./routes/storeRoutes'));
 
 //Displays
 app.use("/api/v2/Display", require('./routes/displayRoutes'));
+
+app.use("*", (req, res) => res.status(404).json({ error: "page not found" }));
 
 /*
 // Serve frontend

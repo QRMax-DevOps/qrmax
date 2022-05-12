@@ -227,6 +227,21 @@ const deleteStore = asyncHandler(async (req, res) => {
   
 })
 
+// @desc    Get  all the company account settings
+// @route   POST /api/v2/Company/Account/Settings
+// @access  Private
+const postCompanyAccountSettings = asyncHandler(async (req,res) =>{
+  const settings = await companyAccount.find({company: req.company.id}, {projection:{settings:1}});
+
+  if(!settings){
+    res.status(401)
+    throw new Error('Issue finding company');
+  }
+
+  res.status(200).json({settings});
+})
+
+
 module.exports = {
   putCompanyAccount,
   postCompanyAccount,
@@ -235,5 +250,6 @@ module.exports = {
   addStore,
   getStores,
   addAccountToStore,
-  deleteStore
+  deleteStore,
+  postCompanyAccountSettings,
 }
