@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
-import {log, fetchAPI} from './middleware_core';
+import {log, fetchAPI} from './core_mw';
 
 /*The mw_core suite contains all the fundamental functions
  * utilised by all middleware suites. */

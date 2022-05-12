@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import Display from '../objects/DisplayObject';
 import { getDisplays } from '../services/display_middleware';
-import { HandleDisplay } from '../services/qr_middleware';
+import { HandleDisplay } from '../services/middleware/qr_mw';
 import './DisplayMngr.css';
-import { ImageToBase64 } from '../services/base64_utilities';
+import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
 

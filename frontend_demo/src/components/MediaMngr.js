@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import './MediaMngr.css';
 import Media from '../objects/MediaObject';
-import {HandleMedia} from '../services/media_middleware';
-import { ImageToBase64 } from '../services/base64_utilities';
+import {HandleMedia} from '../services/middleware/media_mw';
+import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
 import { getDisplays } from '../services/display_middleware';
