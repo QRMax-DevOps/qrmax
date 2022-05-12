@@ -10,6 +10,7 @@ const {
   addAccountToStore,
   deleteStore,
   postCompanyAccountSettings,
+  patchCompanyAccountSettings
 } = require('../controllers/companyController');
 const { protect } = require('../middleware/authCompanyMiddleware');
 
@@ -21,7 +22,7 @@ router.delete('/Account/', protect, deleteCompanyAccount);
 
   //settings
   router.post('/Account/Settings', protect, postCompanyAccountSettings);
-  //router.patch('/Account/Settings', protect, patchCompanySettings);
+  router.patch('/Account/Settings', protect, patchCompanyAccountSettings);
 
   /*accountList
   router.post('/Account/AccountList', protect, postCompanyAccountList);

@@ -13,6 +13,10 @@ const companyAccountSchema = mongoose.Schema(
     password: {
       type: String,
       required: [true, 'Please add password'],
+    },
+    settings:{
+      type:Array,
+      required: [true, 'please add settings array']
     }
   }
 )
