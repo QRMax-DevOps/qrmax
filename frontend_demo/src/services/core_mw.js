@@ -57,11 +57,11 @@ export function getBetterRejectionReason(res) {
 function getHeadersString(headers) {
 	var str = "";
 	
-	if(headers.get('Content-Type')) {
-		str=str+"Content-Type : "+headers.get('Content-Type');
+	if(headers["Content-Type"]) {
+		str=str+"\"Content-Type\":\""+headers["Content-Type"]+"\"";
 	}
-	if(headers.get('Authorization')) {
-		str=str+",\nAuthorization : "+headers.get('Authorization')+"\n";
+	if(headers["Authorization"]) {
+		str=str+",\"Authorization\":\""+headers["Authorization"]+"\"";
 	}
 	
 	return str;
@@ -82,11 +82,16 @@ export async function fetchAPI(address, requestOptions) {
 		if(checkLoginToken()===true) {
 			var loginToken = getLoginToken();
 			
-			//console.log(requestOptions);
-			requestOptions.headers.append('Authorization','Basic '+loginToken);
+			
+			requestOptions.headers.append('Authorization','Bearer '+loginToken);
+			
+			/*console.log("\n\nActual header data below:");
+			for (let entry of requestOptions.headers) { // <-- response header iterable
+			  console.log(entry);
+			}*/
 			
 			var reducedToken = (loginToken.substring(0, 5)+"..."+loginToken.substring(loginToken.length-5,loginToken.length));
-			headersShown = {'Content-Type': 'application/json', 'Authorization':'Basic '+reducedToken};
+			headersShown = {'Content-Type': 'application/json', 'Authorization':'Bearer '+reducedToken};
 			//console.log("updated: ", requestOptions);
 		}
 		

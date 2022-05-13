@@ -84,12 +84,15 @@ export default class Page extends React.Component {
 		}
 		if(recalled_company != null && recalled_company.length > 0) {
 			this.state.companyBox = recalled_company; 
+			this.state.rememberMeCheck = true;
 		}
 		if(recalled_companyChecked != null) {
 			this.state.companyAccount = true;
+			this.state.rememberMeCheck = true;
 		}
 		if(recalled_localhostChecked != null) {
 			this.state.localhost = true;
+			this.state.rememberMeCheck = true;
 		}
 		
 		this.updateRememberedValues = this.updateRememberedValues.bind(this);
@@ -159,7 +162,16 @@ export default class Page extends React.Component {
 
 		saveLoginToken(JSON.parse(GLOBAL[1]).token);
 		
+		alert(GLOBAL[1]);
+		
 		window.location.href = window.location.protocol + '//' + window.location.host + '/homepage';
+	}
+	
+	componentDidUpdate(prevProps, prevState) {
+		if(prevState!==this.state && this.state.rememberMeCheck === true) {
+			this.updateRememberedValues();
+		}
+		
 	}
 	
 	handleChange({ target }, checkboxType) {
@@ -168,9 +180,6 @@ export default class Page extends React.Component {
 				[target.name]: target.value,
 				loginError : ''
 			});
-			if(this.state.rememberMeCheck === true) {
-				this.updateRememberedValues();
-			}
 		}
 		else {
 			this.setState({[target.name] : target.checked})
