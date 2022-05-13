@@ -53,9 +53,9 @@ function logCheck(dataName, data, result) {
 function checkFormat(data) {
 	var result = [true];
 	
-	logCheck("data.company", data.company, result)
-	logCheck("data.store", data.store, result)
-	logCheck("data.display", data.display, result)
+	//logCheck("data.company", data.company, result)
+	//logCheck("data.store", data.store, result)
+	//logCheck("data.display", data.display, result)
 	logCheck("data.QRID", data.QRID, result)
 	
 	if(result[0]===true) { console.log(" ^ Check passed\n\n"); }

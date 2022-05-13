@@ -141,7 +141,7 @@ const deleteCompanyAccount = asyncHandler(async (req, res) => {
 // @desc    Add store
 // @route   put /api/v2/Company/Store
 // @access  Private
-// @review  underway
+// @review  Complete
 const addStore = asyncHandler(async (req, res) => {
   const companyAcct = await companyAccount.findById(req.company.id);
   
@@ -149,30 +149,26 @@ const addStore = asyncHandler(async (req, res) => {
   
    // Check for company
   if (!companyAcct) {
-	  res.status(400);
+	  res.status(400).json({status:"fail", cause:'Company not found'});;
 	  throw new Error('Company not found');
   }
   
   if (await store.findOne({storeName, company:companyAcct.name})) {
-    res.status(400)
-    throw new Error('Store already exists')
+    res.status(400).json({status:"fail", cause:'Store already exists'});
+    throw new Error('Store already exists');
   }
   else {
 	  
 	  const storeCreate = await store.create({
 	    store: storeName,
-		company: req.company.id
+		  company: req.company.id
 	  });
 
 	  if (storeCreate) {
-	    res.status(201).json({
-	      _id: storeCreate.id,
-		  store: storeCreate.store,
-	      company: storeCreate.company
-	    });
+	    res.status(201).json({status:"success"});
 	  } 
 	  else {
-		  res.status(400);
+		  res.status(400).json({status:"fail", cause:'Invalid store data'});
 		  throw new Error('Invalid store data');
 	  }
   }
@@ -181,7 +177,7 @@ const addStore = asyncHandler(async (req, res) => {
 // @desc    Get stores
 // @route   POST /api/v2/Company/Store
 // @access  Private
-// @review  not started
+// @review  Underway
 const getStores = asyncHandler(async (req, res) => {
   const stores = await store.find({company: req.company.id});
 
