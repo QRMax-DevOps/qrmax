@@ -12,7 +12,7 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 export async function RefreshQR(url, data, global) {
 	
 	//Where this input is being sent to.
-	const endpoint = url+'api/v2/Display/Media/Refresh';
+	const endpoint = url+'api/v1/Display/Media/Refresh';
 	var methodGen = 'PATCH';
 	
 	var inputGen = {

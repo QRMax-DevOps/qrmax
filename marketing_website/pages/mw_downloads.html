@@ -4,9 +4,8 @@
 	<link rel="stylesheet" href="../mw_style.css">
 	<title>Official Site | QRMAX Management Software</title>
 	<script>
-		function goToInteralLink(path){
-			var myDomain = window.location.hostname;
-			window.location.href = myDomain + "/" + path;
+		function doAlert(){
+			alert("Sorry!\n\nThe selected feature is yet to be implemented.\n\nIf this site is being reviewed post submission, then the feature is likely a stretch goal that was never realised.");
 		}
 	</script>
 </head>
@@ -39,7 +38,7 @@
 							<p class="overlayStandardText">To access the QRMAX app, please refer to the contact page.</p>
 							<p style='height:1px;'/>
 							<div>
-								<button class="overlayButton">Choose QRMAX</button>
+								<a href="./mw_contact.html"><button class="overlayButton">Choose QRMAX</button></a>
 								
 								<p class="overlayEmphasisText">We'll get you started.</p>
 							</div>
@@ -51,10 +50,10 @@
 						<div id="mainSplashInternal">
 							<div style='margin-left:200px'>
 								<h2 style='font-size:34px; margin-bottom:40px;  font-weight:300; '>Download links:</h2>
-								<p class='downloadLink'>User manual</p>
+								<p class='downloadLink' onclick=doAlert()>User manual</p>
 								<p style='margin-left:20px; color:grey; width:500px;'>General assistance for QRMAX application users, mapping out how to use the app and get started with developing your new kiosk system.</p>
 								<br/>
-								<p class='downloadLink'>Technical manual</p>
+								<p class='downloadLink' onclick=doAlert()>Technical manual</p>
 								<p style='margin-left:20px; color:grey; width:500px;'>Reccomended for IT professionals! Concerns the system requirements, installation process, QRMAX executive summary and information architecture, data dictionaries and testing closeout. </p>
 							</div>
 					</div>

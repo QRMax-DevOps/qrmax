@@ -12,7 +12,7 @@ import {prepMediaCall} from './helpers/media_prep_call';
 // ...................................................................................................
 // ...................................................................................................
 
-//DISPLAY HANDLER (POST,PUT,DELETE @ /api/v2/Display)
+//DISPLAY HANDLER (POST,PUT,DELETE @ /api/v1/Display)
  
 /*ACCEPTABLE "TARGET" INPUTS
  *      - 'display'					- (supports: PUT, DELETE, POST)

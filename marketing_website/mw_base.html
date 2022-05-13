@@ -4,9 +4,8 @@
 	<link rel="stylesheet" href="./mw_style.css">
 	<title>Official Site | QRMAX Management Software</title>
 	<script>
-		function goToInteralLink(path){
-			var myDomain = window.location.hostname;
-			window.location.href = myDomain + "/" + path;
+		function doAlert(){
+			alert("Sorry!\n\nThe selected feature is yet to be implemented.\n\nIf this site is being reviewed post submission, then the feature is likely a stretch goal that was never realised.");
 		}
 	</script>
 </head>
@@ -41,7 +40,7 @@
 							<p class="overlayStandardText">Want safety, reliability and dedicated support?</p>
 							<p style='height:1px;'/>
 							<div>
-								<button class="overlayButton">Choose QRMAX</button>
+								<a href="./pages/mw_contact.html"><button class="overlayButtonDark">Choose QRMAX</button></a>
 								
 								<p class="overlayEmphasisText">We're here to help.</p>
 							</div>
@@ -57,7 +56,7 @@
 									<p style='font-size:18px; margin-bottom:15px; font-weight:600'>DIVE RIGHT IN</p>
 									<h2 style='font-size:34px; margin-bottom:20px;  font-weight:300;'>Be a part of the future of safe kiosk design.</h2>
 									<p>The future of any successful, safety-paramount kiosk system relies on reliable and safe contactless technology.<br/><br/>The QRMAX software suite will take care of that without any hard work, IT team or huge budget.<br/></p>
-									<button class="overlayButtonBlue">Get started</button>
+									<a href="./pages/mw_contact.html"><button class="overlayButtonBlue">Get started</button></a>
 								</div>
 								<div>
 									<img src='./images/stock_demo1.jpg' style='height:350px;'/>
@@ -76,7 +75,7 @@
 										<br/><br/>No scary budgets, no dedicated IT team, no hastle.
 										<br/><br/>Our software allows you to fully customise your kiosk design, complete with path trees, links between screens and designs unique to your business.<br/>
 									</p>
-									<button class="overlayButtonBlue">Read more</button>
+									<a href="./pages/mw_features.html"><button class="overlayButtonBlue">Read more</button></a>
 								</div>
 							</div>
 							<div class="sideBySideCenter">
@@ -86,7 +85,7 @@
 									<p>Without any time-consuming enquiries, questions or awkwardly looking for a staff member to help them, your customers can use this technology to:</p>
 									<p>Navigate through your store, see what's in stock, see any specials or sales, or maybe just learn a thing or two?</p>
 									<p>All the while remaining safe and hygenic. All they need is a smartphone to scan the QR codes!<br/></p>
-									<button class="overlayButtonBlue">Read more</button>
+									<a href="./pages/mw_features.html"><button class="overlayButtonBlue">Read more</button></a>
 								</div>
 								<div>
 									<img src='./images/stock_demo3.jpg' style='height:350px;'/>
@@ -98,12 +97,12 @@
 								<div class="center" style="width:300px;">
 									<p style='font-weight:bold; text-align:center; font-size:20px;'> We are here to support you 24/7 including email chat support.</p>
 									<img src='./images/icon_support.png' style='height:200px;'/>
-									<button class="overlayButtonBlue">Contact</button>
+									<a href="pages/mw_contact.html"><button class="overlayButtonBlue">Contact</button></a>
 								</div>
 								<div class="center" style="width:300px;">
 									<p style='font-weight:bold; text-align:center; font-size:20px;'> You can count on us, final-year students from a prestigous Australian university.</p>
 									<img src='./images/icon_trust.png' style='height:200px;'/>
-									<button class="overlayButtonBlue">Developer portfolios</button>
+									<button class="overlayButtonBlue" onclick=doAlert()>Developer portfolios</button>
 								</div>
 							</div>
 					</div>

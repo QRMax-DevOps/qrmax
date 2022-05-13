@@ -51,13 +51,13 @@ function getEndpoint(url, target) {
 	if(target && typeof target === 'string') {
 		switch(target.toLowerCase())  {
 			case 'companyaccount':
-				return url+'api/v2/Company/Account/Settings';
+				return url+'api/v1/Company/Account/Settings';
 				
 			case 'storeaccount':
-				return url+'api/v2/Store/Account/Settings';
+				return url+'api/v1/Store/Account/Settings';
 				
 			case 'display':
-				return url+'api/v2/Display/Settings';
+				return url+'api/v1/Display/Settings';
 				
 			default:
 				logWarn("Middleware error in \'getSettings() ... getEndpoint()\'. A value of "

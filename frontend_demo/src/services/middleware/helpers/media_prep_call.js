@@ -9,7 +9,7 @@ export function prepMediaCall(target, type, url, data, global) {
 	
 	switch(target.toLowerCase()) {
 		case 'display/media':
-			endpointGen = url+'api/v2/display/media';
+			endpointGen = url+'api/v1/display/media';
 			switch(type.toUpperCase()) {
 				case 'PUT':
 					methodGen = 'PUT';
@@ -63,7 +63,7 @@ export function prepMediaCall(target, type, url, data, global) {
 			break;
 		
 		case 'display/media/file':
-			endpointGen = url+'api/v2/display/media/file';
+			endpointGen = url+'api/v1/display/media/file';
 			switch(type.toUpperCase()) {
 				case 'POST':
 					methodGen = 'POST';
@@ -83,7 +83,7 @@ export function prepMediaCall(target, type, url, data, global) {
 			break;
 		
 		case 'display/media/refresh':
-			endpointGen = url+'api/v2/display/media/refresh';
+			endpointGen = url+'api/v1/display/media/refresh';
 			switch(type.toUpperCase()) {
 				case 'PATCH':
 					methodGen = 'PATCH';
@@ -103,7 +103,7 @@ export function prepMediaCall(target, type, url, data, global) {
 			break;
 		
 		case 'display/media/positions':
-			endpointGen = url+'api/v2/display/media/positions';
+			endpointGen = url+'api/v1/display/media/positions';
 			switch(type.toUpperCase()) {
 				case 'PUT':
 					methodGen = 'PUT';
@@ -155,7 +155,7 @@ export function prepMediaCall(target, type, url, data, global) {
 			}
 			break;
 		case 'display/media/basemedia':
-			endpointGen = url+'api/v2/display/media/basemedia';
+			endpointGen = url+'api/v1/display/media/basemedia';
 			switch(type.toUpperCase()) {
 				case 'PUT':
 					methodGen = 'PUT';

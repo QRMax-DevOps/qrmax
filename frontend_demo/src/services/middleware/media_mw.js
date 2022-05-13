@@ -10,13 +10,13 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 // ...................................................................................................
 
 
-//DISPLAY HANDLER (POST,PUT,DELETE @ /api/v2/Display)
+//DISPLAY HANDLER (POST,PUT,DELETE @ /api/v1/Display)
  export async function HandleMedia(type, url, data, global) {
 	//Enum handler
 	type = enumToString(type);
 	
 	//Where this input is being sent to.
-	var endpoint = url+'api/v2/Display/Media';
+	var endpoint = url+'api/v1/Display/Media';
 	
 	//For the request options.
 	var methodGen = null;
@@ -70,7 +70,7 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 			break;
 		case 'GETMEDIAFILE':
 			methodGen = 'POST';
-			endpoint = url+'api/v2/Display/media/file';
+			endpoint = url+'api/v1/Display/media/file';
 			inputGen = JSON.stringify({
 				company	: data.company,
 				store	: data.store,

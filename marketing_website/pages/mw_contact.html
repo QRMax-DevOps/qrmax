@@ -4,9 +4,8 @@
 	<link rel="stylesheet" href="../mw_style.css">
 	<title>Official Site | QRMAX Management Software</title>
 	<script>
-		function goToInteralLink(path){
-			var myDomain = window.location.hostname;
-			window.location.href = myDomain + "/" + path;
+		function doAlert(){
+			alert("Sorry!\n\nThe selected feature is yet to be implemented.\n\nIf this site is being reviewed post submission, then the feature is likely a stretch goal that was never realised.");
 		}
 	</script>
 </head>
@@ -66,7 +65,7 @@
 							  </div>
 							  
 							  <div class="center" style='margin-top:20px;'>
-							  <input class='submit' type="submit" value="Submit">
+							  <input class='submit' type="submit" value="Submit" onclick=doAlert()>
 							  </div>
 							</form>
 						</div>
