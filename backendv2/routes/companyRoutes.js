@@ -7,31 +7,31 @@ const {
   deleteCompanyAccount,
   addStore,
   getStores,
-  addAccountToStore,
+  editStore,
   deleteStore,
   postCompanyAccountSettings,
-  patchCompanyAccountSettings
+  patchCompanyAccountSettings,
+  postCompanyAccountList
 } = require('../controllers/companyController');
 const { protect } = require('../middleware/authCompanyMiddleware');
 
 //Account
-router.put('/Account/', putCompanyAccount);
-router.post('/Account/', postCompanyAccount);
-router.patch('/Account/', protect, patchCompanyAccount);
-router.delete('/Account/', protect, deleteCompanyAccount);
+router.put('/Account/', putCompanyAccount); //done
+router.post('/Account/', postCompanyAccount); //done
+router.patch('/Account/', protect, patchCompanyAccount); //done
+router.delete('/Account/', protect, deleteCompanyAccount); //done
 
   //settings
-  router.post('/Account/Settings', protect, postCompanyAccountSettings);
-  router.patch('/Account/Settings', protect, patchCompanyAccountSettings);
+  router.post('/Account/Settings', protect, postCompanyAccountSettings); //done
+  router.patch('/Account/Settings', protect, patchCompanyAccountSettings); //done
 
-  /*accountList
+  //accountList
   router.post('/Account/AccountList', protect, postCompanyAccountList);
-  */
 
 //store
-router.put('/store/', protect, addStore);
-router.post('/store/', protect, getStores);
-router.patch('/store/', protect, addAccountToStore);
-router.delete('/store/', protect, deleteStore);
+router.put('/store/', protect, addStore); //done
+router.post('/store/', protect, getStores); //done
+router.patch('/store/', protect, editStore); //done
+router.delete('/store/', protect, deleteStore); //done
 
 module.exports = router;

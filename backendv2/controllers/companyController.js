@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const companyAccount = require('../models/companyAccountModel');
 const store = require('../models/storeModel');
+const storeAccount = require('../models/storeAccountModel');
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
 const jwt = require('jsonwebtoken');
@@ -16,7 +17,7 @@ const putCompanyAccount = asyncHandler(async (req, res) => {
   const companyExists = await companyAccount.findOne({ company });
 
   if (companyExists) {
-	res.status(400);
+	res.status(400).json({status:"fail", cause:"Company already exists"});
 	throw new Error('Company already exists');
   }
   
@@ -145,7 +146,7 @@ const deleteCompanyAccount = asyncHandler(async (req, res) => {
 const addStore = asyncHandler(async (req, res) => {
   const companyAcct = await companyAccount.findById(req.company.id);
   
-  const storeName = req.body.store;
+  const storeName = req.body.store || req.body.storeName;
   
    // Check for company
   if (!companyAcct) {
@@ -153,13 +154,14 @@ const addStore = asyncHandler(async (req, res) => {
 	  throw new Error('Company not found');
   }
   
-  if (await store.findOne({storeName, company:companyAcct.name})) {
+  if (await store.findOne({store:storeName, company:req.company.id})) {
     res.status(400).json({status:"fail", cause:'Store already exists'});
     throw new Error('Store already exists');
   }
   else {
-	  
+	  const stores = await store.find({company:req.company.id});
 	  const storeCreate = await store.create({
+      ID:stores.length+1,
 	    store: storeName,
 		  company: req.company.id
 	  });
@@ -177,67 +179,86 @@ const addStore = asyncHandler(async (req, res) => {
 // @desc    Get stores
 // @route   POST /api/v2/Company/Store
 // @access  Private
-// @review  Underway
+// @review  Complete
 const getStores = asyncHandler(async (req, res) => {
-  const stores = await store.find({company: req.company.id});
+  const stores = await store.find({company:req.company.id}, {_id:0, store:1, ID:1});
 
   // Check for company
   if (!stores) {
-    res.status(401)
+    res.status(401).json({status:"fail", cause:'Issue finding stores'});
     throw new Error('Issue finding stores')
   }
 
   res.status(200).json({stores})
 })
 
-// @desc    Add account to store
-// @route   PATCH /api/v2/Company/Store
-// @access  Private
-// @review  not started
-const addAccountToStore = asyncHandler(async (req, res) => {
-  const storeName = req.body.store;
-  const storeToBeUpdated = await store.findOne({store: storeName, company: req.company.id});
-  
-  // Check for company
-  if (!storeToBeUpdated) {
-    res.status(401)
-    throw new Error('Issue finding store')
-  }
-  else {
-	  const accountToBeAdded = req.body.account;
-  	await storeToBeUpdated.updateOne({store: storeName, company: req.company.id}, {$push:{accounts:{account:accountToBeAdded}}});
-  }
-
-  res.status(200).json("success");
-})
-
-// @desc    Add account to store
+// @desc    Delete store
 // @route   DELETE /api/v2/Company/Store
 // @access  Private
-// @review  not started
+// @review  Complete
 const deleteStore = asyncHandler(async (req, res) => {
-  const storeName = req.body.store;
+  const storeName = req.body.store || req.body.storeName;
   const storeToBeDeleted = await store.findOne({store: storeName, company: req.company.id});
   
   // Check for company
   if (!storeToBeDeleted) {
-    res.status(401)
+    res.status(401).json({status:"fail",cause:'Issue finding store'});
     throw new Error('Issue finding store')
   }
-  await storeToBeDeleted.remove({store: storeName, company: req.company.id});
-	res.status(200).json("success");
+  var storeNum = storeToBeDeleted.ID;
+  storeToBeDeleted.remove({store: storeName, company: req.company.id});
 
-  
+  //lower all greater IDs by 1
+  const stores = await store.find({company:req.company.id});
+  stores.forEach(async (s)=>{
+    console.log(storeNum+" - "+s.ID);
+    if (s.ID>storeNum){
+      var sNum = s.ID-1
+      await store.findByIdAndUpdate(s._id, {$set:{ID:sNum}})
+    }
+  })
+
+	res.status(200).json({status:"success"});
+})
+
+// @desc    Edit store
+// @route   PATCH /api/v2/Company/Store
+// @access  Private
+// @review  Complete
+const editStore = asyncHandler(async (req,res) =>{
+  const storeName = req.body.store || req.body.storeName;
+  const storeToBeEdited = await store.findOne({store: storeName, company: req.company.id});
+  req.body.fields.split(',').forEach(async (field, i)=>{
+    if (!(field == 'storeName' || field == 'store')){
+      //ignore
+      res.status(200).json({status:"success", message:"Illegal operations may have lead to some fields not being updated"});
+    }
+    else{
+      const storeToBeUpdated = await store.findOne({store: storeName, company: req.company.id});
+      if (!storeToBeUpdated) {
+        res.status(401).json({status:"fail", cause:"Issue finding store"});
+        //throw new Error('Issue finding store')
+      }
+      else if (await store.findOne({store:req.body.values.split(',')[i], company:req.company.id})) {
+        res.status(400).json({status:"fail", cause:'Store name already in use'});
+        //throw new Error('Store already exists');
+      }
+      else{
+        await store.updateOne({store: storeName, company:req.company.id}, {$set:{store:req.body.values.split(',')[i]}});
+        res.status(200).json({status:"success"});
+      }
+    }
+  })
 })
 
 // @desc    Get all the company account settings
 // @route   POST /api/v2/Company/Account/Settings
 // @access  Private
-// @review  not started
+// @review  Complete
 const postCompanyAccountSettings = asyncHandler(async (req,res) =>{
   const settings = await companyAccount.findById(req.company.id, {_id:0, settings:1});
   if(!settings){
-    res.status(401)
+    res.status(401).json({status:"fail",cause:'Issue finding company'});
     throw new Error('Issue finding company');
   }
 
@@ -247,13 +268,12 @@ const postCompanyAccountSettings = asyncHandler(async (req,res) =>{
 // @desc    Set/patch the company account settings
 // @route   PATCH /api/v2/Company/Account/Settings
 // @access  Private
-// @review  not started
+// @review  Complete
 const patchCompanyAccountSettings = asyncHandler(async (req,res)=>{
-  console.log(req.company.id);
   const updatedAccount = companyAccount.findById(req.company.id, {_id:1});
   
   if(!updatedAccount){
-    res.status(401)
+    res.status(401).json({status:"fail",cause:'Issue finding company'});
     throw new Error('Issue finding company to update');
   }
 
@@ -268,6 +288,20 @@ const patchCompanyAccountSettings = asyncHandler(async (req,res)=>{
   res.status(200).json("success");
 })
 
+// @desc    Get all store accounts under a company adn their attatched stores
+// @route   PATCH /api/v2/Company/Account/accountList
+// @access  Private
+// @review  Not started
+const postCompanyAccountList = asyncHandler(async (req,res)=>{
+  //get all stores under company
+  let storeAccounts = await storeAccount.find({company:req.company.id}, {_id:0, username:1, stores:1});
+  storeAccounts.forEach(async (s, i) =>{
+    //var storeInfo = await store.findById(s, {_id:0, ID:1, store:1});
+    //stores[i] = storeInfo
+  });
+  res.status(200).json(storeAccounts);
+})
+
 
 module.exports = {
   putCompanyAccount,
@@ -276,8 +310,9 @@ module.exports = {
   deleteCompanyAccount,
   addStore,
   getStores,
-  addAccountToStore,
+  editStore,
   deleteStore,
   postCompanyAccountSettings,
-  patchCompanyAccountSettings
+  patchCompanyAccountSettings,
+  postCompanyAccountList
 }

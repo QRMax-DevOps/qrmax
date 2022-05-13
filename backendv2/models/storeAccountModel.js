@@ -6,18 +6,18 @@ const storeAccountSchema = mongoose.Schema(
 	  type: String,
 	  required: [true, 'Please add username'],
 	},
-    company: {
+  company: {
 	  type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'Please add company'],
-    },
-    salt: {
-      type: String,
-      required: [true, 'Please add salt'],
-    },
-    password: {
-      type: String,
-      required: [true, 'Please add password'],
-    },
+    required: [true, 'Please add company'],
+  },
+  salt: {
+    type: String,
+    required: [true, 'Please add salt'],
+  },
+  password: {
+    type: String,
+    required: [true, 'Please add password'],
+  },
 	stores: {
 	  type: Array,
 	  required: false

@@ -1,18 +1,23 @@
 const mongoose = require('mongoose')
+const { number } = require('yargs')
 
 const storeSchema = mongoose.Schema(
   {
 	store: {
-	  type: String,
-	  required: [true, 'Please add name'],
+	  	type: String,
+	  	required: [true, 'Please add name'],
 	},
     company: {
-	  type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'Please add company'],
+	  	type: mongoose.Schema.Types.ObjectId,
+      	required: [true, 'Please add company'],
     },
 	accounts: {
-	  type: Array,
-	  required: false
+	  	type: Array,
+	  	required: false
+	},
+	ID: {
+		type: Number,
+		required: true
 	}
   }
 )

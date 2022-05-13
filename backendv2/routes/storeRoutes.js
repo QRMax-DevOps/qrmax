@@ -9,16 +9,18 @@ const {
   deleteStoresFromAccount
 } = require('../controllers/storeController');
 const { protect } = require('../middleware/authStoreMiddleware');
-const { route } = require('./QRRoutes');
+const companyProtect = require('../middleware/authCompanyMiddleware');
+const compantStoreProtect = require('../middleware/authCompanyStoreMiddleware');
 
-router.put('/Account/', putStoreAccount);
-router.post('/Account/', postStoreAccount);
-router.patch('/Account/', protect, patchStoreAccount);
-router.delete('/Account/', protect, deleteStoreAccount);
+//company protect used as a store account can only be created by a valid logged in Company account
+router.put('/Account/', companyProtect.protect, putStoreAccount); //done
+router.post('/Account/', postStoreAccount); //done
+router.patch('/Account/', compantStoreProtect.protect, patchStoreAccount); //doing: needs to be accessed by both logged in store AND logged in company
+router.delete('/Account/', companyProtect.protect, deleteStoreAccount); //doing: same problem as above
 
   //StoresList
-  router.put('/Account/storesList/', protect, addStoresToAccount);
-  router.delete('/Account/storesList/', protect, deleteStoresFromAccount);
+  router.put('/Account/storesList/', companyProtect.protect, addStoresToAccount);
+  router.delete('/Account/storesList/', companyProtect.protect, deleteStoresFromAccount);
   //router.post('/Account/storesList/', protect, getStoresFromAccount);
 
   /*Settings
