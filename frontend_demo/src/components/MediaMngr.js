@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './MediaMngr.css';
+import './UniversalStyle.css';
 import Media from '../objects/MediaObject';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 
@@ -11,6 +12,7 @@ class MediaMngr extends Component {
         super(props);
         this.selectMedia = this.selectMedia.bind(this);
         this.changeCurrentMediaInput = this.changeCurrentMediaInput.bind(this);
+        this.changeCurrentMediaLength = this.changeCurrentMediaLength.bind(this);
         this.updateMedia = this.updateMedia.bind(this);
         this.createMedia = this.createMedia.bind(this);
         this.deleteMedia = this.deleteMedia.bind(this);
@@ -22,8 +24,9 @@ class MediaMngr extends Component {
         currentDisplay: "display1",
         currentObj: {media: [{mediaName: ''}]}, 
         selectedMedia: 0,
-        mediaInput: 'default',
+        mediaInput: 'Media Name',
         mediaUpdate: 'default',
+        mediaLength: 'Media Length',
         open: false,
         imgString: null,
         mediaCount: 0
@@ -48,6 +51,12 @@ class MediaMngr extends Component {
     changeCurrentMediaInput(e) {
         this.setState({
             mediaInput: e.target.value
+        })
+    }
+
+    changeCurrentMediaLength(e) {
+        this.setState({
+            mediaLength: e.target.value
         })
     }
 
@@ -79,7 +88,7 @@ class MediaMngr extends Component {
 
     createMedia() {
         let newName = this.getNewName();
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: newName, mediaFile: this.state.imgString};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: newName, mediaFile: this.state.imgString, TTL: this.state.mediaLength};
         this.fetchMedia("put", data);
     }
 
@@ -175,10 +184,13 @@ class MediaMngr extends Component {
                         {console.log(this.state.selectedMedia)}
                         <div id='settings-box'>
                             <h5 id='settings-box-header'></h5>
-                            <label htmlFor='name-field'>Name</label>
                             <input id='name-field' type='text' onChange={this.changeCurrentMediaInput} value={this.state.mediaInput}></input>
                             {console.log(this.state.mediaInput)}
+
+                            <input id='length-field' type='text' onChange={this.changeCurrentMediaLength} value={this.state.mediaLength}></input>
+                            {console.log(this.state.mediaLength)}
                             <input type="file" onChange={this.setSelectedFile}/>
+
                         </div>
                         <button type="submit" id="update-button" className='buttons' onClick={this.updateMedia}>Update Media</button>
                         <br/>
