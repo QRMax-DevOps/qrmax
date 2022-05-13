@@ -22,11 +22,11 @@ const DEFAULT_HEADERS = getDefaultHeaders(); //Default headers used by every req
 	var bodyGen = '';
  
 	if(isCompany) {
-		endpoint = url+'api/v2/Company/Store';
+		endpoint = url+'api/v1/Company/Store';
 		bodyGen = JSON.stringify({company:id});
 	}
 	else {
-		endpoint = url+'api/v2/Store/Account/storesList';
+		endpoint = url+'api/v1/Store/Account/storesList';
 		bodyGen = JSON.stringify({company:companyName,username:id});
 	}
 	
@@ -47,7 +47,7 @@ const DEFAULT_HEADERS = getDefaultHeaders(); //Default headers used by every req
  export async function RunFetch_GetAccounts(isCompany, url, id, companyName, global) {
 	if(isCompany) {
 		var bodyGen = JSON.stringify({company:id});
-		const endpoint = url+'api/v2/Company/Account/AccountList';
+		const endpoint = url+'api/v1/Company/Account/AccountList';
 		
 		const requestOptions = {
 			method: 'POST',
@@ -131,15 +131,15 @@ async function RunFetch_CreateAccount(url, isCompany, bodyGen, type, global) {
 		//console.log('RunFetch_CreateAccount: ',url, isCompany,bod,type);
 
 		switch(type.toLowerCase()){ 
-			  case 'companyaccount':	methodGen='PUT';	endpoint=url+'api/v2/Company/Account';		break;
-			  case 'storeaccount':		methodGen='PUT';	endpoint=url+'api/v2/Store/Account';		break;
+			  case 'companyaccount':	methodGen='PUT';	endpoint=url+'api/v1/Company/Account';		break;
+			  case 'storeaccount':		methodGen='PUT';	endpoint=url+'api/v1/Store/Account';		break;
 			  case 'store':			
 				methodGen='PUT';	
 				if(isCompany) {
-					endpoint=url+'api/v2/Company/Store';	
+					endpoint=url+'api/v1/Company/Store';	
 				}
 				else {
-					endpoint=url+'api/v2/Store/Account/StoresList';	
+					endpoint=url+'api/v1/Store/Account/StoresList';	
 				}
 				break;
 		}
@@ -222,20 +222,20 @@ export async function RunFetch_DeleteAccount(url, isCompany, type, bodyGen, glob
 	switch(type) {
 			  case 'companyaccount':
 				methodGen='DELETE';
-				endpoint=url+'api/v2/Company/Account';
+				endpoint=url+'api/v1/Company/Account';
 				break;
 				
 			  case 'storeaccount':
 				methodGen='DELETE';
-				endpoint=url+'api/v2/Store/Account';
+				endpoint=url+'api/v1/Store/Account';
 				break;
 				
 			  case 'store':	
 				methodGen='DELETE';
 				if(isCompany) {
-					endpoint=url+'api/v2/Company/Store';
+					endpoint=url+'api/v1/Company/Store';
 				} else {
-					endpoint=url+'api/v2/Store/Account/storesList';
+					endpoint=url+'api/v1/Store/Account/storesList';
 				}
 				break;
 	}
@@ -366,8 +366,8 @@ export async function RunFetch_UpdateAccount(url, type, bodyGen, global) {
 	let methodGen=null;
 
 	switch(type.toLowerCase()) {
-		  case 'companyaccount':	methodGen='PATCH';		endpoint=url+'api/v2/Company/Account';		break;
-		  case 'storeaccount':		methodGen='PATCH';		endpoint=url+'api/v2/Store/Account';		break;
+		  case 'companyaccount':	methodGen='PATCH';		endpoint=url+'api/v1/Company/Account';		break;
+		  case 'storeaccount':		methodGen='PATCH';		endpoint=url+'api/v1/Store/Account';		break;
 	}
 		
 	const requestOptions = {

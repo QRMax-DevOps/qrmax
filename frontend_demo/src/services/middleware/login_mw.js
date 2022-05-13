@@ -17,11 +17,11 @@ export async function RunFetch_Login(url, isCompanyAccount, data, global) {
 	var bodyGen = '';
 	
 	if(isCompanyAccount) {
-		endpoint = url + 'api/v2/Company/Account';
+		endpoint = url + 'api/v1/Company/Account';
 		var bodyGen = JSON.stringify({company:data.companyInput, password:data.passwordInput});
 		
 	} else /*is store account*/ {
-		endpoint = url + 'api/v2/Store/Account';
+		endpoint = url + 'api/v1/Store/Account';
 		var bodyGen = JSON.stringify({company:data.companyInput, username:data.usernameInput, password:data.passwordInput});
 	}
 	
