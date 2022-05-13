@@ -39,6 +39,12 @@ export let SidebarData = [
     },
     {
         id: 6,
+        title: "Media Management",
+        icon: "",
+        link: "/media_mngr"
+    },
+    {
+        id: 7,
         title: "Exit",
         icon: <LogoutIcon/>,
         link: "/login"

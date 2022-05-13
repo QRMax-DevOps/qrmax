@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import './Interactions.css';
 import '../UniversalStyling.css';
-import { Dropdown, DropdownButton, Button } from 'react-bootstrap';
+import { Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap';
 
 import Sidebar from './Sidebar';
 import { handleDisplay } from '../services/middleware/display_mw';
@@ -126,26 +126,27 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                            <p>Current Display: {this.state.currentDisplay}</p>
+                            <h2>Current Display: {this.state.currentDisplay}</h2>
                             
-                            <p>Current Period: {this.state.currentPeriod}</p>
+                            <h4>Current Period: {this.state.currentPeriod}</h4>
 
                         </div>
                         <div>
-                        <DropdownButton id="displayDrop" title="Display">
+                        <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
                                     <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.display}</Dropdown.Item>
                                 );
                             })}
                         </DropdownButton>
-                        <DropdownButton id="periodDrop" title="Period">
+                        <DropdownButton id="periodDrop" title="Period" as={ButtonGroup}>
                             <Dropdown.Item onClick={this.selectPeriod}>All Time</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Today</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>One Hour</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Last 10 Minutes</Dropdown.Item>
                         </DropdownButton>
                         </div>
+                        <br />
                         <ul id='interactions-list'>
                             {this.state.currentObjInt.interactions.map((val, key) => {
                                 return (
