@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const storeAccount = require('../models/storeAccountModel');
 const companyAccount = require('../models/companyAccountModel');
+const store = require('../models/storeModel');
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
 const jwt = require('jsonwebtoken');
@@ -35,6 +36,7 @@ const putStoreAccount = asyncHandler(async (req, res) => {
 	  company: req.company.id,
 	  salt:salt,
     password: hash,
+    settings:[],
   });
 
   if (storeAcct) {
@@ -142,7 +144,7 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
 // @desc    Delete user
 // @route   DELETE /api/v2/Store/Account
 // @access  Private
-// @review  Done
+// @review  Complete
 const deleteStoreAccount = asyncHandler(async (req, res) => {
   const storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
 
@@ -157,43 +159,128 @@ const deleteStoreAccount = asyncHandler(async (req, res) => {
   res.status(200).json({ status: "success"});
 })
 
-// @desc    Add stores to user
+// @desc    Add stores to user and user to stores
 // @route   PUT /api/v2/Store/Account/storesList
 // @access  Private
-// @review  Underway
+// @review  Complete
 const addStoresToAccount = asyncHandler(async (req, res) => {
-  const storeAcct = await storeAccount.findById(req.company.id);
-  const company = storeAcct.company;
-  const username = storeAcct.username;
-  let stores = req.body.stores.split(',');
-  // Check for company
+  const storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
+  // Check storeAccount exists
+  let storeAcctID = storeAcct._id;
   if (!storeAcct) {
-	res.status(401);
-	throw new Error('Store account not found');
+	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
+	  throw new Error('Store account not found');
   }
 
-  await storeAccount.updateOne({company:company, username:username}, {$set:{stores:stores}}, {upsert:false});
-  const updatedStoreAcct = await storeAccount.findById(req.company.id);
-  res.status(200).json(updatedStoreAcct);
+  //check all stores exists
+  req.body.stores.split(',').forEach(async (s)=>{
+    if(! await store.findOne({company:req.company.id, store:s})){
+      res.status(400).json({status:"fail", cause:"Store not found: "+s});
+      throw new Error('Store not found');
+    }
+  })
+
+  req.body.stores.split(',').forEach(async (s)=>{
+    s = await store.findOne({company:req.company.id, store:s})
+    //add all stores to storeAccount
+    await storeAccount.updateOne({company:req.company.id, username:req.body.username}, {$addToSet:{stores:s._id}});
+    //find store object and add storeAccount to the store
+    await store.updateOne({company:req.company.id, store:s.store}, {$addToSet:{accounts:storeAcctID}});
+  })
+  res.status(200).json({ status: "success"});
 })
 
 // @desc    Delete stores from account
 // @route   DELETE /api/v2/Store/Account/storesList
 // @access  Private
+// @review  Complete
 const deleteStoresFromAccount = asyncHandler(async (req, res) => {
-  const storeAcct = await storeAccount.findById(req.company.id);
-  const company = storeAcct.company;
-  const username = storeAcct.username;
-  // Check for company
+  const storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
+  // Check storeAccount exists
+  let storeAcctID = storeAcct._id;
   if (!storeAcct) {
-	res.status(401);
-	throw new Error('Store account not found');
+	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
+	  throw new Error('Store account not found');
+  }
+  //check all stores exists
+  req.body.stores.split(',').forEach(async (s)=>{
+    if(! await store.findOne({company:req.company.id, store:s})){
+      res.status(400).json({status:"fail", cause:"Store not found: "+s});
+      throw new Error('Store not found');
+    }
+  })
+  req.body.stores.split(',').forEach(async (s)=>{
+    s = await store.findOne({company:req.company.id, store:s})
+    //add all stores to storeAccount
+    await storeAccount.updateOne({company:req.company.id, username:req.body.username}, {$pull:{stores:s._id}});
+    //find store object and add storeAccount to the store
+    await store.updateOne({company:req.company.id, store:s.store}, {$pull:{accounts:storeAcctID}});
+  })
+  res.status(200).json({ status: "success"});
+
+})
+
+// @desc    Delete stores from account
+// @route   DELETE /api/v2/Store/Account/storesList
+// @access  Private
+// @review  Underway
+const getStoresFromAccount = asyncHandler(async (req,res)=>{
+  const storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
+  // Check storeAccount exists
+  if (!storeAcct) {
+	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
+	  throw new Error('Store account not found');
+  }
+  //get list of stores
+  const stores = storeAcct.stores;
+  var storeList = [];
+  for (let i=0; i<stores.length;i++){
+    let s = stores[i]
+    let foundStore = await store.findById(s);
+    let found = {ID:foundStore.ID, store:foundStore.store}
+    storeList.push(found);
+  }
+  res.status(200).json({status:"success",storeCount:stores.length, stores:storeList});
+})
+
+// @desc    Get all the store account settings
+// @route   POST /api/v2/Store/Account/Settings
+// @access  Private
+// @review  Complete
+const postStoreAccountSettings = asyncHandler(async (req,res)=>{
+  const settings = await storeAccount.findById(req.store.id, {_id:0, settings:1});
+  if(!settings){
+    res.status(401).json({status:"fail",cause:'Issue finding store'});
+    throw new Error('Issue finding store');
   }
 
-  await storeAccount.updateOne({company:company, username:username}, {$pull:{stores:{}}}, {upsert:false});
-  const updatedStoreAcct = await storeAccount.findById(req.company.id);
-  res.status(200).json(updatedStoreAcct);
+  res.status(200).json({status:"success",settings});
 })
+
+// @desc    Set/patch the store account settings
+// @route   PATCH /api/v2/Store/Account/Settings
+// @access  Private
+// @review  Complete
+const patchStoreAccountSettings = asyncHandler(async (req,res)=>{
+  const updatedAccount = await storeAccount.findById(req.store.id);
+  console.log(updatedAccount)
+  
+  if(!updatedAccount){
+    res.status(401).json({status:"fail",cause:'Issue finding store'});
+    throw new Error('Issue finding store to update');
+  }
+
+  var fields = req.body.fields.split(',');
+  var values = req.body.values.split(',');
+
+  fields.forEach(async (field, index)=>{
+    await storeAccount.findByIdAndUpdate(req.store.id, {$pull:{settings:{[field]:{$exists:true}}}});
+    await storeAccount.findByIdAndUpdate(req.store.id, {$push:{settings:{[field]:values[index]}}});
+  })
+  
+  res.status(200).json({status:"success"});
+})
+
 
 module.exports = {
   putStoreAccount,
@@ -201,5 +288,8 @@ module.exports = {
   patchStoreAccount,
   deleteStoreAccount,
   addStoresToAccount,
-  deleteStoresFromAccount
+  deleteStoresFromAccount,
+  getStoresFromAccount,
+  postStoreAccountSettings,
+  patchStoreAccountSettings
 }

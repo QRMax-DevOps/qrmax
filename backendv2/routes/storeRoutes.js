@@ -6,7 +6,10 @@ const {
   patchStoreAccount,
   deleteStoreAccount,
   addStoresToAccount,
-  deleteStoresFromAccount
+  deleteStoresFromAccount,
+  getStoresFromAccount,
+  postStoreAccountSettings,
+  patchStoreAccountSettings
 } = require('../controllers/storeController');
 const { protect } = require('../middleware/authStoreMiddleware');
 const companyProtect = require('../middleware/authCompanyMiddleware');
@@ -15,18 +18,17 @@ const compantStoreProtect = require('../middleware/authCompanyStoreMiddleware');
 //company protect used as a store account can only be created by a valid logged in Company account
 router.put('/Account/', companyProtect.protect, putStoreAccount); //done
 router.post('/Account/', postStoreAccount); //done
-router.patch('/Account/', compantStoreProtect.protect, patchStoreAccount); //doing: needs to be accessed by both logged in store AND logged in company
-router.delete('/Account/', companyProtect.protect, deleteStoreAccount); //doing: same problem as above
+router.patch('/Account/', compantStoreProtect.protect, patchStoreAccount); //done
+router.delete('/Account/', companyProtect.protect, deleteStoreAccount); //done
 
   //StoresList
-  router.put('/Account/storesList/', companyProtect.protect, addStoresToAccount);
-  router.delete('/Account/storesList/', companyProtect.protect, deleteStoresFromAccount);
-  //router.post('/Account/storesList/', protect, getStoresFromAccount);
+  router.put('/Account/storesList/', companyProtect.protect, addStoresToAccount); //done
+  router.delete('/Account/storesList/', companyProtect.protect, deleteStoresFromAccount); //done
+  router.post('/Account/storesList/', companyProtect.protect, getStoresFromAccount); //done
 
-  /*Settings
-  route.post('/Account/Settings/', protect, postStoreAccountSettings);
-  route.patch('/Account/Settings/', protect, patchStoreAccountSettings);
-  */
+  //Settings
+  router.post('/Account/Settings/', protect, postStoreAccountSettings); //done
+  router.patch('/Account/Settings/', protect, patchStoreAccountSettings); //done
 
 
 module.exports = router;

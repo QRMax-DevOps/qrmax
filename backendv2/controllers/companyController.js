@@ -37,7 +37,7 @@ const putCompanyAccount = asyncHandler(async (req, res) => {
     res.status(201).json({status:"success"});
   } 
   else {
-	  res.status(400);
+	  res.status(400).json({status:"fail",cause:"Invalid company data"});
 	  throw new Error('Invalid company data');
   }
 });
@@ -59,7 +59,7 @@ const postCompanyAccount = asyncHandler(async (req, res) => {
     });
   } 
   else {
-    res.status(400).json({status:"fail"});
+    res.status(400).json({status:"fail", cause:"Invalid login credentials"});
     throw new Error('Failed login');
   }
 })
@@ -81,7 +81,7 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
   const companyAcct = await companyAccount.findById(req.company.id);
   
   if (!companyAcct) {
-    res.status(400).json({status:"fail"});
+    res.status(400).json({status:"fail", cause:"Company does not exist"});
     throw new Error('Company Does Not Exist') 
   }
 
@@ -130,7 +130,7 @@ const deleteCompanyAccount = asyncHandler(async (req, res) => {
 
   // Check for company
   if (!companyAcct) {
-    res.status(400).json({status:"fail"})
+    res.status(400).json({status:"fail", cause:"Company not found"})
     throw new Error('Company not found')
   }
 
@@ -189,7 +189,7 @@ const getStores = asyncHandler(async (req, res) => {
     throw new Error('Issue finding stores')
   }
 
-  res.status(200).json({stores})
+  res.status(200).json({status:"success",stores})
 })
 
 // @desc    Delete store
@@ -227,7 +227,6 @@ const deleteStore = asyncHandler(async (req, res) => {
 // @review  Complete
 const editStore = asyncHandler(async (req,res) =>{
   const storeName = req.body.store || req.body.storeName;
-  const storeToBeEdited = await store.findOne({store: storeName, company: req.company.id});
   req.body.fields.split(',').forEach(async (field, i)=>{
     if (!(field == 'storeName' || field == 'store')){
       //ignore
@@ -262,7 +261,7 @@ const postCompanyAccountSettings = asyncHandler(async (req,res) =>{
     throw new Error('Issue finding company');
   }
 
-  res.status(200).json(settings);
+  res.status(200).json({status:"success",settings});
 })
 
 // @desc    Set/patch the company account settings
@@ -270,7 +269,7 @@ const postCompanyAccountSettings = asyncHandler(async (req,res) =>{
 // @access  Private
 // @review  Complete
 const patchCompanyAccountSettings = asyncHandler(async (req,res)=>{
-  const updatedAccount = companyAccount.findById(req.company.id, {_id:1});
+  const updatedAccount = companyAccount.findById(req.company.id);
   
   if(!updatedAccount){
     res.status(401).json({status:"fail",cause:'Issue finding company'});
@@ -285,21 +284,28 @@ const patchCompanyAccountSettings = asyncHandler(async (req,res)=>{
     await companyAccount.findByIdAndUpdate(req.company.id, {$push:{settings:{[field]:values[index]}}});
   })
   
-  res.status(200).json("success");
+  res.status(200).json({status:"success"});
 })
 
-// @desc    Get all store accounts under a company adn their attatched stores
+// @desc    Get all store accounts under a company and their attatched stores
 // @route   PATCH /api/v2/Company/Account/accountList
 // @access  Private
-// @review  Not started
+// @review  Complete
 const postCompanyAccountList = asyncHandler(async (req,res)=>{
   //get all stores under company
-  let storeAccounts = await storeAccount.find({company:req.company.id}, {_id:0, username:1, stores:1});
-  storeAccounts.forEach(async (s, i) =>{
-    //var storeInfo = await store.findById(s, {_id:0, ID:1, store:1});
-    //stores[i] = storeInfo
-  });
-  res.status(200).json(storeAccounts);
+  let storeAccounts = await storeAccount.find({company:req.company.id});
+  let Accounts = [];
+  for(let i =0; i<storeAccount.length;i++){
+    const storeAccount = storeAccounts[i];
+    const username = storeAccount.username;
+    let stores = storeAccount.stores;
+    for (let j = 0;j<stores.length;j++){
+      stores[j] = await store.findById(stores[j]);
+      stores[j] = {ID:stores[j].ID, store:stores[j].store};
+    }
+    Accounts.push({username:username, stores:stores});
+  }
+  res.status(200).json({status:"success", Accounts});
 })
 
 
