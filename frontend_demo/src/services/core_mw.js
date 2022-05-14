@@ -1,112 +1,120 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 import {checkLoginToken, getLoginToken} from './utilities/auth_util';
 
-//flexible fetch
+//Basic, but more appropriate logging function used to maintain logging format standard.
 export function log(message) {
 	let curTime = new Date().toLocaleTimeString();
 	console.log("["+curTime+"] : "+message);
 }
 
+//Similar to the above function, but will highlight the log in the console in a bright yellow.
+//Typically used to notify the reader of a notable, but not critical issue.
 export function logWarn(message) {
 	let curTime = new Date().toLocaleTimeString();
 	console.warn("["+curTime+"] : "+message);
 }
 
+//Note that if provided a floating number, this function will round it down.
 function isInt(value) {
 	var x = parseFloat(value);
 	return !isNaN(value) && (x | 0) === x;
 }
 
+//Returns the URL / address for the backend API
 export function getApiURL(localhost) {
-	if(localhost !== null && localhost !== false && localhost !== 'false') {
-		if(localhost === true || localhost === 'true') {
-			return 'http://localhost:80/';
-		} else if (isInt(localhost)) {
-			return 'http://localhost:'+localhost+'/';
-		}
+	//If localhost enabled
+	if(localhost != null && localhost !== false && localhost !== 'false' && localhost !== 'False') {
+		return 'http://localhost:80/';
 	}
+	//If localhost not enabled
 	else {
 		return 'https://api.qrmax.app/';
 	}
 }
 
 function isUnassigned(str){
-    return str === null || str.match(/^ *$/) !== null || str === 'UNASSIGNED_BODY' || str === 'UNASSIGNED_METHOD';
+    return str === null
+		|| str.match(/^ *$/) !== null
+		|| str === 'UNASSIGNED_BODY'
+		|| str === 'UNASSIGNED_METHOD';
 }
 
-//Produces a much more user-friendly reason for rejection.
-export function getBetterRejectionReason(res) {
-	try {
-		if(res.status.toLowerCase() === 'failure' || res.status.toLowerCase() === 'fail') {
-			switch(res.cause.toLowerCase()) {
-				case 'no such account': 
-					return 'Sorry, we couldn\'t log you in. Please check your details and try again.';
-				case 'regex failed': 
-					return 'Regex failure. QRID was not recognised.';
-				default:
-					return 'Unhandled response from API received. Update required.';
-			}
+//Used for logging. Returns a nicer/readable headers string.
+function getHeadersString(headers, shortenToken) {
+	var str = "{";
+	var arr = new Array();
+	
+	for (let entry of headers.entries()) { 
+		if(shortenToken === true && entry[0].toLowerCase() === 'authorization') {
+			var reducedToken = (entry[1].substring(0, 12)+"..."+entry[1].substring(entry[1].length-5,entry[1].length));
+			arr.push('"'+entry[0]+'":"'+reducedToken);
 		}
-	} catch {
-		return 'An unexpected error has occured. Please check the console.';
-	}
-}
-
-function getHeadersString(headers) {
-	var str = "";
-	
-	for (let entry of headers) { // <-- response header iterable
-		str=str+"\""+entry[0]+"\":\""+entry[1]+"\", ";
+		else
+		{arr.push('"'+entry[0]+'":"'+entry[1]);}
 	}
 	
+	for(let i = 0; i < arr.length; i++) {
+		if(i==(arr.length-1)) {
+			str=str+arr[i]+"}";
+		} else {
+			str=str+arr[i]+",";
+		}
+	}
 	return str;
 }
 
+//The workhorse of the middleware. The function used to send requests to the API.
 export async function fetchAPI(address, requestOptions) {
 	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
 		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request \'method\' and/or \'body\' is unassigned.");
-		return [false, getBetterRejectionReason("")];
+		return [false, 'An unexpected error has occured. Please check the console.'];
 	}
 	else {
+		let curTime = new Date().toLocaleTimeString();
+		
 		//If login token exists, then create/append Authorization field to headers
-		
-		//JSON.stringify({company:id});
-		
-		//var headersShown = requestOptions.headers;
-		
-		//console.log(getHeadersString(headersShown));
-		
 		if(checkLoginToken()===true) {
 			var loginToken = getLoginToken();
-			
-			
 			requestOptions.headers.append('Authorization','Bearer '+loginToken);
-			
-			
-			//var reducedToken = (loginToken.substring(0, 5)+"..."+loginToken.substring(loginToken.length-5,loginToken.length));
-			//console.log("updated: ", requestOptions);
 		}
+
+		//Logging request data
+		console.log("["+curTime+"] : ",requestOptions.method," to API"
+			,"\n    > Target  = ",address
+			,"\n    > Data    = ",requestOptions
+			,"\n    > Headers = ",getHeadersString(requestOptions.headers, true)
+			,"\n ");
 		
-		
-		log("Attempting "+requestOptions.method+":\n    > At: "+address+"\n    > With body: "+requestOptions.body+"\n    > And headers: "+getHeadersString(requestOptions.headers));
-		
+		//Doing the actual request
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
-					logWarn(requestOptions.method+" to API : Handled rejection! (response: "+JSON.stringify(res)+")");
-					return [false,JSON.stringify(res),getBetterRejectionReason(res)];
+					logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
+					+"\n    > Response = ",JSON.stringify(res));
+					return [false,JSON.stringify(res)];
 				} 
 				else {
-					log(requestOptions.method+" to API : successful! (response: "+JSON.stringify(res)+")");
+					
+					console.log("["+curTime+"] : ",requestOptions.method," to API was SUCCESSFUL!\n   > Received: ",res,"\n ");
+					
 					return [true,JSON.stringify(res),"The API accepted the POST request!"];
 				}
 			})
 			.catch(res => {
-				logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")\n    > Double check that the server is running!\n    > Also check the correct url is being used for the FETCH function.");
-				return [false,getBetterRejectionReason(res)];
+				logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")"
+					+"\n    > This usually denotes a front-end bug or an interrupted connection between the front-end and the API!"
+					+"\n    > Nonetheless, please take a screenshot of your whole window and send it to the QRMAX development team "
+					+"with a description of what you were doing leading up to this error.");
+				return [false,'An unexpected error has occured. Please check the console.'];
 			});
 	}
 }

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import './MediaMngr.css';
-import './UniversalStyle.css';
 import Media from '../objects/MediaObject';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 

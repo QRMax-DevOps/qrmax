@@ -25,17 +25,17 @@ function checkDetails(isCompany, companyName, userName, passCode) {
 	if(!companyName) {
 		valid = false;
 		log('Login Error: Invalid COMPANY (provided: \''+companyName+'\')');
-		GLOBAL = [false, "Please provide a company name."];
+		GLOBAL = [false, "(Please provide a company name)"];
 	}
 	if(!userName && !isCompany) {
 		valid = false;
 		log('Login Error: Invalid USERNAME (provided: \''+userName+'\')');
-		GLOBAL = [false, "Please provide a username."];
+		GLOBAL = [false, "(Please provide a username)"];
 	}
 	if(!passCode) {
 		valid = false;
 		log('Login Error: Invalid PASSWORD (provided: \''+passCode+'\')');
-		if(companyName) { GLOBAL = [false, "Please provide a password."]; }
+		if(companyName) { GLOBAL = [false, "(Please provide a password)"]; }
 		
 	}
 	return valid;
@@ -161,9 +161,6 @@ export default class Page extends React.Component {
 		}
 
 		saveLoginToken(JSON.parse(GLOBAL[1]).token);
-		
-		alert(GLOBAL[1]);
-		
 		window.location.href = window.location.protocol + '//' + window.location.host + '/homepage';
 	}
 	
@@ -289,7 +286,7 @@ export default class Page extends React.Component {
 				<div id="mainbox" >
 
 					<div id="leftbox" className="alignmentCheck">
-						<div id="innerbox">
+						<div id="innerbox_left">
 							<img id="logo" src={Img1}/>
 							<br/><br/>
 							<p id="subtitle">
@@ -305,15 +302,14 @@ export default class Page extends React.Component {
 							<img id="LoadingGraphic" src={LoadingGif}/>
 							</div>
 						}
-						<div id="innerbox">
-							<p style={{margin:0, textAlign:"left", fontSize:"30px", fontWeight:"500", color:"white"}}>Login</p>
-							<p style={{textAlign:"left", fontSize:"20px", color:"#fff9"}}>G'day, let's get started</p>
+						<div id="rightbox_inner">
+						<div id="innerbox_right">
+							<div style={{marginBottom:"30px"}}>
+								<p style={{margin:"0", textAlign:"left", fontSize:"30px", fontWeight:"500", color:"white"}}>Login</p>
+								<p style={{margin:"0", textAlign:"left", fontSize:"20px", color:"#fff9"}}>G'day, let's get started</p>
+							</div>
 							
-							  <form>
-							  
-							 
-							  
-							  <div id="LoginFields_Container">
+							  <form id="LoginFields_Container">
 							  
 								 <label id="LoginErrorBox">{this.state.loginError}</label>
 							  
@@ -328,7 +324,7 @@ export default class Page extends React.Component {
 									</div>
 								</div>
 							  
-								<div id="LoginFormGroup" className="form-group" style={{paddingBottom:"20px"}} >
+								<div id="LoginFormGroup" className="form-group" >
 								
 
 									<input
@@ -381,9 +377,9 @@ export default class Page extends React.Component {
 										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Remember me</label>
 									  </div>
 								  </div>
-							  </div>
-							  <button type="button" onClick={this.SubmitLoginRequest} className="btn" id="submitButton">Submit</button>
 							</form>
+						</div>
+						<button type="button" onClick={this.SubmitLoginRequest} className="btn" id="submitButton">Submit</button>
 						</div>
 					</div>
 				  </div>
