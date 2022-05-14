@@ -37,7 +37,10 @@ const postUserInput = asyncHandler(async (req, res) => {
     /*Need More Validation Here*/
 
     //let apiURL = "https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=" + cleanIdentifier;
+    //WIFI TEST
     let apiURL = 'https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=101.183.54.116'
+    //MOBILE DATA TEST
+    //let apiURL = 'https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=1.145.60.15'
     let responseLat;
     let responseLon;
     await axios.get(apiURL)
