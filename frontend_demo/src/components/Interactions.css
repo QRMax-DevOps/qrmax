@@ -1,8 +1,11 @@
-
-
-
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Cody Spicer
+ *  - Student ID: 6486125 */
 
 .DisplayContainer {
+    box-shadow: 0 0 10px #5A5A5A;
     background-color: blue(223, 222, 222);
     margin-left: 0 auto;
     height: 100%;
@@ -25,3 +28,26 @@
     margin: auto;
 }
 
+.buttons {
+    outline: none;
+    background-color: #1b5cab;
+    color: white;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease-in-out;
+    margin-top: 10px;
+}
+
+#styled-container {
+    box-shadow: 1px 1px 5px grey;
+    margin: auto;
+    width:500px;
+    padding: 10px;
+}
+
+.ViewerTitle {
+	width:50%;
+	height:50px;
+	line-height:90px;
+	background-color:#003B75;
+	color:white;
+}
