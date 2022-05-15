@@ -16,7 +16,6 @@ import {Account} from './am_account';
 import Sidebar from '../Sidebar';
 
 import {isEmptyOrSpaces, IsJsonString, stringToBool} from './../../services/utilities/common_util';
-import '../UniversalStyle.css';
 import "./am_style.css";
 
 

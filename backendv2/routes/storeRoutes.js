@@ -6,25 +6,29 @@ const {
   patchStoreAccount,
   deleteStoreAccount,
   addStoresToAccount,
-  deleteStoresFromAccount
+  deleteStoresFromAccount,
+  getStoresFromAccount,
+  postStoreAccountSettings,
+  patchStoreAccountSettings
 } = require('../controllers/storeController');
 const { protect } = require('../middleware/authStoreMiddleware');
-const { route } = require('./QRRoutes');
+const companyProtect = require('../middleware/authCompanyMiddleware');
+const compantStoreProtect = require('../middleware/authCompanyStoreMiddleware');
 
-router.put('/Account/', putStoreAccount);
-router.post('/Account/', postStoreAccount);
-router.patch('/Account/', protect, patchStoreAccount);
-router.delete('/Account/', protect, deleteStoreAccount);
+//company protect used as a store account can only be created by a valid logged in Company account
+router.put('/Account/', companyProtect.protect, putStoreAccount); //done
+router.post('/Account/', postStoreAccount); //done
+router.patch('/Account/', compantStoreProtect.protect, patchStoreAccount); //done
+router.delete('/Account/', companyProtect.protect, deleteStoreAccount); //done
 
   //StoresList
-  router.put('/Account/storesList/', protect, addStoresToAccount);
-  router.delete('/Account/storesList/', protect, deleteStoresFromAccount);
-  //router.post('/Account/storesList/', protect, getStoresFromAccount);
+  router.put('/Account/storesList/', companyProtect.protect, addStoresToAccount); //done
+  router.delete('/Account/storesList/', companyProtect.protect, deleteStoresFromAccount); //done
+  router.post('/Account/storesList/', companyProtect.protect, getStoresFromAccount); //done
 
-  /*Settings
-  route.post('/Account/Settings/', protect, postStoreAccountSettings);
-  route.patch('/Account/Settings/', protect, patchStoreAccountSettings);
-  */
+  //Settings
+  router.post('/Account/Settings/', protect, postStoreAccountSettings); //done
+  router.patch('/Account/Settings/', protect, patchStoreAccountSettings); //done
 
 
 module.exports = router;

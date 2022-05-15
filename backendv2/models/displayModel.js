@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { stringify } = require('uuid')
 
 const displaySchema = mongoose.Schema(
   {
@@ -14,9 +15,25 @@ const displaySchema = mongoose.Schema(
 	  type: Array,
 	  required: false
 	},
-	currentPosition: {
-	  type: Number,
-	  required: false
+	media: {
+		type: Array,
+		required: false
+	},
+    currentContent:{
+		type:Object,
+		required:false
+	},
+    displayType:{
+		type: String,
+		required: [true, "please add display type"]
+	},
+	location:{
+		type: String,
+		required: [true, "please add location"]
+	},
+	baseMedia:{
+		type:Object,
+		required: false
 	}
   }
 )

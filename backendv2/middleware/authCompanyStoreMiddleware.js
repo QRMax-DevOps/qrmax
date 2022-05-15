@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken')
 const asyncHandler = require('express-async-handler')
 const CompanyAccount = require('../models/companyAccountModel')
+const StoreAccount = require('../models/storeAccountModel')
+const { Console } = require('console')
+
 
 const protect = asyncHandler(async (req, res, next) => {
   let token
@@ -20,7 +23,10 @@ const protect = asyncHandler(async (req, res, next) => {
 
       // Get company from the token
       req.company = await CompanyAccount.findById(decoded.id).select('-password')
-
+      if(!req.company){
+        req.store = await StoreAccount.findById(decoded.id).select('-password');
+      }
+      
       next()
     } catch (error) {
       console.log(error)
