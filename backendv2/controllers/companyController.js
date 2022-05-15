@@ -98,8 +98,8 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
   if(legal){
     fields.split(',').forEach(async (field, i)=>{
       if(field == 'company'){
-        if (await companyAccount.findOne(companyAcct.name)) {
-	        res.status(400).json({status:"fail", cause:"Company name already exists"});
+        if (await companyAccount.findOne({company:values.split(',')[i]})) {
+	        res.status(400).json({status:"fail", cause:"Company name already in use"});
         }
         else{
           res.status(200).json({status:"success", token: generateToken(companyAcct._id)});
