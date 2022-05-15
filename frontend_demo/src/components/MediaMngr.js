@@ -6,7 +6,6 @@
 
 import React, {Component} from 'react';
 import './MediaMngr.css';
-import './UniversalStyle.css';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
