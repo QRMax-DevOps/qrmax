@@ -1,5 +1,11 @@
-
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Cody Spicer
+ *  - Student ID: 6486125 */
+ 
 .main-container {
+    box-shadow: 0 0 10px #5A5A5A;
     height: 100vh;
     width: 100vw;
     padding: 10px;
@@ -60,3 +66,4 @@
     border-color: grey;
     box-shadow: 0 0 15px grey;
 }
+
