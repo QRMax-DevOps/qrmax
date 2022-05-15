@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const UserInput = require('../models/userInputModel')
 const Display = require('../models/displayModel')
+const Media = require('../models/mediaModel')
 const createDOMPurify = require("dompurify");
 const {JSDOM} = require("jsdom");
 const e = require("express");
@@ -37,7 +38,7 @@ const postUserInput = asyncHandler(async (req, res) => {
 	  imeOfInput: new Date(Date.now())
 	});
   //recording interaction in correct media
-  var result = await Display.findOne({"media.QRID":QRID});
+  var result = await Media.findOne({QRID:QRID});
   let voteCount;
   let lifetimeVotes;
 	for(var i = 0; i < result.media.length; i++){
@@ -49,7 +50,7 @@ const postUserInput = asyncHandler(async (req, res) => {
   voteCount += 1;
   lifetimeVotes += 1;
   //increment voteCount
-  await Display.updateOne({"media.QRID":QRID}, {$set:{"media.$.voteCount":parseInt(voteCount), "media.$.lifetimeVotes":parseInt(lifetimeVotes)}}, {upsert:false});
+  await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
 	
 	if (userInput) {
 	  res.status(201).json({status:"success"});
