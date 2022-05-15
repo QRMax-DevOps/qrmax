@@ -5,6 +5,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import AccountsIcon from '@mui/icons-material/AddBusiness';
 import DisplaySettingsIcon from '@mui/icons-material/DisplaySettings';
+import MediaManagerIcon from '@mui/icons-material/Theaters';
 
 export let SidebarData = [
     {
@@ -40,7 +41,7 @@ export let SidebarData = [
     {
         id: 6,
         title: "Media Management",
-        icon: "",
+        icon: <MediaManagerIcon/>,
         link: "/media_mngr"
     },
     {

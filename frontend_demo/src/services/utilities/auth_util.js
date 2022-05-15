@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import {log, logWarn} from '../core_mw';
 
 //Checks for null, unassigned or whitespace-only input

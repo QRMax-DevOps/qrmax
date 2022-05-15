@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 
-const storeAccountSchema = mongoose.Schema(
-  {
+const storeAccountSchema = mongoose.Schema({
 	username: {
 	  type: String,
 	  required: [true, 'Please add username'],
@@ -21,8 +20,11 @@ const storeAccountSchema = mongoose.Schema(
 	stores: {
 	  type: Array,
 	  required: false
+	},
+  settings: {
+	  type: Array,
+	  required: false
 	}
-  }
-)
+})
 
 module.exports = mongoose.model('StoreAccount', storeAccountSchema)

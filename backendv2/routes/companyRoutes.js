@@ -26,7 +26,7 @@ router.delete('/Account/', protect, deleteCompanyAccount); //done
   router.patch('/Account/Settings', protect, patchCompanyAccountSettings); //done
 
   //accountList
-  router.post('/Account/AccountList', protect, postCompanyAccountList);
+  router.post('/Account/AccountList', protect, postCompanyAccountList); //done
 
 //store
 router.put('/store/', protect, addStore); //done

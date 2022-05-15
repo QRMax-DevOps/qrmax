@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Cody Spicer
+ *  - Student ID: 6486125 */
+
 import React, {Component} from 'react';
 import './Interactions.css';
 import '../UniversalStyling.css';
@@ -6,26 +12,38 @@ import { Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap';
 import Sidebar from './Sidebar';
 import { handleDisplay } from '../services/middleware/display_mw';
 
-
-
-
 class Interactions extends Component {
     constructor(props) {
         super(props);
         this.selectDisplay = this.selectDisplay.bind(this);
         this.selectPeriod = this.selectPeriod.bind(this);
+        this.comparison = this.comparison.bind(this);
+        this.selectCompDisplay = this.selectCompDisplay.bind(this);
     }
     state = {
         currentCompany: "mediaCompany",
         currentStore: "mediaStore",
         currentObj: {displays: [{display: ""}]},
-        currentObjInt: {interactions: [["", 0]]},
+        currentObjInt: {interactions: [["Null", 0]]},
+        currentObjComp: {interactions: [["Null", 0]]},
         currentDisplay: "None Selected",
+        currentDisplayComp: "None Selected",
         currentPeriod: "All Time",
-        currentPeriodCode: 0
+        currentPeriodCode: 0,
+        compareBoolean: 0
     }
     
-   
+   comparison(){
+    if(this.state.compareBoolean == 0){
+        this.setState({
+            compareBoolean: 1
+        });
+    }else{
+        this.setState({
+            compareBoolean: 0
+        });
+    }
+   }
 
     selectDisplay(e){
         {console.log(e.target.value)}
@@ -33,6 +51,14 @@ class Interactions extends Component {
             currentDisplay: e.target.innerHTML
         });
         this.getInteractions(e);
+    }
+
+    selectCompDisplay(e){
+        {console.log(e.target.value)}
+        this.setState({
+            currentDisplayComp: e.target.innerHTML
+        });
+        this.getComparison(e);
     }
 
     selectPeriod(e){
@@ -54,15 +80,17 @@ class Interactions extends Component {
         });
 
       this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: code}, 1);
-      {console.log("HEY THIS IS A THING WOOHOO YAY YAY")}
       
     }
 
     getInteractions(e){
         var data;
         this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: e.target.innerHTML, period: this.state.currentPeriodCode}, 1);
-        console.log("THIS IS PART OF THE GETLIST");
-        console.log(data);
+    }
+
+    getComparison(e){
+        var data;
+        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: e.target.innerHTML, period: this.state.currentPeriodCode}, 2);
     }
 
     fetchDisplay(type, data, objectCount) {
@@ -96,8 +124,8 @@ class Interactions extends Component {
                     if(objectCount == 1)
                     me.setState({currentObjInt: json});
 
-                    {console.log("we reach this point")}
-                    {console.log(json)}
+                    if(objectCount == 2)
+                    me.setState({currentObjComp: json});
                 }
             }
             if(timer.elapsed == 24) {
@@ -117,6 +145,7 @@ class Interactions extends Component {
 
 
     render() { 
+        if(this.state.compareBoolean == 0){
         return (
             
             <div className="background">
@@ -126,9 +155,10 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                            <h2>Current Display: {this.state.currentDisplay}</h2>
+                            <div class='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>
                             
-                            <h4>Current Period: {this.state.currentPeriod}</h4>
+                            <h5>Current Period: {this.state.currentPeriod}</h5>
+                            
 
                         </div>
                         <div>
@@ -145,8 +175,11 @@ class Interactions extends Component {
                             <Dropdown.Item onClick={this.selectPeriod}>One Hour</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Last 10 Minutes</Dropdown.Item>
                         </DropdownButton>
+                        <br />
+                        <button className="buttons" onClick={this.comparison}>Turn On Comparison</button>
                         </div>
                         <br />
+                        <div id='styled-container'>
                         <ul id='interactions-list'>
                             {this.state.currentObjInt.interactions.map((val, key) => {
                                 return (
@@ -154,18 +187,81 @@ class Interactions extends Component {
                                  );
                              })}
                         </ul>
-                        
+                        </div>
                     </div>
                 </div>
                 </div>
-                
-                
-           
-            
         );
-    }
+
+
+
+    }else if(this.state.compareBoolean == 1){
+        return (
+            
+            <div className="background">
+                <div>
+                    <Sidebar/>
+                </div>
+                <div className="MainContainer">
+                    <div className="DisplayContainer">
+                        <div>
+                        <div class='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>
+                            
+                            <h5>Current Period: {this.state.currentPeriod}</h5>
+
+                        </div>
+                        <div>
+                        <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
+                            {this.state.currentObj.displays.map((val, key) => {
+                                return (
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.display}</Dropdown.Item>
+                                );
+                            })}
+                        </DropdownButton>
+                        <DropdownButton id="periodDrop" title="Period" as={ButtonGroup}>
+                            <Dropdown.Item onClick={this.selectPeriod}>All Time</Dropdown.Item>
+                            <Dropdown.Item onClick={this.selectPeriod}>Today</Dropdown.Item>
+                            <Dropdown.Item onClick={this.selectPeriod}>One Hour</Dropdown.Item>
+                            <Dropdown.Item onClick={this.selectPeriod}>Last 10 Minutes</Dropdown.Item>
+                        </DropdownButton>
+                        <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
+                        {this.state.currentObj.displays.map((val, key) => {
+                                return (
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectCompDisplay} >{val.display}</Dropdown.Item>
+                                );
+                            })}
+                        </DropdownButton>
+                        <br />
+                        <button className="buttons" onClick={this.comparison}>Turn Off Comparison</button>
+                       
+                        </div>
+                        <br />
+                        <div id='styled-container'>
+                        <ul id='interactions-list'>
+                            {this.state.currentObjInt.interactions.map((val, key) => {
+                                return (
+                                 <li className='interactions-list-item' width={500} key={key} value={key}>{val[0]} intertactions:    {val[1]}</li>
+                                 );
+                             })}
+                        </ul>
+                        </div>
+                        <br/>
+                        <h4>Current Comparison Display: {this.state.currentDisplayComp}</h4>
+                        <div id='styled-container'>
+                        <ul id='interactions-list'>
+                            {this.state.currentObjComp.interactions.map((val, key) => {
+                                return (
+                                 <li className='interactions-list-item' width={500} key={key} value={key}>{val[0]} intertactions:    {val[1]}</li>
+                                 );
+                             })}
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        );
 }
- 
-
-
+}
+}
+        
 export default Interactions;

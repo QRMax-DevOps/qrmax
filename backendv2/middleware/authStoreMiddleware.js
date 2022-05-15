@@ -11,7 +11,7 @@ const protect = asyncHandler(async (req, res, next) => {
   ) {
     try {
       // Get token from header
-      token = req.headers.authorization.split(' ')[1]
+      token = req.headers.authorization.split(',')[0]
       token = token.split(' ')[1]
 
       // Verify token
@@ -19,7 +19,7 @@ const protect = asyncHandler(async (req, res, next) => {
       //const decoded = jwt.verify(token, 'zzz4564')
 
       // Get company from the token
-      req.company = await StoreAccount.findById(decoded.id).select('-password')
+      req.store = await StoreAccount.findById(decoded.id).select('-password')
 
       next()
     } catch (error) {

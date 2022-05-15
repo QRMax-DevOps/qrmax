@@ -3,15 +3,15 @@ const router = express.Router();
 const {
   putDisplay,
   postDisplay,
-  //patchDisplay,
+  patchDisplay,
   deleteDisplay
 } = require('../controllers/displayController');
 const { protect } = require('../middleware/authStoreMiddleware');
 
-router.put('/', protect, putDisplay);
-router.post('/', protect, postDisplay);
-//router.patch('/', protect, patchDisplay);
-router.delete('/', protect, deleteDisplay);
+router.put('/', protect, putDisplay); //done
+router.post('/', protect, postDisplay); //done
+router.patch('/', protect, patchDisplay); //done
+router.delete('/', protect, deleteDisplay); //done
 
 /*Media
 router.put('/Media', protect, putDisplayMedia);
