@@ -12,7 +12,7 @@ const math = require('mathjs');
 // @desc    Post User Input
 // @route   POST /api/v2/QR
 // @access  Public
-// @review underway
+// @review  Not started
 const postUserInput = asyncHandler(async (req, res) => {
   const windowEmulator = new JSDOM('').window;
   const DOMPurify = createDOMPurify(windowEmulator);
@@ -84,6 +84,20 @@ const postUserInput = asyncHandler(async (req, res) => {
         throw new Error('Out of range');
       }
     }
+    //recording interaction in correct media
+    var result = await Media.findOne({QRID:QRID});
+    let voteCount;
+    let lifetimeVotes;
+	  for(var i = 0; i < result.media.length; i++){
+        if(result.media[i].QRID === QRID){
+          voteCount = result.media[i].voteCount;
+          lifetimeVotes = result.media[i].lifetimeVotes;
+        }
+	  }
+    voteCount += 1;
+    lifetimeVotes += 1;
+    //increment voteCount
+    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
     
     const userInput = await UserInput.create({
       QR: QRID,
