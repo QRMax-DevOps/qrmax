@@ -1,6 +1,7 @@
 const CompanyDAO = require("./CompanyDAO");
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
+const jwt = require("jsonwebtoken");
 
 let StoreAccount;
 
@@ -59,7 +60,13 @@ class StoreAccountDAO {
     static async checkLogin(company, username, password){
       let result = await StoreAccount.findOne({company:company, username:username, password:password}, {upsert:false});
         if (result){
-            return {status:'success'};
+			const token = jwt.sign({company: company, username: username},"secret_this_should_be_longer",{expiresIn: "1h"});
+			      /*res.status(200).json({
+			        token: token,
+			        expiresIn: 3600,
+			        userId: username
+			      });*/
+			return {status:'success', token:token};
         }
         return {status:'failure', cause:'incorrect password'};
     }

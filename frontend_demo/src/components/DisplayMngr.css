@@ -1,9 +1,12 @@
+
 .main-container {
     height: 100vh;
     width: 100vw;
     padding: 10px;
-    justify-content: center;
-    
+    margin: 50px;
+    display: inline-block;
+    background-color: white;
+    font-family: 'Arial';
 }
 
 .page-header {
@@ -20,14 +23,42 @@
     margin: auto;
 }
 
+#styled-container {
+    box-shadow: 1px 1px 5px grey;
+    margin: auto;
+    width:500px;
+    padding: 10px;
+}
+
 .display-list-item:hover {
     cursor: pointer;
-    background-color: blue;
+    background-color: #1b5cab;;
     color: white;
 }
 
 #settings-box {
     height: auto;
     width: auto;
-
+    padding: 5px;
+    box-shadow: 20px, 20px, 20px, black;
 }
+
+.buttons {
+    outline: none;
+    background-color: #1b5cab;
+    color: white;
+    border-radius: 8px;
+    transition: box-shadow 0.2s ease-in-out;
+    margin-top: 10px;
+}
+
+.buttons:hover {
+    outline: none;
+    cursor: pointer;
+    background-color: #216ecc;
+    color: white;
+    border-color: grey;
+    box-shadow: 0 0 15px grey;
+}
+
+

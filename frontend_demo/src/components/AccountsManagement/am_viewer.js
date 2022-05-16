@@ -64,7 +64,6 @@ class ListItem_Account extends Component {
 		
 		var account = this.props.account;
 		var stores = this.getStoresString(account.stores);
-
 		if(account.type.toLowerCase()==='storeaccount') {
 			
 			let classDesc = "";

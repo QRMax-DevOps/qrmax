@@ -22,3 +22,21 @@
     height: 100%;
     width: 100%;
 }
+
+.image {
+    height: 600px;
+    width: 800px;
+}
+
+.qr-list {
+    justify-content: center;
+    height: 150px;
+    width: 500px;
+    overflow-x: scroll;
+    overflow: hidden;
+    border: 2px solid black;
+    list-style: none;
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+}
