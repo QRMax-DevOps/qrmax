@@ -20,8 +20,22 @@ const displaySchema = mongoose.Schema(
 		required: false
 	},
     currentContent:{
-		type:Object,
-		required:false
+		media:{
+			type:mongoose.Schema.Types.ObjectId,
+			required:false,
+		},
+		mediaBase:{
+			type:String,
+			required:false,
+		},
+		liveTime:{
+			type:Date,
+			required:false,
+		},
+		TTL:{
+			type:Number,
+			required:false,
+		},
 	},
     displayType:{
 		type: String,
@@ -32,8 +46,8 @@ const displaySchema = mongoose.Schema(
 		required: [true, "please add location"]
 	},
 	baseMedia:{
-		type:Object,
-		required: false
+		type: mongoose.Schema.Types.ObjectId,
+		required: false,
 	}
   }
 )

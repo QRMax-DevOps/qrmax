@@ -27,11 +27,9 @@ const postUserInput = asyncHandler(async (req, res) => {
         cleanIdentifier+=identifierArray[i];
       }
     }
-    console.log(cleanIdentifier);
 
     const dirtyQRID = req.body.QRID;
     const QRID = DOMPurify.sanitize(dirtyQRID);
-    console.log(QRID);
 
     const company = req.body.company;
     const store = req.body.store;
@@ -84,18 +82,11 @@ const postUserInput = asyncHandler(async (req, res) => {
         throw new Error('Out of range');
       }
     }
+
     //recording interaction in correct media
     var result = await Media.findOne({QRID:QRID});
-    let voteCount;
-    let lifetimeVotes;
-	  for(var i = 0; i < result.media.length; i++){
-        if(result.media[i].QRID === QRID){
-          voteCount = result.media[i].voteCount;
-          lifetimeVotes = result.media[i].lifetimeVotes;
-        }
-	  }
-    voteCount += 1;
-    lifetimeVotes += 1;
+    let voteCount = result.voteCount +1;
+    let lifetimeVotes = result.lifetimeVotes +1;
     //increment voteCount
     await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
     
@@ -106,12 +97,7 @@ const postUserInput = asyncHandler(async (req, res) => {
     });
 
     if (userInput) {
-      res.status(201).json({
-        _id: userInput.id,
-        QR: userInput.QR,
-        UserIdentifier: userInput.UserIdentifier,
-        TimeOfInput: userInput.TimeOfInput
-      });
+      res.status(201).json({status:"success"});
     } 
     else {
       res.status(400);

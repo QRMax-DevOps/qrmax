@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 
 const mediaFileSchema = mongoose.Schema(
   {
-	mediaID: {
-	  type: mongoose.Schema.Types.ObjectId,
-	  required: false,
-	},
+	  mediaID: {
+	    type: mongoose.Schema.Types.ObjectId,
+	    required: false,
+	  },
     chunkNumber:{
         type:Number,
         required:false,

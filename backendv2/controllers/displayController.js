@@ -39,10 +39,10 @@ const putDisplay = asyncHandler(async (req, res) => {
     displayName: displayName,
 	  store: req.store.id,
     media:[],
-    currentContent:{},
+    currentContent:{media:'', mediaBase:'Base', liveTime:new Date(Date.now()), TTL:0},
     displayType:displaytype,
     location:location,
-    baseMedia:{},
+    baseMedia:'',
     settings:[],
   });
 
@@ -450,39 +450,234 @@ const patchDisplaySettings = asyncHandler(async (req, res)=>{
 // @access  Private
 // @review  Complete
 const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
-  let(display, mediaName) = req.body;
-  //generate new QRID
-  let newQRID = uuidv4(); 
-  let cleanQRID = "";
-    for (let sub of newQRID) {
-      if (sub != '-') {
-        cleanQRID+=sub;
-      }
-    }
-  cleanQRID = cleanQRID.slice(0,20);
-  newQRID = cleanQRID;
+  const {display, mediaName} = req.body;
+  
   //update single media
   if (mediaName && display){
-    let foundDisplay = displayModel.findOne({store:req.store.id, displayName:display});
-    let foundMedia = mediaModel.findOne({displayID:foundDisplay._id, mediaName:mediaName});
+    //generate new QRID
+    let newQRID = uuidv4(); 
+    let cleanQRID = "";
+      for (let sub of newQRID) {
+        if (sub != '-') {
+          cleanQRID+=sub;
+        }
+      }
+    cleanQRID = cleanQRID.slice(0,20);
+    newQRID = cleanQRID;
+
+    let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display});
+    if(!foundDisplay){
+      res.status(401).json({status:"fail",cause:'Issue finding display'});
+      throw new Error('Issue finding display');
+    }
+    let foundMedia = await mediaModel.findOne({displayID:foundDisplay._id, mediaName:mediaName});
+    if(!foundMedia){
+      res.status(401).json({status:"fail",cause:'Issue finding media'});
+      throw new Error('Issue finding media');
+    }
     let currentQR = foundMedia.QRID;
     await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{QRID:cleanQRID}, $push:{QR_History:currentQR}})
   }
+
   //error
   else if (media && !display){
-    
+    res.status(401).json({status:"fail",cause:'Provided media but no display'});
+    throw new Error('Provided media but no display');
   }
+
   //update all in display
   else if(display){
-    
+    let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display});
+    if(!foundDisplay){
+      res.status(401).json({status:"fail",cause:'Issue finding display'});
+      throw new Error('Issue finding display');
+    }
+    for (let i=0; i<foundDisplay.media.length;i++){
+      //generate new QRID
+      let newQRID = uuidv4(); 
+      let cleanQRID = "";
+        for (let sub of newQRID) {
+          if (sub != '-') {
+            cleanQRID+=sub;
+          }
+        }
+      cleanQRID = cleanQRID.slice(0,20);
+      newQRID = cleanQRID;
+      //Update media
+      let foundMedia = await mediaModel.findOne({displayID:foundDisplay.media[i]});
+      let currentQR = foundMedia.QRID;
+      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{QRID:cleanQRID}, $push:{QR_History:currentQR}})
+    }
   }
+
   //update all in store
   else{
-    
+    //find all displays
+    let displays = await displayModel.find({store:req.store.id});
+    if(!displays){
+      res.status(401).json({status:"fail",cause:'Issue finding displays'});
+      throw new Error('Issue finding displays');
+    }
+    displays.forEach(async (display)=>{
+      for (let i=0; i<display.media.length;i++){
+        //generate new QRID
+        let newQRID = uuidv4(); 
+        let cleanQRID = "";
+          for (let sub of newQRID) {
+            if (sub != '-') {
+              cleanQRID+=sub;
+            }
+          }
+        cleanQRID = cleanQRID.slice(0,20);
+        newQRID = cleanQRID;
+        //Update media
+        let foundMedia = await mediaModel.findId({displayID:display.media[i]});
+        let currentQR = foundMedia.QRID;
+        await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{QRID:cleanQRID}, $push:{QR_History:currentQR}})
+      }
+    })
   }
 
   res.status(200).json({status:"success"});
 })
+
+const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
+  const {display, mediaName, mediaFile, TTL }= req.body;
+  if(!(display&&mediaName&&mediaFile&&TTL)){
+    res.status(400).json({status:"fail", cause:"Missing media information"});
+    throw new Error('Missing media information') 
+  }
+  //generate a clean QRID
+  const QRID = uuidv4();
+  let cleanQRID = "";
+  for (let sub of QRID) {
+    if (sub != '-') {
+      cleanQRID+=sub;
+    }
+  }
+  cleanQRID = cleanQRID.slice(0,20);
+
+  //var mediaFileByteLength = Buffer.byteLength(mediaFile);
+  var mediaFileNumChunks = Math.ceil(mediaFile.length / 1024);
+  var mediaFileChunks = new Array(mediaFileNumChunks);
+
+  for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
+    mediaFileChunks[i] = mediaFile.substr(o, 1024)
+  }
+
+  //check if display exists
+  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  if(!(foundDisplay)){
+    res.status(400).json({status:"fail", cause:"Display not found"});
+    throw new Error('Display not found') 
+  }
+  
+  
+  let foundMedia = await mediaModel.findOne({display:foundDisplay._id, mediaName:mediaName});
+
+  //check if media name already in use
+  if(foundMedia){
+    res.status(400).json({status:"fail", cause:"Media name already in use"});
+    throw new Error('Media name already in use') 
+  }
+
+  //make new media obj
+  const createdMedia = await media.create({
+    display:foundDisplay._id,
+    QRID:cleanQRID,
+    QR_History:[cleanQRID],
+    mediaName:mediaName,
+    mediaFileChunks:mediaFileNumChunks,
+    voteCount:0,
+    lifetimeVotes:0,
+    TTL:TTL,
+  })
+
+  //add media to store
+  await displayModel.updateOne({store:req.store.id, displayName:display}, {baseMedia:createdMedia.id})
+
+  //for each mediaFileChunk make a new mediaFileChunk object
+  mediaFileChunks.forEach((chunk, i)=>{
+    mediaFileModel.create({
+      mediaID:createdMedia._id,
+      chunkNumber:i+1,
+      data:chunk,
+    })
+  })
+
+  res.status(200).json({status:"success"});
+})
+
+const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
+  //get all the info and check it is ok
+  const {display} = req.body;
+  if(!(display)){
+    res.status(400).json({status:"fail", cause:"Missing display"});
+    throw new Error('Missing display'); 
+  }
+  //get all media id from display
+  let baseMediaDisplay = await displayModel.findOne({displayName:display, store:req.store.id});
+  let baseMedia = await mediaModel.findById(baseMediaDisplay.baseMedia);
+  let baseMediaFile = '';
+  for(let i = 1; i<=baseMedia.mediaFileChunks; i++){
+    let foundMediaFile = await mediaFileModel.findOne({mediaID:baseMedia._id, chunkNumber:i})
+    baseMediaFile += foundMediaFile.data;
+  }
+  
+  //for each media list QRID, TTL, mediaName, voteCount, currentMedia
+  res.status(200).json({status:"success", baseMedia:baseMedia.mediaName, baseMediaFile:baseMediaFile});
+})
+
+const postDisplayMediaListen = asyncHandler(async (req, res)=>{
+  const {display} = req.body; 
+  //call loop
+   let rMessage = null;
+   while (rMessage == null){
+     await new Promise(resolve => setTimeout(resolve, 250));
+     rMessage = await loopCurrentMedia(display);
+   }
+   res.json({staus:"success", display:rMessage});
+})
+
+//every .250 seconds check for a potential change
+//
+
+const loopCurrentMedia = asyncHandler((display) =>{
+  /*
+  var display = await Display.findOne({store:req.store.id, display:display});
+  if (display.media.length > 0){
+    const cTime = new Date(Date.now());
+    let liveTime = display.currentMedia.liveTime;
+    liveTime = new Date(liveTime);
+    liveTime = new Date(liveTime.getTime() + (display.currentMedia.TTL * 1000))
+
+    if (cTime >= liveTime){
+      if(display.currentMedia.media === "displayQR"){
+        const company = display.company; 
+        const store = display.store;
+        const desiredDisplay = display.display;
+        const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
+        //switch to new media
+        this.setCurrentMedia(company, store, desiredDisplay, highestMedia, desiredDisplay);
+        //send message to display new media
+        return "newMedia";
+      }
+      else{
+        const company = display.company; 
+        const store = display.store;
+        const desiredDisplay = display.display;
+        const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
+        this.setCurrentMediaQR(company, store, desiredDisplay, highestMedia);
+        //send message to display QR
+        return "QR";
+      }
+    }
+  }
+  return null;
+  */
+});
+
+  
 
 module.exports = {
   putDisplay,
@@ -497,4 +692,7 @@ module.exports = {
   postDisplaySettings,
   patchDisplaySettings,
   postDisplayMediaRefresh,
+  putDisplayMediaBaseMedia,
+  postDisplayMediaBaseMedia,
+  postDisplayMediaListen
 }
