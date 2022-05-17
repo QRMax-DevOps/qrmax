@@ -105,6 +105,7 @@ class MediaMngr extends Component {
         this.fetchMedia("patch", data, 1);
         console.log("inside updateMedia");
         console.log(data);
+        window.location.reload();
         }else{
             console.log("can't update new media")
             alert("You can't update +New Media")
@@ -119,12 +120,14 @@ class MediaMngr extends Component {
         let newName = this.getNewName();
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: newName, mediaFile: this.state.imgString, TTL: this.state.mediaLength};
         this.fetchMedia("put", data, 1);
+        window.location.reload();
     }
 
     deleteMedia() {
         if(this.state.selectedMedia < this.state.mediaCount){
             var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaInput};
             this.fetchMedia("delete", data, 1);
+            window.location.reload();
         }else{
           console.log("can't delete null media")
           alert("You can't delete +New Media")
