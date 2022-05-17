@@ -30,3 +30,29 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 	global[0] = asyncFetch[0];
 	global[1] = asyncFetch[1];
 }
+
+export async function registerVote(type, url, data, global) {
+	var endpoint = url+'api/v1/Display/Media/'+data.QRID;
+
+	var methodGen = null;
+	var inputGen  = null;
+
+	if(type == "VOTE") {
+		methodGen = 'PATCH';
+		inputGen = JSON.stringify({
+			voteCount: data.voteCount
+		})
+	}
+
+	const requestOptions = {
+		method	: methodGen,
+		headers	: { 'Content-Type': 'application/json' },
+		body	: inputGen
+	};
+
+	log("Attempting "+requestOptions.method+":\n    > At: "+endpoint+"\n    > With body: "+requestOptions.body);
+	const asyncFetch = await fetchAPI(endpoint,requestOptions);
+
+	global[0] = asyncFetch[0];
+	global[1] = asyncFetch[1];
+}

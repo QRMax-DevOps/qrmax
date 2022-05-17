@@ -8,7 +8,7 @@ import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
 import { useLocation } from "react-router-dom";
 import GreenTickImage from '../../graphics/tick.png'
-import { ActionQRID } from "../../services/middleware/input_mw";
+import { ActionQRID, registerVote } from "../../services/middleware/input_mw";
 import './InputResponse.css';
 
 class ResponseGood extends React.Component {
@@ -18,7 +18,7 @@ class ResponseGood extends React.Component {
 		var _display = new URLSearchParams(useLocation.search).get("display");
 		var _QRID = new URLSearchParams(useLocation.search).get("qrid")
 
-		var isLocalHost = "http://localhost:80/";
+		var url = "http://localhost:80/";
         var data = {company: "displayCompany", store: "displayStore", display: _display, QRID: _QRID};
 
         let request = null;
@@ -27,7 +27,7 @@ class ResponseGood extends React.Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = ActionQRID(data, global, true);
+        request = registerVote("VOTE", url, data, response);
         
 
         var interval = setInterval(function() {
