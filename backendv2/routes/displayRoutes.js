@@ -4,7 +4,18 @@ const {
   putDisplay,
   postDisplay,
   patchDisplay,
-  deleteDisplay
+  deleteDisplay,
+  putDisplayMedia,
+  postDisplayMedia,
+  patchDisplayMedia,
+  deleteDisplayMedia,
+  postDisplayMediaFile,
+  postDisplaySettings,
+  patchDisplaySettings,
+  postDisplayMediaRefresh,
+  putDisplayMediaBaseMedia,
+  postDisplayMediaBaseMedia,
+  postDisplayMediaListen,
 } = require('../controllers/displayController');
 const { protect } = require('../middleware/authStoreMiddleware');
 
@@ -13,24 +24,20 @@ router.post('/', protect, postDisplay); //done
 router.patch('/', protect, patchDisplay); //done
 router.delete('/', protect, deleteDisplay); //done
 
-/*Media
-router.put('/Media', protect, putDisplayMedia);
-router.post('/Media', protect, postDisplayMedia);
-router.patch('/Media', protect, patchDisplayMedia);
-router.delete('/Media', protect, deleteDisplayMedia);
-*/
+//Media
+router.put('/Media', protect, putDisplayMedia); //done
+router.post('/Media', protect, postDisplayMedia); //done
+router.patch('/Media', protect, patchDisplayMedia); //done
+router.delete('/Media', protect, deleteDisplayMedia); //done
 
-  /*Media/File
-  router.post('/Media/File', protect, postDisplayMediaFile);
-  */
+  //Media/File
+  router.post('/Media/File', protect, postDisplayMediaFile); //done
 
-  /*Media/Listen
+  //Media/Listen
   router.post('/Media/Listen', protect, postDisplayMediaListen);
-  */
 
-  /*Media/Refresh
-  router.post('/Media/Refresh', protect, postDisplayMediaRefresh);
-  */
+  //Media/Refresh
+  router.post('/Media/Refresh', protect, postDisplayMediaRefresh); //done
 
   /*Media/Positions
   router.put('/Media/Positions', protect, putDisplayMediaPositions);
@@ -39,15 +46,13 @@ router.delete('/Media', protect, deleteDisplayMedia);
   router.delete('/Media/Positions', protect, deleteDisplayMediaPositions);
   */
 
-  /*Media/BaseMedia
-  router.put('/Media/BaseMedia', protect, putDisplayMediaBaseMedia);
-  router.post('/Media/BaseMedia', protect, postDisplayMediaBaseMedia);
-  */
+  //Media/BaseMedia
+  router.put('/Media/BaseMedia', protect, putDisplayMediaBaseMedia); //done
+  router.post('/Media/BaseMedia', protect, postDisplayMediaBaseMedia); //done
 
-/*Settings
-router.put('/Settings', protect, putDisplaySettings);
-router.patch('/Settings', protect, patchDisplaySettings);
-*/
+//Settings
+router.post('/Settings', protect, postDisplaySettings); //done
+router.patch('/Settings', protect, patchDisplaySettings); //done
 
 /*Interactions
 router.post('/Interactions', protect, postDisplayInteractions);

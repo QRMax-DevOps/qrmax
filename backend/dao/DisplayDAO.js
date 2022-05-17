@@ -194,7 +194,6 @@ class DisplayDAO {
 	
     static async listQR(company, store, display){
       var result = await Display.find({company:company, store:store, display:display}, {projection:{_id:0, company:0, store:0, displayID:0, display:0, mediaCount:0}}).toArray();
-      console.log(result[0]);
       return result[0];
     }
 	
