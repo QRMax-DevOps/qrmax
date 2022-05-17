@@ -677,6 +677,187 @@ const loopCurrentMedia = asyncHandler((display) =>{
   */
 });
 
+const putDisplayMediaPositions = asyncHandler(async (req, res)=>{
+	const {display, position} = req.body;
+    if(!display||!position){
+      res.status(400).json({status:"fail", cause:"Missing information"});
+      throw new Error('Missing information'); 
+    }
+	const findMedia = await media.findOne({display});
+	if (!findMedia) {
+        res.status(400).json({status:"fail", cause:"Could not find display"});
+        throw new Error('Could not find display'); 
+	}
+	
+	const xyArray = position.split(':');
+  	const pos = {
+	  	x: xyArray[0],
+	  	x: xyArray[1]
+  	};
+	const addPosition = await media.update({display}, {$push: {positions:pos}})
+	if (!addPosition) {
+        res.status(400).json({status:"fail", cause:"Failed to add position"});
+        throw new Error('Failed to add position'); 
+	}
+	
+  res.status(200).json({status:"success"});
+});
+
+const postDisplayMediaPositions = asyncHandler(async (req, res)=>{
+	const {display} = req.body;
+    if(!display){
+      res.status(400).json({status:"fail", cause:"Missing information"});
+      throw new Error('Missing information'); 
+    }
+	const findMedia = await media.findOne({display});
+	if (!findMedia) {
+        res.status(400).json({status:"fail", cause:"Could not find display"});
+        throw new Error('Could not find display'); 
+	}
+	if (!findMedia.currentQRPosition) {
+		res.status(200).json({status:"success"}, findMedia.positions[0]);
+	}
+	else {
+		res.status(200).json({status:"success"}, findMedia.positions[findMedia.currentQRPosition]);
+	}
+});
+
+const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
+	const {display, fields, values} = req.body;
+    if(!display){
+      res.status(400).json({status:"fail", cause:"Missing information"});
+      throw new Error('Missing information'); 
+    }
+	const findMedia = await media.findOne({display});
+	if (!findMedia) {
+        res.status(400).json({status:"fail", cause:"Could not find display"});
+        throw new Error('Could not find display'); 
+	}
+    const farray = fields.split(',');
+    const varray = values.split(',');
+	
+    for (let field of fields){
+      	i++;
+      	let value = values[i];
+      	if (field == 'QRPositionAtCurrent'){
+			if (!findMedia.currentQRPosition) {
+				const xyArray = value.split(':');
+				var positionsArray = findMedia.positions;
+				let positionalVal = 0;
+  		        positionsArray[positionalVal].x = parseInt(xyArray[0]);
+  		        positionsArray[positionalVal].y = parseInt(xyArray[1]);
+		  	  	const updatePositions = await media.updateOne({display:display}, {$set:{positions:positionsArray}});
+				if (!updatePositions) {
+			        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+			        throw new Error('Could not updated positions');
+				}
+				res.status(200).json({status:"success"});
+			}
+			else {
+				const xyArray = value.split(':');
+				var positionsArray = findMedia.positions;
+				let positionalVal = parseInt(findMedia.currentQRPosition);
+  		        positionsArray[positionalVal].x = parseInt(xyArray[0]);
+  		        positionsArray[positionalVal].y = parseInt(xyArray[1]);
+		  	  	const updatePositions = await media.updateOne({display:display}, {$set:{positions:positionsArray}});
+				if (!updatePositions) {
+			        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+			        throw new Error('Could not updated positions');
+				}
+				res.status(200).json({status:"success"});
+		    }
+      	}
+      	else if(field == 'nextQRPosition'){
+  	    	let positionalVal = parseInt(findMedia.currentQRPosition) + 1;
+			if (positionalVal < findMedia.positions.length) {
+	          	const updatePositions = await media.updateOne({display:display}, {$set:{currentQRPosition:positionalVal}})
+				if (!updatePositions) {
+			        res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+			        throw new Error('Could not updated positions');
+				}
+			}
+			else {
+				res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+				throw new Error('Could not updated positions');
+			}
+          	res.status(200).json({status:"success"});
+        }
+      	else if(field == 'prevQRPosition'){
+  	    	let positionalVal = parseInt(findMedia.currentQRPosition) - 1;
+			if (positionalVal >= 0) {
+	          	const updatePositions = await media.updateOne({display:display}, {$set:{currentQRPosition:positionalVal}})
+				if (!updatePositions) {
+			        res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+			        throw new Error('Could not updated positions');
+				}
+			}
+			else {
+				res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+				throw new Error('Could not updated positions');
+			}
+          	res.status(200).json({status:"success"});
+        }
+      	else{
+	        res.status(400).json({status:"fail", cause:"Cannot update that field"});
+	        throw new Error('Cannot update that field'); 
+      	}
+    }
+});
+
+const deleteDisplayMediaPositions = asyncHandler(async (req, res)=>{
+	const {display} = req.body;
+    if(!display){
+      res.status(400).json({status:"fail", cause:"Missing information"});
+      throw new Error('Missing information'); 
+    }
+	const findMedia = await media.findOne({display});
+	if (!findMedia) {
+        res.status(400).json({status:"fail", cause:"Could not find display"});
+        throw new Error('Could not find display'); 
+	}
+	if (!findMedia.currentQRPosition) {
+		var positionsArray = findMedia.positions;
+		let positionalVal = 0;
+    	var newPositions = [];
+    	for (let i=0; i<positionsArray.length; i++) {
+    		if(i != positionalVal) {
+    		  	newPositions.push(positionsArray[i]);
+    		}
+    	}
+  	  	const deletePosition = await media.updateOne({display:display}, {$set:{positions:newPositions}});
+		if (!deletePosition) {
+	        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+	        throw new Error('Could not updated positions');
+		}
+		res.status(200).json({status:"success"});
+	}
+	else {
+		var positionsArray = findMedia.positions;
+		let positionalVal = parseInt(findMedia.currentQRPosition);
+    	var newPositions = [];
+    	for (let i=0; i<positionsArray.length; i++) {
+    		if(i != positionalVal) {
+    		  	newPositions.push(positionsArray[i]);
+    		}
+    	}
+  	  	if (positionalVal != 0) {
+			const deletePosition = await media.updateOne({display:display}, {$set:{currentQRPosition: parseInt(positionalVal-1),positions:newPositions}});
+			if (!deletePosition) {
+		        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+		        throw new Error('Could not updated positions');
+			}
+		}
+		else {
+			const deletePosition = await media.updateOne({display:display}, {$set:{positions:newPositions}});
+			if (!deletePosition) {
+		        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+		        throw new Error('Could not updated positions');
+			}
+		}
+  	  	
+		res.status(200).json({status:"success"});
+	}
+});
   
 
 module.exports = {
@@ -694,5 +875,9 @@ module.exports = {
   postDisplayMediaRefresh,
   putDisplayMediaBaseMedia,
   postDisplayMediaBaseMedia,
-  postDisplayMediaListen
+  postDisplayMediaListen,
+  putDisplayMediaPositions,
+  postDisplayMediaPositions,
+  patchDisplayMediaPositions,
+  deleteDisplayMediaPositions
 }

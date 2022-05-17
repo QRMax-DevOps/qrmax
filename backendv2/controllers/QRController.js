@@ -82,6 +82,16 @@ const postUserInput = asyncHandler(async (req, res) => {
         throw new Error('Out of range');
       }
     }
+	
+	const previousInputs = await UserInput.find({UserIdentifier:cleanIdentifier});
+	const currentDate = new Date(Date.now());
+	
+	for (let i=0; i < previousInputs.length; i++) {
+		if (math.abs(previousInputs[i].TimeOfInput - currentDate) < 10000) {
+	        res.status(400);
+	        throw new Error('Tried voting too quickly, wait 10 seconds between votes');
+		}
+	}
 
     //recording interaction in correct media
     var result = await Media.findOne({QRID:QRID});
