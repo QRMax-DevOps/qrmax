@@ -4,7 +4,7 @@ import './Homepage.css';
 import '../App.css';
 import {getApiURL} from "./../services/core_mw"
 import {HandleMedia} from "./../services/middleware/media_mw"
-import { getDisplays } from '../services/display_middleware';
+import { handleDisplay } from '../services/middleware/display_mw';
 import QRCode from 'qrcode.react';
 import Draggable from 'react-draggable';
 import { ListenTo } from '../services/deprecated/(demo) listener_mw';
@@ -64,7 +64,7 @@ class Homepage extends Component {
         var timer = {elapsed: 0};
         var json;
 
-        request = getDisplays("GETLIST", url, data, response);
+        request = handleDisplay("display", "GETLIST", url, data, response);
         console.log(data.company + " " + data.store);
 
         this.interval = setInterval(function() {
@@ -105,7 +105,7 @@ class Homepage extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays("GETLIST", url, data, response);
+        request = handleDisplay("GETLIST", url, data, response);
 
 
     }
@@ -229,7 +229,7 @@ class Homepage extends Component {
 
         let request = null;
         let response = [null,null];
-        request = await getDisplays("GETLIST", url, data, response);
+        request = await handleDisplay("GETLIST", url, data, response);
         var json = JSON.parse(response[1]);
         return json;
 

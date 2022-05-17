@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getDisplays } from '../services/display_middleware';
+import { handleDisplay } from '../services/middleware/display_mw';
 import { HandleDisplay } from '../services/middleware/qr_mw';
 import './DisplayMngr.css';
 import { ImageToBase64 } from '../services/utilities/base64_util';
@@ -92,7 +92,7 @@ class DisplayMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = getDisplays(type, url, data, response);
+        request = handleDisplay(type, url, data, response);
         
 
         var interval = setInterval(function() {
