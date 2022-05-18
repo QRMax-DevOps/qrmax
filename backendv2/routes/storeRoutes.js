@@ -13,12 +13,12 @@ const {
 } = require('../controllers/storeController');
 const { protect } = require('../middleware/authStoreMiddleware');
 const companyProtect = require('../middleware/authCompanyMiddleware');
-const compantStoreProtect = require('../middleware/authCompanyStoreMiddleware');
+const companyStoreProtect = require('../middleware/authCompanyStoreMiddleware');
 
 //company protect used as a store account can only be created by a valid logged in Company account
 router.put('/Account/', companyProtect.protect, putStoreAccount); //done
 router.post('/Account/', postStoreAccount); //done
-router.patch('/Account/', compantStoreProtect.protect, patchStoreAccount); //done
+router.patch('/Account/', companyStoreProtect.protect, patchStoreAccount); //done
 router.delete('/Account/', companyProtect.protect, deleteStoreAccount); //done
 
   //StoresList

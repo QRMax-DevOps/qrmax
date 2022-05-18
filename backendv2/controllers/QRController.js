@@ -126,9 +126,37 @@ const postUserInput = asyncHandler(async (req, res) => {
       res.status(201).json({status:"success"});
     } 
     else {
-      res.status(400).json({status:"fail", cause:"Invalid user data"});
+      res.status(400).json({status:"fail", cause:"failed user log"});
       throw new Error('Invalid user data');
     }
+
+    //recording interaction in correct media
+    var result = await Media.findOne({QRID:QRID});
+    if(!result){
+      res.status(404).json({status:"fail", cause:"Could not find matching media"})
+      throw new Error('Could not find matching media');
+    }
+    let voteCount = result.voteCount +1;
+    let lifetimeVotes = result.lifetimeVotes +1;
+    //increment voteCount
+    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
+/*
+    //Regex
+    if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
+      //Validation
+      if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
+        UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
+        DisplayDAO.addVote(company, store, display, QRID);
+        res.json({status:"success"});
+      }
+      else {
+        throw "Validation failed";
+      }
+    }
+    else {
+      throw "Regex failed";
+    }
+*/
   }
   else {
     res.status(400);

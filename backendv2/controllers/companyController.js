@@ -295,7 +295,7 @@ const postCompanyAccountList = asyncHandler(async (req,res)=>{
   //get all stores under company
   let storeAccounts = await storeAccount.find({company:req.company.id});
   let Accounts = [];
-  for(let i =0; i<storeAccount.length;i++){
+  for(let i=0; i<storeAccounts.length; i++){
     const storeAccount = storeAccounts[i];
     const username = storeAccount.username;
     let stores = storeAccount.stores;
