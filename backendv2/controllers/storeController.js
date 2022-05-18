@@ -97,7 +97,6 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
     company = req.body.company; 
     companyCheck = companyAccount.findOne({company:company});
   }
-  console.log(company);
   //check company exists
   if (!companyCheck){
 	  res.status(400).json({status:"fail", cause:"Company does not exist"});
@@ -111,7 +110,8 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
   //define a list of allowed fields to patch
   let valid = ['username', 'password'];
   //check all fields are valid
-  fields.split(',').forEach(async (field, i)=>{
+  for(let i=0; i<fields.split(',').length; i++){
+    let field =  fields.split(',')[i]
     if(!valid.includes(field)){
       res.status(400).json({status:"fail", cause:"Cannot call patch operation on field: "+field});
 	    throw new Error('Cannot call patch operation on field');
@@ -122,7 +122,8 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
 	      throw new Error("Username already in use");
       }
     }
-  })
+  }
+  
   //if all fields valid then go through and update them accordingly
   fields.split(',').forEach(async (field, i)=>{
     if(field == 'password'){
