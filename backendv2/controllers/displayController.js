@@ -677,13 +677,17 @@ const loopCurrentMedia = asyncHandler((display) =>{
   */
 });
 
+// @desc    Add position
+// @route   PUT /api/v2/Display/Media/Positions
+// @access  Private
+// @review  Complete
 const putDisplayMediaPositions = asyncHandler(async (req, res)=>{
-	const {display, position} = req.body;
-    if(!display||!position){
+	const {QRID, position} = req.body;
+    if(!QRID||!position){
       res.status(400).json({status:"fail", cause:"Missing information"});
       throw new Error('Missing information'); 
     }
-	const findMedia = await media.findOne({display});
+	const findMedia = await media.findOne({QRID:QRID});
 	if (!findMedia) {
         res.status(400).json({status:"fail", cause:"Could not find display"});
         throw new Error('Could not find display'); 
@@ -692,10 +696,14 @@ const putDisplayMediaPositions = asyncHandler(async (req, res)=>{
 	const xyArray = position.split(':');
   	const pos = {
 	  	x: xyArray[0],
-	  	x: xyArray[1]
+	  	y: xyArray[1]
   	};
-	const addPosition = await media.update({display}, {$push: {positions:pos}})
-	if (!addPosition) {
+	const addPosition = await media.updateOne({QRID:QRID}, {$push: {positions:pos}})
+  var updateCurrentPosVal;
+  if (!addPosition.currentQRPosition) {
+    updateCurrentPosVal = await media.updateOne({QRID:QRID},{currentQRPosition:0});
+  }
+	if (!addPosition | !updateCurrentPosVal) {
         res.status(400).json({status:"fail", cause:"Failed to add position"});
         throw new Error('Failed to add position'); 
 	}
@@ -703,98 +711,107 @@ const putDisplayMediaPositions = asyncHandler(async (req, res)=>{
   res.status(200).json({status:"success"});
 });
 
+// @desc    Get position
+// @route   POST /api/v2/Display/Media/Positions
+// @access  Private
+// @review  Complete
 const postDisplayMediaPositions = asyncHandler(async (req, res)=>{
-	const {display} = req.body;
-    if(!display){
+	const {QRID} = req.body;
+    if(!QRID){
       res.status(400).json({status:"fail", cause:"Missing information"});
       throw new Error('Missing information'); 
     }
-	const findMedia = await media.findOne({display});
+  const findMedia = await media.findOne({QRID:QRID});
 	if (!findMedia) {
         res.status(400).json({status:"fail", cause:"Could not find display"});
         throw new Error('Could not find display'); 
 	}
 	if (!findMedia.currentQRPosition) {
-		res.status(200).json({status:"success"}, findMedia.positions[0]);
+		res.status(200).json({status:"success", position:findMedia.positions[0]});
 	}
 	else {
-		res.status(200).json({status:"success"}, findMedia.positions[findMedia.currentQRPosition]);
+    res.status(200).json({status:"success", position:findMedia.positions[findMedia.currentQRPosition]});
 	}
 });
 
+// @desc    Update position
+// @route   PATCH /api/v2/Display/Media/Positions
+// @access  Private
+// @review  Complete
 const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
-	const {display, fields, values} = req.body;
-    if(!display){
+	const {QRID, fields, values} = req.body;
+    if(!QRID){
       res.status(400).json({status:"fail", cause:"Missing information"});
       throw new Error('Missing information'); 
     }
-	const findMedia = await media.findOne({display});
+  const findMedia = await media.findOne({QRID:QRID});
 	if (!findMedia) {
         res.status(400).json({status:"fail", cause:"Could not find display"});
         throw new Error('Could not find display'); 
 	}
     const farray = fields.split(',');
     const varray = values.split(',');
-	
-    for (let field of fields){
+    let i = -1;
+    for (let field of farray){
+        console.log(field);
       	i++;
-      	let value = values[i];
+      	let value = varray[i];
       	if (field == 'QRPositionAtCurrent'){
-			if (!findMedia.currentQRPosition) {
-				const xyArray = value.split(':');
-				var positionsArray = findMedia.positions;
-				let positionalVal = 0;
-  		        positionsArray[positionalVal].x = parseInt(xyArray[0]);
-  		        positionsArray[positionalVal].y = parseInt(xyArray[1]);
-		  	  	const updatePositions = await media.updateOne({display:display}, {$set:{positions:positionsArray}});
-				if (!updatePositions) {
-			        res.status(400).json({status:"fail", cause:"Could not updated positions"});
-			        throw new Error('Could not updated positions');
-				}
-				res.status(200).json({status:"success"});
-			}
-			else {
-				const xyArray = value.split(':');
-				var positionsArray = findMedia.positions;
-				let positionalVal = parseInt(findMedia.currentQRPosition);
-  		        positionsArray[positionalVal].x = parseInt(xyArray[0]);
-  		        positionsArray[positionalVal].y = parseInt(xyArray[1]);
-		  	  	const updatePositions = await media.updateOne({display:display}, {$set:{positions:positionsArray}});
-				if (!updatePositions) {
-			        res.status(400).json({status:"fail", cause:"Could not updated positions"});
-			        throw new Error('Could not updated positions');
-				}
-				res.status(200).json({status:"success"});
-		    }
-      	}
+          if (!findMedia.currentQRPosition) {
+            const xyArray = value.split(':');
+            var positionsArray = findMedia.positions;
+            let positionalVal = 0;
+                  positionsArray[positionalVal].x = parseInt(xyArray[0]);
+                  positionsArray[positionalVal].y = parseInt(xyArray[1]);
+                const updatePositions = await media.updateOne({QRID:QRID}, {$set:{positions:positionsArray}});
+            if (!updatePositions) {
+                  res.status(400).json({status:"fail", cause:"Could not updated positions"});
+                  throw new Error('Could not updated positions');
+            }
+            res.status(200).json({status:"success"});
+          }
+          else {
+            const xyArray = value.split(':');
+            var positionsArray = findMedia.positions;
+            let positionalVal = parseInt(findMedia.currentQRPosition);
+                  positionsArray[positionalVal].x = parseInt(xyArray[0]);
+                  positionsArray[positionalVal].y = parseInt(xyArray[1]);
+                const updatePositions = await media.updateOne({QRID:QRID}, {$set:{positions:positionsArray}});
+            if (!updatePositions) {
+                  res.status(400).json({status:"fail", cause:"Could not updated positions"});
+                  throw new Error('Could not updated positions');
+            }
+            res.status(200).json({status:"success"});
+            }
+        }
       	else if(field == 'nextQRPosition'){
   	    	let positionalVal = parseInt(findMedia.currentQRPosition) + 1;
-			if (positionalVal < findMedia.positions.length) {
-	          	const updatePositions = await media.updateOne({display:display}, {$set:{currentQRPosition:positionalVal}})
-				if (!updatePositions) {
-			        res.status(400).json({status:"fail", cause:"Could not update to next position value"});
-			        throw new Error('Could not updated positions');
-				}
-			}
-			else {
-				res.status(400).json({status:"fail", cause:"Could not update to next position value"});
-				throw new Error('Could not updated positions');
-			}
-          	res.status(200).json({status:"success"});
+          if (positionalVal < findMedia.positions.length) {
+                  const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:positionalVal}})
+            if (!updatePositions) {
+                  res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+                  throw new Error('Could not updated positions');
+            }
+          }
+          else {
+            res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+            throw new Error('Could not updated positions');
+          }
+          res.status(200).json({status:"success"});
         }
       	else if(field == 'prevQRPosition'){
   	    	let positionalVal = parseInt(findMedia.currentQRPosition) - 1;
-			if (positionalVal >= 0) {
-	          	const updatePositions = await media.updateOne({display:display}, {$set:{currentQRPosition:positionalVal}})
-				if (!updatePositions) {
-			        res.status(400).json({status:"fail", cause:"Could not update to next position value"});
+		    	if (positionalVal >= 0) {
+	          	const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:positionalVal}})
+				    if (!updatePositions) {
+			        res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
 			        throw new Error('Could not updated positions');
-				}
-			}
-			else {
-				res.status(400).json({status:"fail", cause:"Could not update to next position value"});
-				throw new Error('Could not updated positions');
-			}
+				    }
+			    }
+          else {
+            res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
+            throw new Error('Could not updated positions');
+          }
           	res.status(200).json({status:"success"});
         }
       	else{
@@ -804,13 +821,17 @@ const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
     }
 });
 
+// @desc    Delete position
+// @route   DELETE /api/v2/Display/Media/Positions
+// @access  Private
+// @review  Complete
 const deleteDisplayMediaPositions = asyncHandler(async (req, res)=>{
-	const {display} = req.body;
-    if(!display){
+	const {QRID} = req.body;
+    if(!QRID){
       res.status(400).json({status:"fail", cause:"Missing information"});
       throw new Error('Missing information'); 
     }
-	const findMedia = await media.findOne({display});
+	const findMedia = await media.findOne({QRID:QRID});
 	if (!findMedia) {
         res.status(400).json({status:"fail", cause:"Could not find display"});
         throw new Error('Could not find display'); 
@@ -824,7 +845,7 @@ const deleteDisplayMediaPositions = asyncHandler(async (req, res)=>{
     		  	newPositions.push(positionsArray[i]);
     		}
     	}
-  	  	const deletePosition = await media.updateOne({display:display}, {$set:{positions:newPositions}});
+  	  	const deletePosition = await media.updateOne({QRID:QRID}, {$set:{positions:newPositions}});
 		if (!deletePosition) {
 	        res.status(400).json({status:"fail", cause:"Could not updated positions"});
 	        throw new Error('Could not updated positions');
@@ -840,15 +861,15 @@ const deleteDisplayMediaPositions = asyncHandler(async (req, res)=>{
     		  	newPositions.push(positionsArray[i]);
     		}
     	}
-  	  	if (positionalVal != 0) {
-			const deletePosition = await media.updateOne({display:display}, {$set:{currentQRPosition: parseInt(positionalVal-1),positions:newPositions}});
+  	  if (positionalVal != 0) {
+			const deletePosition = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition: parseInt(positionalVal-1),positions:newPositions}});
 			if (!deletePosition) {
 		        res.status(400).json({status:"fail", cause:"Could not updated positions"});
 		        throw new Error('Could not updated positions');
 			}
 		}
 		else {
-			const deletePosition = await media.updateOne({display:display}, {$set:{positions:newPositions}});
+			const deletePosition = await media.updateOne({QRID:QRID}, {$set:{positions:newPositions}});
 			if (!deletePosition) {
 		        res.status(400).json({status:"fail", cause:"Could not updated positions"});
 		        throw new Error('Could not updated positions');
