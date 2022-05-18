@@ -20,11 +20,13 @@ const protect = asyncHandler(async (req, res, next) => {
 
       // Get company from the token
       req.company = await CompanyAccount.findById(decoded.id).select('-password')
-
+      if(!req.company){
+        throw new Error('Company account not found');
+      }
       next()
     } catch (error) {
       console.log(error)
-      res.status(401).json({status:"fail",cause:"Not authorized"});
+      res.status(401).json({status:"fail",cause:"Not authorized, check bearer token"});
       throw new Error('Not authorized')
     }
   }
