@@ -79,6 +79,7 @@ const postUserInput = asyncHandler(async (req, res) => {
     var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
     var d = R * c; // Distance in km
     
+    /*
     console.log(d);
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
@@ -94,6 +95,7 @@ const postUserInput = asyncHandler(async (req, res) => {
         throw new Error('Out of range');
       }
     }
+    */
 	
 	const previousInputs = await UserInput.find({UserIdentifier:cleanIdentifier});
 	const currentDate = new Date(Date.now());
@@ -121,6 +123,7 @@ const postUserInput = asyncHandler(async (req, res) => {
 
     //recording interaction in correct media
     var result = await Media.findOne({QRID:QRID});
+    console.log(result);
     if(!result){
       res.status(404).json({status:"fail", cause:"Could not find matching media"})
       throw new Error('Could not find matching media');
@@ -128,7 +131,7 @@ const postUserInput = asyncHandler(async (req, res) => {
     let voteCount = result.voteCount +1;
     let lifetimeVotes = result.lifetimeVotes +1;
     //increment voteCount
-    Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
+    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
 /*
     //Regex
     if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
