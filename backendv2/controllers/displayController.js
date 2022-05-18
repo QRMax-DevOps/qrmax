@@ -380,12 +380,7 @@ const postDisplayMediaFile = asyncHandler(async (req, res)=>{
     throw new Error('Missing media information') 
   }
   
-  console.log("req.store ===", req.store);
-  console.log("req.body === ",req.body);
-  console.log("req.body.store ===", req.body.store);
-  console.log("req.body.store.id ===", req.body.store.id);
-  
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.body.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
 
   //check if display exists
   if(!(foundDisplay)){
