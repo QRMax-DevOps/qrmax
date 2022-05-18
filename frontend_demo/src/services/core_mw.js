@@ -98,9 +98,16 @@ export async function fetchAPI(address, requestOptions) {
 			.then((response) => response.json())
 			.then((res) => {
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
-					logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
-					+"\n    > Response = ",JSON.stringify(res));
-					return [false,JSON.stringify(res)];
+					if(typeof res === 'string') {
+						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
+						+"\n    > Response = "+res);
+						return [false,res];
+					}
+					else {
+						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
+						+"\n    > Response = "+JSON.stringify(res));
+						return [false,JSON.stringify(res)];
+					}
 				} 
 				else {
 					
