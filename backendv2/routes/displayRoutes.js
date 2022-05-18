@@ -16,6 +16,10 @@ const {
   putDisplayMediaBaseMedia,
   postDisplayMediaBaseMedia,
   postDisplayMediaListen,
+  putDisplayMediaPositions,
+  postDisplayMediaPositions,
+  patchDisplayMediaPositions,
+  deleteDisplayMediaPositions
 } = require('../controllers/displayController');
 const { protect } = require('../middleware/authStoreMiddleware');
 
@@ -39,12 +43,11 @@ router.delete('/Media', protect, deleteDisplayMedia); //done
   //Media/Refresh
   router.post('/Media/Refresh', protect, postDisplayMediaRefresh); //done
 
-  /*Media/Positions
+  //Media/Positions
   router.put('/Media/Positions', protect, putDisplayMediaPositions);
   router.post('/Media/Positions', protect, postDisplayMediaPositions);
   router.patch('/Media/Positions', protect, patchDisplayMediaPositions);
   router.delete('/Media/Positions', protect, deleteDisplayMediaPositions);
-  */
 
   //Media/BaseMedia
   router.put('/Media/BaseMedia', protect, putDisplayMediaBaseMedia); //done
