@@ -14,7 +14,8 @@ const mediaModel = require('../models/mediaModel');
 // @access  Private
 // @review  Complete
 const putDisplay = asyncHandler(async (req, res) => {
-  const {displayName, lat, lon} = req.body;
+  const displayName = req.body.display;
+  const {lat, lon} = req.body;
   //Check if display exists
   const displayExists = await displayModel.findOne({store:req.store.id, displayName:displayName });
   if (displayExists) {
@@ -22,7 +23,7 @@ const putDisplay = asyncHandler(async (req, res) => {
 	  throw new Error('Display already exists');
   }
 
-  if(!(req.body.displayType&&req.body.location)){
+  if(!(req.body.displayType&&req.body.lat&&req.body.lon)){
     res.status(400).json({status:"fail",cause:"Missing display information"});
 	  throw new Error('Missing display information');
   }
@@ -86,7 +87,7 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
-  const displayName = req.body.displayName;
+  const displayName = req.body.display;
   
   //Check if display exists
   const displayExists = await displayModel.find({store:req.store.id, displayName:displayName});
@@ -105,7 +106,8 @@ const deleteDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const patchDisplay = asyncHandler(async (req, res) => {
-  const { fields, values, displayName } = req.body;
+  const displayName = req.body.display;
+  const { fields, values} = req.body;
 
   if(!(fields&&values&&displayName)){
     res.status(400).json({status:"fail", cause:"Missing patch information"});
@@ -257,7 +259,9 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const patchDisplayMedia = asyncHandler(async (req, res) => {
-  const { fields, values, displayName } = req.body;
+  const displayName = req.body.display;
+  const mediaName = req.body.mediaName;
+  const { fields, values } = req.body;
   const sFields = fields.split(',');
   const sValues = values.split(',');
 
@@ -266,7 +270,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     throw new Error('Missing patch information') 
   }
 
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:displayName, store:req.store.id})
 
   //check if display exists
   if(!(foundDisplay)){

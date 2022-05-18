@@ -50,10 +50,11 @@ const displaySchema = mongoose.Schema(
 		type: Number,
 		required: [true, "please add lon"]
 	},
+	/*
 	baseMedia:{
 		type: mongoose.Schema.Types.ObjectId,
 		required: false,
-	}
+	}*/
   }
 )
 
