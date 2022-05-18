@@ -78,18 +78,11 @@ const postUserInput = asyncHandler(async (req, res) => {
     }
     else {
       if (d>1) {
-        res.status(400);
+        res.status(400)
         throw new Error('Out of range');
       }
     }
-
-    //recording interaction in correct media
-    var result = await Media.findOne({QRID:QRID});
-    let voteCount = result.voteCount +1;
-    let lifetimeVotes = result.lifetimeVotes +1;
-    //increment voteCount
-    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
-    
+  
     const userInput = await UserInput.create({
       QR: QRID,
       UserIdentifier: cleanIdentifier,
@@ -100,9 +93,20 @@ const postUserInput = asyncHandler(async (req, res) => {
       res.status(201).json({status:"success"});
     } 
     else {
-      res.status(400);
+      res.status(400).json({status:"fail", cause:"failed user log"});
       throw new Error('Invalid user data');
     }
+
+    //recording interaction in correct media
+    var result = await Media.findOne({QRID:QRID});
+    if(!result){
+      res.status(404).json({status:"fail", cause:"Could not find matching media"})
+      throw new Error('Could not find matching media');
+    }
+    let voteCount = result.voteCount +1;
+    let lifetimeVotes = result.lifetimeVotes +1;
+    //increment voteCount
+    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
 /*
     //Regex
     if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
