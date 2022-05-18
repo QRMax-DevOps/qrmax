@@ -41,9 +41,13 @@ const displaySchema = mongoose.Schema(
 		type: String,
 		required: [true, "please add display type"]
 	},
-	location:{
-		type: String,
-		required: [true, "please add location"]
+	lat:{
+		type: Number,
+		required: [true, "please add lat"]
+	},
+	lon:{
+		type: Number,
+		required: [true, "please add lon"]
 	},
 	baseMedia:{
 		type: mongoose.Schema.Types.ObjectId,
