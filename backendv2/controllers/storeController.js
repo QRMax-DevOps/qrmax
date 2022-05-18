@@ -111,7 +111,7 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
   let valid = ['username', 'password'];
   //check all fields are valid
   for(let i=0; i<fields.split(',').length; i++){
-    let field =  fields.split(',')[i]
+    let field = fields.split(',')[i];
     if(!valid.includes(field)){
       res.status(400).json({status:"fail", cause:"Cannot call patch operation on field: "+field});
 	    throw new Error('Cannot call patch operation on field');
@@ -123,7 +123,7 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
       }
     }
   }
-  
+
   //if all fields valid then go through and update them accordingly
   fields.split(',').forEach(async (field, i)=>{
     if(field == 'password'){

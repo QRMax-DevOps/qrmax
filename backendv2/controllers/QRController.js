@@ -106,7 +106,7 @@ const postUserInput = asyncHandler(async (req, res) => {
     let voteCount = result.voteCount +1;
     let lifetimeVotes = result.lifetimeVotes +1;
     //increment voteCount
-    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
+    Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
 /*
     //Regex
     if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {

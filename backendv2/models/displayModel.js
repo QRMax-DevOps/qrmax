@@ -21,7 +21,7 @@ const displaySchema = mongoose.Schema(
 	},
     currentContent:{
 		media:{
-			type:mongoose.Schema.Types.ObjectId,
+			type:String,
 			required:false,
 		},
 		mediaBase:{

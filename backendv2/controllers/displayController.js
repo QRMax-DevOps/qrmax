@@ -39,10 +39,10 @@ const putDisplay = asyncHandler(async (req, res) => {
     displayName: displayName,
 	  store: req.store.id,
     media:[],
-    currentContent:{media:'', mediaBase:'Base', liveTime:new Date(Date.now()), TTL:0},
+    currentContent:{media:null, mediaBase:'Base', liveTime:new Date(Date.now()), TTL:0},
     displayType:displaytype,
     location:location,
-    baseMedia:'',
+    baseMedia:null,
     settings:[],
   });
 
@@ -630,53 +630,29 @@ const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
 
 const postDisplayMediaListen = asyncHandler(async (req, res)=>{
   const {display} = req.body; 
-  //call loop
-   let rMessage = null;
-   while (rMessage == null){
-     await new Promise(resolve => setTimeout(resolve, 250));
-     rMessage = await loopCurrentMedia(display);
-   }
-   res.json({staus:"success", display:rMessage});
+  let foundDisplay = await display.findOne({store:req.store.id, displayName:display}) 
+  let foundDisplayType = foundDisplay.displayType;
+  if (foundDisplayType == 'dynamic'){
+    let foundDisplayCurrentMedia = foundDisplay.currentContent;
+    let current;
+  }
+  else{
+
+  }
+  res.status(200);
 })
 
-//every .250 seconds check for a potential change
-//
+//if the dislay is dynamic:
+//wait till current media time is done
+//if current media is NOT base:
+  //set current media to base
+//else 
+  //when it is get the most voted media and set to current media
 
-const loopCurrentMedia = asyncHandler((display) =>{
-  /*
-  var display = await Display.findOne({store:req.store.id, display:display});
-  if (display.media.length > 0){
-    const cTime = new Date(Date.now());
-    let liveTime = display.currentMedia.liveTime;
-    liveTime = new Date(liveTime);
-    liveTime = new Date(liveTime.getTime() + (display.currentMedia.TTL * 1000))
-
-    if (cTime >= liveTime){
-      if(display.currentMedia.media === "displayQR"){
-        const company = display.company; 
-        const store = display.store;
-        const desiredDisplay = display.display;
-        const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
-        //switch to new media
-        this.setCurrentMedia(company, store, desiredDisplay, highestMedia, desiredDisplay);
-        //send message to display new media
-        return "newMedia";
-      }
-      else{
-        const company = display.company; 
-        const store = display.store;
-        const desiredDisplay = display.display;
-        const highestMedia = await this.getMostVoted(company, store, desiredDisplay);
-        this.setCurrentMediaQR(company, store, desiredDisplay, highestMedia);
-        //send message to display QR
-        return "QR";
-      }
-    }
-  }
-  return null;
-  */
- return 'sad';
-});
+//if the display is static:
+//check for any media with !0 votes every 250 millisecods (or less)
+//switch to that one
+//otherwise check if media time is up and switch to base
 
   
 
