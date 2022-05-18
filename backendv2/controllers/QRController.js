@@ -56,29 +56,41 @@ const postUserInput = asyncHandler(async (req, res) => {
             console.error(err);
         });
       
+    var result = await Media.findOne({QRID:QRID});
+    if (!result) {
+      res.status(400).json({status:"fail", cause:"Invalid QR"});
+      throw new Error('Invalid QR');
+    }
+    let displayID = result.display;
+    var findDisplay = await Display.findById(displayID);
+    if (!result) {
+      res.status(400).json({status:"fail", cause:"Could not find display"});
+      throw new Error('Could not find display');
+    }
     //-37.80981, 144.96984 - success
     //-37.835030, 144.953620 - fail
-    let testLat = -37.80981;
-    let testLon = 144.96984;
+    let testLat = findDisplay.lat;
+    let testLon = findDisplay.lon;
     
     var R = 6371;
     var dLat = (testLat-responseLat) * (math.pi/180);
     var dLon = (testLon-responseLon) * (math.pi/180);
-      var a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(responseLat * (math.pi/180)) * math.cos(testLat * (math.pi/180)) * math.sin(dLon/2) * math.sin(dLon/2);
-      var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
-      var d = R * c; // Distance in km
+    var a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(responseLat * (math.pi/180)) * math.cos(testLat * (math.pi/180)) * math.sin(dLon/2) * math.sin(dLon/2);
+    var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
+    var d = R * c; // Distance in km
     
+    console.log(d);
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
       //Mobile data
       if (d>1000) {
-        res.status(400);
+        res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
     }
     else {
       if (d>1) {
-        res.status(400);
+        res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
     }
@@ -88,13 +100,17 @@ const postUserInput = asyncHandler(async (req, res) => {
 	
 	for (let i=0; i < previousInputs.length; i++) {
 		if (math.abs(previousInputs[i].TimeOfInput - currentDate) < 10000) {
-	        res.status(400);
+          res.status(400).json({status:"fail", cause:"Tried voting too quickly, wait 10 seconds between votes"});
 	        throw new Error('Tried voting too quickly, wait 10 seconds between votes');
 		}
 	}
 
     //recording interaction in correct media
     var result = await Media.findOne({QRID:QRID});
+    if (!result) {
+      res.status(400).json({status:"fail", cause:"Invalid QR"});
+      throw new Error('Invalid QR');
+    }
     let voteCount = result.voteCount +1;
     let lifetimeVotes = result.lifetimeVotes +1;
     //increment voteCount
@@ -110,26 +126,9 @@ const postUserInput = asyncHandler(async (req, res) => {
       res.status(201).json({status:"success"});
     } 
     else {
-      res.status(400);
+      res.status(400).json({status:"fail", cause:"Invalid user data"});
       throw new Error('Invalid user data');
     }
-/*
-    //Regex
-    if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
-      //Validation
-      if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
-        UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
-        DisplayDAO.addVote(company, store, display, QRID);
-        res.json({status:"success"});
-      }
-      else {
-        throw "Validation failed";
-      }
-    }
-    else {
-      throw "Regex failed";
-    }
-*/
   }
   else {
     res.status(400);
