@@ -104,17 +104,6 @@ const postUserInput = asyncHandler(async (req, res) => {
 	        throw new Error('Tried voting too quickly, wait 10 seconds between votes');
 		}
 	}
-
-    //recording interaction in correct media
-    var result = await Media.findOne({QRID:QRID});
-    if (!result) {
-      res.status(400).json({status:"fail", cause:"Invalid QR"});
-      throw new Error('Invalid QR');
-    }
-    let voteCount = result.voteCount +1;
-    let lifetimeVotes = result.lifetimeVotes +1;
-    //increment voteCount
-    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
     
     const userInput = await UserInput.create({
       QR: QRID,

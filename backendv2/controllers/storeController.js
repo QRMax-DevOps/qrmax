@@ -108,7 +108,7 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
 	  throw new Error('User does not exists');
   }
   //define a list of allowed fields to patch
-  let valid = ['username', 'password'];
+  let valid = ['username', 'password', 'stores'];
   //check all fields are valid
   for(let i=0; i<fields.split(',').length; i++){
     let field = fields.split(',')[i];
@@ -116,7 +116,7 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
       res.status(400).json({status:"fail", cause:"Cannot call patch operation on field: "+field});
 	    throw new Error('Cannot call patch operation on field');
     }  
-    if (field=='username'){
+    else if (field=='username'){
       if(await storeAccount.findOne({company:company, username:values.split(',')[i]})){
         res.status(400).json({status:"fail", cause:"Username already in use"});
 	      throw new Error("Username already in use");
@@ -125,8 +125,11 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
   }
 
   //if all fields valid then go through and update them accordingly
-  fields.split(',').forEach(async (field, i)=>{
+  for (let i=0; i<fields.split(',').length; i++){
+    let field = fields.split(',')[i];
     if(field == 'password'){
+      //get new password
+      let password = values.split(',')[i];
       // generate salt
       const salt = uuidv4();
       // hash password
@@ -135,12 +138,38 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
       await storeAccount.updateOne({username:username, company:company}, {$set:{password:hash}})
       res.status(200).json({status:"success"});
     }
+    else if (field =='stores'){
+      //check all stores exists
+      let stores= values.split(',')[i];
+      stores = stores.split(';');
+      //check all stores exist
+      for(let j=0; j<stores.length; j++){
+        let s = stores[j];
+        if(! await store.findOne({company:req.company.id, store:s})){
+          res.status(400).json({status:"fail", cause:"Store not found: "+s});
+          throw new Error('Store not found');
+        }
+      }
+      //remove all stores from list
+      await storeAccount.updateOne({company:req.company.id, username:username}, {$set:{stores:[]}})
+      for(let j=0; j<stores.length; j++){
+        let s = stores[j];
+        s = await store.findOne({company:req.company.id, store:s})
+        //add all stores to storeAccount
+        await storeAccount.updateOne({company:req.company.id, username:req.body.username}, {$addToSet:{stores:s._id}});
+        //find store object and add storeAccount to the store
+        let storeAcct = storeAccount.findOne({company:req.company.id, username:req.body.username});
+        let storeAcctID = storeAcct._id;
+        await store.updateOne({company:req.company.id, store:s.store}, {$addToSet:{accounts:storeAcctID}});
+      }
+      res.status(200).json({ status: "success"});
+    }
     else{
       await storeAccount.updateOne({username:username, company:company}, {$set:{[field]:values.split(',')[i]}})
       res.status(200).json({status:"success"});
     }
-  });
-})
+  }
+});
 
 // @desc    Delete user
 // @route   DELETE /api/v2/Store/Account
