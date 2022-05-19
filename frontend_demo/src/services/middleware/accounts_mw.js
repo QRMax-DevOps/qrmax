@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
+
 import {log, fetchAPI, getApiURL} from '../core_mw';
 import {isEmptyOrSpaces, getDefaultHeaders} from '../utilities/common_util';
 
@@ -287,7 +288,6 @@ function generateStoresList(stores) {
 		}
 	}
 	
-	
 	if(!stores || stores.length < 1) {
 		return "[]";
 	}
@@ -301,33 +301,84 @@ function generateStoresList(stores) {
 			result = result+']';
 		}
     } 
+	return result;
+}
+
+function generateStoresModificaiton(stores) {
+	var result = '';
 	
+	console.log(stores);
+	
+	if(typeof stores === 'string') {
+		try {
+			stores = JSON.parse(stores);
+		}
+		catch(e) {
+			
+		}
+	}
+	
+	if(!stores || stores.length < 1) {
+		return "";
+	}
+	
+	for (var i = 0; i < stores.length; i++) {
+        result = result+(stores[i].store);
+		
+		if(i+1 < stores.length) {
+			result = result+';'; 
+		}
+    } 
 	return result;
 }
 
 export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAccount, newAccount, global) {
 		
-		//console.log('RunFetch_UpdateStoreAccount ',url,isCompany,user,oldAccount,newAccount);
+		console.log('RunFetch_UpdateStoreAccount ',url,isCompany,user,oldAccount,newAccount);
 		
 		
-		var stores = generateStoresList(newAccount.stores);
+		var stores = generateStoresModificaiton(newAccount.stores);
 		
-		//console.log('stores===',stores);
+		console.log('stores===',stores);
+		
 		
 		var passwordField = '';
 		var passwordValue = '';
+		
+		let doNotUpdate = false;
 		
 		if(!isEmptyOrSpaces(newAccount.password)) {
 			passwordField='password,';
 			passwordValue=newAccount.password+",";
 		}
 		
-		var body = JSON.stringify({
+		var body = '';
+		
+		
+		
+		if(oldAccount.username === newAccount.username) {
+			if(!isEmptyOrSpaces(newAccount.password)) {
+				body = JSON.stringify({
+				company:oldAccount.company,
+				username:oldAccount.username,
+				fields:(passwordField+'stores'),
+				values:(passwordValue+stores)});
+			}
+			else {
+				body = JSON.stringify({
+				company:oldAccount.company,
+				username:oldAccount.username,
+				fields:('stores'),
+				values:(stores)});
+			}
+			
+		} else {
+			body = JSON.stringify({
 			company:oldAccount.company,
 			username:oldAccount.username,
-			fields:('company,username,'+passwordField+'stores'),
-			values:(newAccount.company+','+newAccount.username+','+passwordValue+stores)
-		})
+			fields:(passwordField+'username,'+'stores'),
+			values:(passwordValue+newAccount.username+','+stores)});
+		}
 		
 		return RunFetch_UpdateAccount(url, 'storeAccount',body,global);
 }
@@ -364,10 +415,12 @@ export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newS
 export async function RunFetch_UpdateAccount(url, type, bodyGen, global) {
 	let endpoint=null
 	let methodGen=null;
+	
+	console.log("Running new fetch");
 
 	switch(type.toLowerCase()) {
-		  case 'companyaccount':	methodGen='PATCH';		endpoint=url+'api/v2/Company/Account';		break;
-		  case 'storeaccount':		methodGen='PATCH';		endpoint=url+'api/v2/Store/Account';		break;
+		  case 'companyaccount':			methodGen='PATCH';		endpoint=url+'api/v2/Company/Account';				break;
+		  case 'storeaccount':				methodGen='PATCH';		endpoint=url+'api/v2/Store/Account';				break;
 	}
 		
 	const requestOptions = {

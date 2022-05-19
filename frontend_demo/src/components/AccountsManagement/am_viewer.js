@@ -65,6 +65,8 @@ class ListItem_Account extends Component {
 		var account = this.props.account;
 		var stores = this.getStoresString(account.stores);
 
+		console.log("account==",account);
+
 		if(account.type.toLowerCase()==='storeaccount') {
 			
 			let classDesc = "";
@@ -181,9 +183,9 @@ export class Viewer extends Component {
 	//Returns a mapped list of "ListItem" objects.
 	BuildList(type, source) {
 		if(source && source.length > 0) {
-			return {ListItems:source.map((data) => this.BuildListItem(type, data))};
+			return source.map((data) => this.BuildListItem(type, data));
 		} else {
-			return 'none';
+			return 'None';
 		}
 	}
 	
@@ -208,12 +210,21 @@ export class Viewer extends Component {
 			{ isSelected = true; }
 			
 			return  (
-				<li key={data.ID}>
+				<li key={data}>
 					<ListItem_Store UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} selected={isSelected} storeData={data}/>
 				</li>
 			);
 		}
 	}
+	
+	componentDidMount() { 
+		this._mounted = true;
+	}
+
+	componentWillUnmount() {
+		this._mounted = false;
+	}
+
 	
 	componentDidUpdate(prevProps, prevState) {
 		this.ACCOUNTSLIST = this.getParentState('primaryaccountslist');
@@ -222,8 +233,9 @@ export class Viewer extends Component {
 		if(prevState.currentlySelected !== this.state.currentlySelected) {
 			this.setParentState('queueSoftRefresh',true);
 		}
-		
-		if(this.getParentState('queueSoftRefresh') === true) {
+		if(this.getParentState('queueSoftRefresh') === true && this._mounted) {
+			
+
 			
 			if(this.type === 'stores') {
 				this.SoftRefresh(this.STORESLIST);
@@ -243,30 +255,29 @@ export class Viewer extends Component {
 			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
 				this.setParentState('currentForm',null);
 			}
+			this.setState({currentlySelected:null});
+			this.setParentState('currentForm',null);
+				
 			this.Fetch(this.type);
 	}
 	
 	SoftRefresh(target) {
-		if(IsJsonString(target)) {		
-			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
-				this.setParentState('currentForm',null);
-			}
-			
+		if(IsJsonString(target)) {
+			this.setParentState('currentForm',null);
+
 			let results = [];
 			var json =  JSON.parse(target);
-			
-			//console.log(json)
 			
 			if(json) {
 				if(this.type === 'stores' && !json.status) {
 					//Safe guarding.  The API will sometimes return an object in an array instead of a single object.
 					if(Array.isArray(json)) {
-						json[0].stores.forEach((element) => {
+						json.forEach((element) => {
 							results.push(element)
 						});
 					}
 					else {
-						json.stores.forEach((element) => {
+						json.forEach((element) => {
 							results.push(element)
 						});
 					}
@@ -277,12 +288,11 @@ export class Viewer extends Component {
 					});
 				}
 				
-				
 				if(this.type==='accounts') {
-					this.setState(this.BuildList('accounts', results));
+					this.setState({ListItems:this.BuildList('accounts', results)});
 				}
 				else if(this.type==='stores') {
-					this.setState(this.BuildList('stores', results));
+					this.setState({ListItems:this.BuildList('stores', results)});
 				}
 			}
 		}

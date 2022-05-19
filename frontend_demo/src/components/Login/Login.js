@@ -149,6 +149,9 @@ export default class Page extends React.Component {
 		if(this.state.companyAccount) {
 			sessionStorage.setItem('username',this.state.companyBox);
 		}
+		else {
+			sessionStorage.setItem('username',this.state.usernameBox);
+		}
 		
 		sessionStorage.setItem('isLocalhost',false);
 		if(this.state.localhost===true) { 
