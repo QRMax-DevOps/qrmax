@@ -16,10 +16,12 @@ const {
   putDisplayMediaBaseMedia,
   postDisplayMediaBaseMedia,
   postDisplayMediaListen,
+  postDisplayInteractions,
   putDisplayMediaPositions,
   postDisplayMediaPositions,
   patchDisplayMediaPositions,
-  deleteDisplayMediaPositions
+  deleteDisplayMediaPositions,
+
 } = require('../controllers/displayController');
 const { protect } = require('../middleware/authStoreMiddleware');
 
@@ -57,8 +59,7 @@ router.delete('/Media', protect, deleteDisplayMedia); //done
 router.post('/Settings', protect, postDisplaySettings); //done
 router.patch('/Settings', protect, patchDisplaySettings); //done
 
-/*Interactions
+//Interactions
 router.post('/Interactions', protect, postDisplayInteractions);
-*/
 
 module.exports = router;

@@ -27,10 +27,14 @@ const protect = asyncHandler(async (req, res, next) => {
         req.store = await StoreAccount.findById(decoded.id).select('-password');
       }
       
+      if(!req.company&&!req.store){
+        throw new Error('Not authorized')
+      }
+      
       next()
     } catch (error) {
       console.log(error)
-      res.status(401).json({status:"fail",cause:"Not authorized"});
+      res.status(401).json({status:"fail",cause:"Not authorized, check bearer token"});
       throw new Error('Not authorized')
     }
   }

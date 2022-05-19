@@ -1,3 +1,4 @@
+const { string, boolean } = require('mathjs')
 const mongoose = require('mongoose')
 const { stringify } = require('uuid')
 
@@ -21,11 +22,11 @@ const displaySchema = mongoose.Schema(
 	},
     currentContent:{
 		media:{
-			type:String,
+			type:mongoose.Schema.Types.ObjectId,
 			required:false,
 		},
 		mediaBase:{
-			type:String,
+			type:Boolean,
 			required:false,
 		},
 		liveTime:{
@@ -49,10 +50,11 @@ const displaySchema = mongoose.Schema(
 		type: Number,
 		required: [true, "please add lon"]
 	},
+	/*
 	baseMedia:{
 		type: mongoose.Schema.Types.ObjectId,
 		required: false,
-	}
+	}*/
   }
 )
 

@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const displayModel = require('../models/displayModel');
 const media = require('../models/mediaModel');
 const mediaFileModel = require('../models/mediaFileModel');
+const userInput = require('../models/userInputModel');
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
 const jwt = require('jsonwebtoken');
@@ -13,7 +14,8 @@ const mediaModel = require('../models/mediaModel');
 // @access  Private
 // @review  Complete
 const putDisplay = asyncHandler(async (req, res) => {
-  const displayName = req.body.displayName;
+  const displayName = req.body.display;
+  const {lat, lon} = req.body;
   //Check if display exists
   const displayExists = await displayModel.findOne({store:req.store.id, displayName:displayName });
   if (displayExists) {
@@ -21,7 +23,7 @@ const putDisplay = asyncHandler(async (req, res) => {
 	  throw new Error('Display already exists');
   }
 
-  if(!(req.body.displayType&&req.body.location)){
+  if(!(req.body.displayType&&req.body.lat&&req.body.lon)){
     res.status(400).json({status:"fail",cause:"Missing display information"});
 	  throw new Error('Missing display information');
   }
@@ -39,11 +41,12 @@ const putDisplay = asyncHandler(async (req, res) => {
     displayName: displayName,
 	  store: req.store.id,
     media:[],
-    currentContent:{media:null, mediaBase:'Base', liveTime:new Date(Date.now()), TTL:0},
+    currentContent:{media:null, mediaBase:true, liveTime:new Date(Date.now()), TTL:0},
     displayType:displaytype,
-    location:location,
-    baseMedia:null,
+    baseMedia:true,
     settings:[],
+    lat:lat,
+    lon:lon,
   });
 
   if (displayCreate) {
@@ -63,7 +66,7 @@ const postDisplay = asyncHandler(async (req, res) => {
   const storeID = req.store.id;
   
   //Check if display exists
-  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1});
+  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1});
 	
   if (!displays) {
 	  res.status(400).json({status:"success",cause:"No displays for store"});
@@ -84,7 +87,7 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
-  const displayName = req.body.displayName;
+  const displayName = req.body.display;
   
   //Check if display exists
   const displayExists = await displayModel.find({store:req.store.id, displayName:displayName});
@@ -103,7 +106,8 @@ const deleteDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const patchDisplay = asyncHandler(async (req, res) => {
-  const { fields, values, displayName } = req.body;
+  const displayName = req.body.display;
+  const { fields, values} = req.body;
 
   if(!(fields&&values&&displayName)){
     res.status(400).json({status:"fail", cause:"Missing patch information"});
@@ -232,6 +236,7 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
     res.status(400).json({status:"fail", cause:"Missing display"});
     throw new Error('Missing display'); 
   }
+
   //get all media id from display
   let displays = await displayModel.findOne({displayName:display, store:req.store.id}, {_id:0, displayName:1, media:1});
 
@@ -254,7 +259,9 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const patchDisplayMedia = asyncHandler(async (req, res) => {
-  const { fields, values, displayName } = req.body;
+  const displayName = req.body.display;
+  const mediaName = req.body.mediaName;
+  const { fields, values } = req.body;
   const sFields = fields.split(',');
   const sValues = values.split(',');
 
@@ -263,7 +270,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     throw new Error('Missing patch information') 
   }
 
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:displayName, store:req.store.id})
 
   //check if display exists
   if(!(foundDisplay)){
@@ -541,6 +548,10 @@ const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
   res.status(200).json({status:"success"});
 })
 
+// @desc    put base media object
+// @route   PUT /api/v2/Display/media/baseMedia
+// @access  Private
+// @review  Complete
 const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   const {display, mediaName, mediaFile, TTL }= req.body;
   if(!(display&&mediaName&&mediaFile&&TTL)){
@@ -608,6 +619,10 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   res.status(200).json({status:"success"});
 })
 
+// @desc    get base media object
+// @route   POST /api/v2/Display/media/baseMedia
+// @access  Private
+// @review  Complete
 const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   //get all the info and check it is ok
   const {display} = req.body;
@@ -628,31 +643,227 @@ const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   res.status(200).json({status:"success", baseMedia:baseMedia.mediaName, baseMediaFile:baseMediaFile});
 })
 
+// @desc    listen for media change
+// @route   POST /api/v2/Display/media/listen
+// @access  Private
+// @review  Not started
 const postDisplayMediaListen = asyncHandler(async (req, res)=>{
   const {display} = req.body; 
-  let foundDisplay = await display.findOne({store:req.store.id, displayName:display}) 
+  let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display}) 
   let foundDisplayType = foundDisplay.displayType;
   if (foundDisplayType == 'dynamic'){
     let foundDisplayCurrentMedia = foundDisplay.currentContent;
-    let current;
+    let liveTime = foundDisplayCurrentMedia.liveTime;
+    const cTime = new Date(Date.now());
+    liveTime = new Date(liveTime);
+    liveTime = new Date(liveTime.getTime() + (foundDisplayCurrentMedia.TTL * 1000))
+    let timeDifference = liveTime-cTime;
+    await new Promise(resolve => setTimeout(resolve, timeDifference));
+    if (!foundDisplayCurrentMedia.mediaBase){
+      //get base media
+      let baseMediaID = foundDisplay.baseMedia;
+      //set it's id to currentMedia
+      await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID}});
+      //get TTL
+      let baseMedia = await mediaModel.findById(baseMediaID);
+      let baseMediaTTL = baseMedia.TTL;
+      //get liveTime
+      let newLiveTime = new Date(Date.now());
+      await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID, 'currentContent.mediaBase':true, 'currentContent.liveTime':newLiveTime, 'currentContent.TTL':baseMediaTTL}});
+    }
+    else{
+      //get the most voted media and set to current media
+      let mostVoted = 0;
+      let topVotes = 0
+      let mediaList = foundDisplay.media;
+      if (mediaList.length>0){
+        //get most voted media id and ttl
+        for(let i =0; i<mediaList.length; i++){
+          let selectedMedia = await mediaModel.findById(mediaList[i]);
+          if (selectedMedia.voteCount>topVotes){
+            mostVoted = i;
+            topVotes = selectedMedia.voteCount;
+          }
+        }
+        //set current media to most voted and liveTime / ttl to most voted ones
+        let mostVotedMedia = await mediaModel.findById(mediaList[mostVoted]);
+        let mostVotedMediaTTL = mostVotedMedia.TTL
+        let newLiveTime = new Date(Date.now());
+        await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':mostVotedMedia._id, 'currentContent.mediaBase':false, 'currentContent.liveTime':newLiveTime, 'currentContent.TTL':mostVotedMediaTTL}});
+      }
+      //set all media votes to 0 for display
+      //get each media
+      for(let i =0; i<mediaList.length; i++){
+        //set votes to 0
+        await mediaModel.findByIdAndUpdate(mediaList[i], {$set:{voteCount:0}});
+      }
+      
+      
+    }
+    let refreshedDisplay = await displayModel.findById(foundDisplay._id);
+    let newMediaName;
+    if (refreshedDisplay.currentContent.baseMedia){
+      //get the base media name
+      let baseMedia = await mediaModel.findById(refreshedDisplay.baseMedia);
+      newMediaName = baseMedia.mediaName;
+    }
+    else{
+      //get the current content media name
+      let newMedia = await mediaModel.findById(refreshedDisplay.currentContent.media);
+      newMediaName = newMedia.mediaName;
+    }
+    res.status(200).json({status:"success",display:newMediaName})
   }
   else{
-
+    //every 250 millisecond check if media that dosent have 0 votes exists
+      let loop = true;
+      while(loop){
+        await new Promise(resolve => setTimeout(resolve, 250));
+        //loop through all media to find if any have votes != 0
+        let mediaList = foundDisplay.media;
+        let foundNon0 = -1;
+        //get most voted media id and ttl
+        for(let i =0; i<mediaList.length; i++){
+          let selectedMedia = await mediaModel.findById(mediaList[i]);
+          if (selectedMedia.voteCount>0){
+            foundNon0 = i;
+            break;
+          }
+        }
+        if(foundNon0 != -1){
+          //set current media to most voted and liveTime / ttl to most voted ones
+          let mostVotedMedia = await mediaModel.findById(mediaList[foundNon0]);
+          let mostVotedMediaTTL = mostVotedMedia.TTL
+          let newLiveTime = new Date(Date.now());
+          await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':mostVotedMedia._id, 'currentContent.mediaBase':false, 'currentContent.liveTime':newLiveTime, 'currentContent.TTL':mostVotedMediaTTL}});
+          //clear all votes
+          for(let i =0; i<mediaList.length; i++){
+            //set votes to 0
+            await mediaModel.findByIdAndUpdate(mediaList[i], {$set:{voteCount:0}});
+          }
+          //break loop to send response
+          loop = false;
+        }
+        //otherwise check if current media time is up
+        else if(foundNon0 == -1){
+          //check if current displayed media time is up
+          let foundDisplayCurrentMedia = foundDisplay.currentContent;
+          const cTime = new Date(Date.now());
+          let liveTime = foundDisplayCurrentMedia.liveTime;
+          liveTime = new Date(liveTime);
+          liveTime = new Date(liveTime.getTime() + (foundDisplayCurrentMedia.TTL * 1000))
+          liveTime = liveTime - cTime;
+          //if it is switch to base (set TTL to a large amount to leave display on base till vote is recorded)
+          if (liveTime <= 0){
+             //get base media
+            let baseMediaID = foundDisplay.baseMedia;
+            //set currentMediaID to baseMedia
+            await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID}});
+            //get TTL
+            let baseMedia = await mediaModel.findById(baseMediaID);
+            //get liveTime
+            let newLiveTime = new Date(Date.now());
+            await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID, 'currentContent.mediaBase':true, 'currentContent.liveTime':newLiveTime, 'currentContent.TTL':999999999999999999999}});
+            loop = false;
+          }
+        }
+      }
+      let refreshedDisplay = await displayModel.findById(foundDisplay._id);
+      let newMediaName;
+      if (refreshedDisplay.currentContent.baseMedia){
+        //get the base media name
+        let baseMedia = await mediaModel.findById(refreshedDisplay.baseMedia);
+        newMediaName = baseMedia.mediaName;
+      }
+      else{
+        //get the current content media name
+        let newMedia = await mediaModel.findById(refreshedDisplay.currentContent.media);
+        newMediaName = newMedia.mediaName;
+      }
+      res.status(200).json({status:"success",display:newMediaName});
   }
-  res.status(200);
+  res.status(200).json({status:"sucess"});
 })
 
-//if the dislay is dynamic:
-//wait till current media time is done
-//if current media is NOT base:
-  //set current media to base
-//else 
-  //when it is get the most voted media and set to current media
+// @desc    get interaction history
+// @route   POST /api/v2/Display/interactions
+// @access  Private
+// @review  Not started
+const postDisplayInteractions = asyncHandler(async (req, res)=>{
+  const {display, period} = req.body
+  let result = await displayModel.findOne({store:req.store.id, displayName:display});
+  let votes = [];
+  if (period == 0){
+    const media = result.media;
+      for(let i = 0; i<media.length; i++){
+        let m = await mediaModel.findById(media[i]);
+        votes.push([m.mediaName, m.lifetimeVotes]);
+      }
+      res.status(200).json({votes});
+  }
+  else if (period == 1){
+    const media = result.media;
+    for(let i = 0; i<media.length; i++){
+        let voteCount = 0;
+        let m = await mediaModel.findById(media[i]);
+        for (let m2 of m.QR_History){
+          let time = new Date(Date.now());
+          time.setHours(0);
+          time.setMinutes(0);
+          time.setSeconds(0);
+          time.setMilliseconds(0);
+          voteCount += await getVoteStats(time, m2)
+        }
+        votes.push([m.mediaName, voteCount]);
+      }
+    res.status(200).json({votes});
+  }
+  else if (period == 2){
+    const media = result.media;
+    for(let i = 0; i<media.length; i++){
+        let voteCount = 0;
+        let m = await mediaModel.findById(media[i]);
+        for (let m2 of m.QR_History){
+          let time = new Date(Date.now());
+          time.setHours(time.getHours()-1);
+          voteCount += await getVoteStats(time, m2)
+        }
+        votes.push([m.mediaName, voteCount]);
+      }
+    res.status(200).json({votes});
+  }
+  else if (period == 3){
+    const media = result.media;
+    for(let i = 0; i<media.length; i++){
+        let voteCount = 0;
+        let m = await mediaModel.findById(media[i]);
+        for (let m2 of m.QR_History){
+          let time = new Date(Date.now());
+          time.setMinutes(time.getMinutes()-10);
+          voteCount += await getVoteStats(time, m2)
+        }
+        votes.push([m.mediaName, voteCount]);
+      }
+    res.status(200).json({votes});
+  }
+  else{
+    res.status(400).json({status:"fail",cause:"No valid time given"})
+    throw new Error('No valid time given'); 
+  }
+})
 
-//if the display is static:
-//check for any media with !0 votes every 250 millisecods (or less)
-//switch to that one
-//otherwise check if media time is up and switch to base
+async function getVoteStats(time, QRID){
+  //for all user input where timeOfInput > current time - time
+  let result = await userInput.find({QR:QRID, TimeOfInput:{$gt:time}})
+  console.log(result);
+  let count = 0;
+  for(let i = 0; i<result.length;i++){
+    count++;
+  } 
+  console.log(count);
+  return count;
+  //return count
+}
 
 // @desc    Add position
 // @route   PUT /api/v2/Display/Media/Positions
@@ -874,6 +1085,7 @@ module.exports = {
   putDisplayMediaBaseMedia,
   postDisplayMediaBaseMedia,
   postDisplayMediaListen,
+  postDisplayInteractions,
   putDisplayMediaPositions,
   postDisplayMediaPositions,
   patchDisplayMediaPositions,
