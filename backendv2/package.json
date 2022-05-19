@@ -30,6 +30,7 @@
     "jsonwebtoken": "^8.5.1",
     "mathjs": "^10.5.3",
     "mongoose": "^6.1.9",
+    "node-cron": "^3.0.0",
     "pbkdf2-sha256": "^1.1.1",
     "uuid": "^8.3.2"
   },

@@ -25,7 +25,6 @@ const protect = asyncHandler(async (req, res, next) => {
       }
       next()
     } catch (error) {
-      console.log(error)
       res.status(401).json({status:"fail",cause:"Not authorized, check bearer token"});
       throw new Error('Not authorized')
     }
