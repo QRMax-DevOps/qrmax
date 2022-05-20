@@ -290,12 +290,11 @@ export default class Page extends React.Component {
 
 					<div id="leftbox" className="alignmentCheck">
 						<div id="innerbox_left">
-							<img id="logo" src={Img1}/>
-							<br/><br/>
+							<img style={{marginBottom:"20px"}} id="logo" src={Img1}/>
 							<p id="subtitle">
-								This prototype is not an accurate<br/>
-								representation of the final product<br/>
-								and is subject to frequent change.
+								Helping businesses build<br/>
+								contactless kiosks since 2022!<br/><br/>
+								<i>(Alpha-build 0.1)</i>
 							</p>
 						</div>
 					</div>
