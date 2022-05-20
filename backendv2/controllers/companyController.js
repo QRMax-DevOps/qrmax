@@ -50,7 +50,6 @@ const postCompanyAccount = asyncHandler(async (req, res) => {
   const { company, password } = req.body;
   // Check for user email
   const companyAcct = await companyAccount.findOne({ company });
-  
 
   if (companyAcct && (await pbkdf2(password, companyAcct.salt, 80000, 32).toString('hex')) == companyAcct.password) {
     res.status(200).json({
@@ -114,6 +113,8 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
         // hash password
         const hash = pbkdf2 (values.split(',')[i], salt, 80000, 32).toString('hex');
         // store company salt and hash
+        console.log(req.company.id);
+        console.log(hash);
         await companyAccount.findByIdAndUpdate(req.company.id, {$set:{password:hash, salt:salt}})
         res.status(200).json({status:"success", token: generateToken(companyAcct._id)});
       }

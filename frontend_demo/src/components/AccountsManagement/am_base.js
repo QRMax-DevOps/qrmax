@@ -97,7 +97,7 @@ class AccountsManagement extends Component {
 
 					//Good response for accounts (set accountslist)
 					if(requestResponse[0] === true && type==='accounts'){
-						var json = JSON.parse(requestResponse[1]);
+						var json = JSON.parse(requestResponse[1]).Accounts;
 						
 						for(var i = 0; i < json.length; i++) {
 							json[i].type = 'storeaccount';
@@ -106,13 +106,19 @@ class AccountsManagement extends Component {
 								{ json[i].stores=null; }
 						}
 						
+						console.log("new accounts == ",JSON.stringify(json));
+						
 						me.setParentState('primaryAccountsList',JSON.stringify(json));
-						me.setState({queueSoftRefresh:true});
+						me.setState({queueSoftRefresh:true, currentAccount:null, currentStore:null});
 					}
 					//Good response for stores (set storeslist)
 					if(requestResponse[0] === true && type==='stores'){
-						me.setParentState('primaryStoresList',requestResponse[1]);
-						me.setState({queueSoftRefresh:true});
+						var json = JSON.parse(requestResponse[1]).stores;
+						
+						console.log("case stores raw === ", json);
+
+						me.setParentState('primaryStoresList',JSON.stringify(json));
+						me.setState({queueSoftRefresh:true, currentAccount:null, currentStore:null});
 					}
 				}
 				//timeout after 12 seconds
@@ -273,6 +279,10 @@ class Modifications extends Component {
 		//Making sure that the "currentForm" variable is a string and is not null.
 		if(typeof this.props.currentForm === 'string' && !isEmptyOrSpaces(this.props.currentForm)) {
 			var formToDisplay;
+			
+			console.log("---------companyStoresList === ",this.getParentState('primarystoreslist'));
+			
+			console.log("this.props.curAccount==",this.props.curAccount);
 			
 			//Determining which form to display
 			switch(this.props.currentForm.toLowerCase()) {

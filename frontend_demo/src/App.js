@@ -25,7 +25,8 @@ import TestEnv from './services/test_environment';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-	document.title = "Test Application";
+	document.title = "QRMAX | official web app";
+	
 	
 	return (
 		<Routes>

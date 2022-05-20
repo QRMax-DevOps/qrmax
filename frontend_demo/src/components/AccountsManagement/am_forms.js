@@ -9,7 +9,8 @@ import {Account} from './am_account';
 
 import { 
 	RunFetch_CreateStore, RunFetch_DeleteStore, RunFetch_UpdateStore,
-	RunFetch_CreateStoreAccount, RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount
+	RunFetch_CreateStoreAccount, RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount,
+	RunFetch_UpdateStoreAccount_Stores
 } from '../../services/middleware/accounts_mw';
 
 import StoresEditor from "./elements/am_storeseditor";
@@ -83,20 +84,22 @@ function verifyPassword(value) {
 }
 
 function HandleAccount(type, global, data) {
-	var response = [null,null];
+	var response1 = [null,null];
+	var response2 = [null,null];
 	
 	console.log("HandleAccount", type, global.apiURL, global.isCompany, global.userID, data);
 	
 	switch(type.toLowerCase()) {
 		case 'create': 
-			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response);
+			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response1);
 			break;
-		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
+		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response1); break;
 		case 'modify': 
 			if(IsJsonString(data.newAccount.stores)) {
 				data.newAccount.stores = JSON.parse(data.newAccount.stores);
 				//data.newAccount.stores = JSON.stringify(data.newAccount.stores);
-				RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, data.oldAccount, data.newAccount, response);
+				
+				RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, data.oldAccount, data.newAccount, response1);
 			}
 			else {
 				alert("Modify account request rejected! \"Store/s\" field does not contain valid json.");
@@ -242,6 +245,8 @@ export function ModifyAccountForm(props) {
 	const companyStoresList = props.companyStoresList;
 	const oldAccount = {company:global.userID, username:props.account.username, stores:JSON.stringify(props.account.stores)}
 	
+	console.log("companyStoresList===",companyStoresList);
+	
 	const handleSubmission = (e) =>
 		{ HandleAccount('modify', global, {oldAccount, newAccount:{company:oldAccount.company, username, stores, password}}); }
 	
@@ -295,7 +300,7 @@ export function ModifyAccountForm(props) {
 		);
 	}
 	else if(screen==='editor') {
-		return ( <StoresEditor setScreen={changeScreen} modType="UPDATE" company_storesRecords={JSON.parse(companyStoresList).stores} store_storesRecords={JSON.parse(stores)} setStores={setStores}/> );
+		return ( <StoresEditor setScreen={changeScreen} modType="UPDATE" company_storesRecords={JSON.parse(companyStoresList)} store_storesRecords={JSON.parse(stores)} setStores={setStores}/> );
 	}
 	else if(screen==='passwordreset') {
 		return ( <PasswordResetScreen modType="UPDATE" setScreen={changeScreen} setPassword={changePassword}/> );
@@ -362,7 +367,7 @@ export function CreateAccountForm(props) {
 		);
 	}
 	else if(screen==='editor') {
-		return ( <StoresEditor modType="CREATE" setScreen={changeScreen} company_storesRecords={JSON.parse(companyStoresList).stores} store_storesRecords={JSON.parse(stores)} setStores={setStores}/> );
+		return ( <StoresEditor modType="CREATE" setScreen={changeScreen} company_storesRecords={JSON.parse(companyStoresList)} store_storesRecords={JSON.parse(stores)} setStores={setStores}/> );
 	}
 	else if(screen==='passwordreset') {
 		return ( <PasswordResetScreen modType="CREATE" setScreen={changeScreen} setPassword={changePassword}/> );

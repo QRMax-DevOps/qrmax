@@ -132,23 +132,6 @@ const postUserInput = asyncHandler(async (req, res) => {
     let lifetimeVotes = result.lifetimeVotes +1;
     //increment voteCount
     await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
-/*
-    //Regex
-    if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
-      //Validation
-      if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
-        UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
-        DisplayDAO.addVote(company, store, display, QRID);
-        res.json({status:"success"});
-      }
-      else {
-        throw "Validation failed";
-      }
-    }
-    else {
-      throw "Regex failed";
-    }
-*/
   }
   else {
     res.status(400);

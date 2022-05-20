@@ -14,7 +14,8 @@ const mediaModel = require('../models/mediaModel');
 // @access  Private
 // @review  Complete
 const putDisplay = asyncHandler(async (req, res) => {
-  const {displayName, lat, lon} = req.body;
+  const displayName = req.body.display;
+  const {lat, lon} = req.body;
   //Check if display exists
   const displayExists = await displayModel.findOne({store:req.store.id, displayName:displayName });
   if (displayExists) {
@@ -22,7 +23,7 @@ const putDisplay = asyncHandler(async (req, res) => {
 	  throw new Error('Display already exists');
   }
 
-  if(!(req.body.displayType&&req.body.location)){
+  if(!(req.body.displayType&&req.body.lat&&req.body.lon)){
     res.status(400).json({status:"fail",cause:"Missing display information"});
 	  throw new Error('Missing display information');
   }
@@ -42,7 +43,7 @@ const putDisplay = asyncHandler(async (req, res) => {
     media:[],
     currentContent:{media:null, mediaBase:true, liveTime:new Date(Date.now()), TTL:0},
     displayType:displaytype,
-    baseMedia:true,
+    baseMedia:null,
     settings:[],
     lat:lat,
     lon:lon,
@@ -86,7 +87,7 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
-  const displayName = req.body.displayName;
+  const displayName = req.body.display;
   
   //Check if display exists
   const displayExists = await displayModel.find({store:req.store.id, displayName:displayName});
@@ -105,7 +106,8 @@ const deleteDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const patchDisplay = asyncHandler(async (req, res) => {
-  const { fields, values, displayName } = req.body;
+  const displayName = req.body.display;
+  const { fields, values} = req.body;
 
   if(!(fields&&values&&displayName)){
     res.status(400).json({status:"fail", cause:"Missing patch information"});
@@ -257,7 +259,9 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const patchDisplayMedia = asyncHandler(async (req, res) => {
-  const { fields, values, displayName } = req.body;
+  const displayName = req.body.display;
+  const mediaName = req.body.mediaName;
+  const { fields, values } = req.body;
   const sFields = fields.split(',');
   const sValues = values.split(',');
 
@@ -266,7 +270,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     throw new Error('Missing patch information') 
   }
 
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:displayName, store:req.store.id})
 
   //check if display exists
   if(!(foundDisplay)){
@@ -324,6 +328,10 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
           data:chunk,
         })
       })
+    }
+    else if (field == 'TTL'){
+      //change TTL
+      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{TTL:sValues[i]}})
     }
   })
 
@@ -549,8 +557,8 @@ const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
 // @access  Private
 // @review  Complete
 const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
-  const {display, mediaName, mediaFile, TTL }= req.body;
-  if(!(display&&mediaName&&mediaFile&&TTL)){
+  const {display, baseMedia, baseMediaFile, TTL }= req.body;
+  if(!(display&&baseMedia&&baseMediaFile&&TTL)){
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
@@ -565,11 +573,11 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   cleanQRID = cleanQRID.slice(0,20);
 
   //var mediaFileByteLength = Buffer.byteLength(mediaFile);
-  var mediaFileNumChunks = Math.ceil(mediaFile.length / 1024);
+  var mediaFileNumChunks = Math.ceil(baseMediaFile.length / 1024);
   var mediaFileChunks = new Array(mediaFileNumChunks);
 
   for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
-    mediaFileChunks[i] = mediaFile.substr(o, 1024)
+    mediaFileChunks[i] = baseMediaFile.substr(o, 1024)
   }
 
   //check if display exists
@@ -580,8 +588,8 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   }
   
   
-  let foundMedia = await mediaModel.findOne({display:foundDisplay._id, mediaName:mediaName});
-
+  let foundMedia = await mediaModel.findOne({display:foundDisplay._id, mediaName:baseMedia});
+  console.log(foundMedia);
   //check if media name already in use
   if(foundMedia){
     res.status(400).json({status:"fail", cause:"Media name already in use"});
@@ -593,7 +601,7 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
     display:foundDisplay._id,
     QRID:cleanQRID,
     QR_History:[cleanQRID],
-    mediaName:mediaName,
+    mediaName:baseMedia,
     mediaFileChunks:mediaFileNumChunks,
     voteCount:0,
     lifetimeVotes:0,
@@ -628,6 +636,10 @@ const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   }
   //get all media id from display
   let baseMediaDisplay = await displayModel.findOne({displayName:display, store:req.store.id});
+  if(!baseMediaDisplay.baseMedia){
+    res.status(400).json({status:"fail", cause:"Missing base media"});
+    throw new Error('Missing base media'); 
+  }
   let baseMedia = await mediaModel.findById(baseMediaDisplay.baseMedia);
   let baseMediaFile = '';
   for(let i = 1; i<=baseMedia.mediaFileChunks; i++){
@@ -647,6 +659,14 @@ const postDisplayMediaListen = asyncHandler(async (req, res)=>{
   const {display} = req.body; 
   let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display}) 
   let foundDisplayType = foundDisplay.displayType;
+  if(!foundDisplay.baseMedia){
+    res.status(400).json({status:"fail", cause:"Missing base media, please set a base media before continuing"});
+    throw new Error('Missing base media'); 
+  }
+  if(!foundDisplay.media.length>0){
+      res.status(400).json({status:"fail", cause:"No media, please add media before listening"});
+      throw new Error('Missing base media'); 
+  }
   if (foundDisplayType == 'dynamic'){
     let foundDisplayCurrentMedia = foundDisplay.currentContent;
     let liveTime = foundDisplayCurrentMedia.liveTime;
