@@ -29,7 +29,7 @@ const putCompanyAccount = asyncHandler(async (req, res) => {
   
   const companyAcct = await companyAccount.create({
     company,
-	  salt,
+    salt,
     password: hash,
   });
 
@@ -37,8 +37,8 @@ const putCompanyAccount = asyncHandler(async (req, res) => {
     res.status(201).json({status:"success"});
   } 
   else {
-	  res.status(400).json({status:"fail",cause:"Invalid company data"});
-	  throw new Error('Invalid company data');
+    res.status(400).json({status:"fail",cause:"Invalid company data"});
+    throw new Error('Invalid company data');
   }
 });
 
@@ -65,6 +65,7 @@ const postCompanyAccount = asyncHandler(async (req, res) => {
 
 // Generate JWT
 const generateToken = (id) => {
+  // eslint-disable-next-line no-undef
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   })
@@ -98,7 +99,7 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
     fields.split(',').forEach(async (field, i)=>{
       if(field == 'company'){
         if (await companyAccount.findOne({company:values.split(',')[i]})) {
-	        res.status(400).json({status:"fail", cause:"Company name already in use"});
+        res.status(400).json({status:"fail", cause:"Company name already in use"});
         }
         else{
           res.status(200).json({status:"success", token: generateToken(companyAcct._id)});
@@ -151,8 +152,8 @@ const addStore = asyncHandler(async (req, res) => {
   
    // Check for company
   if (!companyAcct) {
-	  res.status(400).json({status:"fail", cause:'Company not found'});;
-	  throw new Error('Company not found');
+    res.status(400).json({status:"fail", cause:'Company not found'});;
+    throw new Error('Company not found');
   }
   
   if (await store.findOne({store:storeName, company:req.company.id})) {
@@ -160,20 +161,20 @@ const addStore = asyncHandler(async (req, res) => {
     throw new Error('Store already exists');
   }
   else {
-	  const stores = await store.find({company:req.company.id});
-	  const storeCreate = await store.create({
+    const stores = await store.find({company:req.company.id});
+    const storeCreate = await store.create({
       ID:stores.length+1,
-	    store: storeName,
-		  company: req.company.id
-	  });
+      store: storeName,
+      company: req.company.id
+    });
 
-	  if (storeCreate) {
-	    res.status(201).json({status:"success"});
-	  } 
-	  else {
-		  res.status(400).json({status:"fail", cause:'Invalid store data'});
-		  throw new Error('Invalid store data');
-	  }
+    if (storeCreate) {
+      res.status(201).json({status:"success"});
+    } 
+    else {
+      res.status(400).json({status:"fail", cause:'Invalid store data'});
+      throw new Error('Invalid store data');
+    }
   }
 })
 
