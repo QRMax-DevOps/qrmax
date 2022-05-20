@@ -1,9 +1,7 @@
 const express = require('express')
 const cors = require("cors");
-const colors = require('colors')
-const dotenv = require('dotenv').config()
-const { errorHandler } = require('./middleware/errorMiddleware')
 const connectDB = require('./config/db')
+const myParser = require("body-parser");
 const {
   refreshAllQR,
   deleteAllUserInput
@@ -20,6 +18,9 @@ const app = express()
 app.use(express.json())
 app.use(cors());
 app.use(express.urlencoded({ extended: false }))
+app.use(myParser.json({limit: '200mb'}));
+app.use(myParser.urlencoded({limit: '200mb', extended: true}));
+app.use(myParser.text({ limit: '200mb' }));
 
 //User input
 app.use("/api/v2/QR", require('./routes/QRRoutes'));
