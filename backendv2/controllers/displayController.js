@@ -308,18 +308,27 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     } 
   }
 
-  sFields.forEach(async (field, i)=>{
+  //sFields.forEach(async (field, i)=>{
+  for(let i=0, j=0; i<sFields.length; i++, j++){
+    let field = sFields[i];
     if (field == 'fileName'){
       //change fileName
-      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{mediaName:sValues[i]}})
+      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{mediaName:sValues[j]}})
     } 
     else if (field == 'mediaFile'){
+      //value combine
+      
       //delete all old mediaFiles
       mediaFileModel.deleteMany({mediaID:foundMedia._id});
       //create new ones
-        
-      var mediaFileNumChunks = Math.ceil(sValues[i].length / 1024);
+      let mediaFileValue = sValues[j]+sValues[j+1];
+      j++;
+      var mediaFileNumChunks = Math.ceil(mediaFileValue.length / 1024);
       var mediaFileChunks = new Array(mediaFileNumChunks);
+      
+      for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
+        mediaFileChunks[i] = mediaFileValue.substr(o, 1024)
+      }
 
       mediaFileChunks.forEach((chunk, i)=>{
         mediaFileModel.create({
@@ -333,7 +342,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
       //change TTL
       await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{TTL:sValues[i]}})
     }
-  })
+  }
 
   res.status(201).json({status:"success"});
 });
