@@ -19,7 +19,7 @@ export function log(message) {
 //Typically used to notify the reader of a notable, but not critical issue.
 export function logWarn(message) {
 	let curTime = new Date().toLocaleTimeString();
-	console.warn("["+curTime+"] : "+message);
+	console.warn("[",curTime,"] : ",message);
 }
 
 //Note that if provided a floating number, this function will round it down.
@@ -74,9 +74,6 @@ function getHeadersString(headers, shortenToken) {
 
 //The workhorse of the middleware. The function used to send requests to the API.
 export async function fetchAPI(address, requestOptions) {
-	console.log("DEALING DATA: ");
-	console.log(address, requestOptions);
-	
 	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
 		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request \'method\' and/or \'body\' is unassigned.");
 		return [false, 'An unexpected error has occured. Please check the console.'];
@@ -101,10 +98,13 @@ export async function fetchAPI(address, requestOptions) {
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
+				
+				console.log(res);
+				
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
 					if(typeof res === 'string') {
 						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
-						+"\n    > Response = "+res);
+						,"\n    > Response = ",res);
 						return [false,res];
 					}
 					else {
@@ -114,9 +114,7 @@ export async function fetchAPI(address, requestOptions) {
 					}
 				} 
 				else {
-					
 					console.log("["+curTime+"] : ",requestOptions.method," to API was SUCCESSFUL!\n   > Received: ",res,"\n ");
-					
 					return [true,JSON.stringify(res),"The API accepted the POST request!"];
 				}
 			})

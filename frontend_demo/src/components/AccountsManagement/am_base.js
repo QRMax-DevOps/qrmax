@@ -4,15 +4,12 @@
  *  - Full name: Marcus Hickey
  *  - Student ID: 6344380 */
 
-import React, { useState, Component } from 'react';
-import {log, RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/middleware/accounts_mw';
+import React, {Component} from 'react';
+import {RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/middleware/accounts_mw';
 import {getApiURL} from './../../services/core_mw';
-import {useLocation} from "react-router-dom";
 
-import {ListItem, Viewer} from './am_viewer';
 import {Options} from './am_options';
 import {CreateAccountForm, ModifyAccountForm, CreateStoreForm, ModifyStoreForm, ErrorOccured} from './am_forms';
-import {Account} from './am_account';
 import Sidebar from '../Sidebar';
 
 import {isEmptyOrSpaces, IsJsonString, stringToBool} from './../../services/utilities/common_util';
@@ -62,7 +59,10 @@ class AccountsManagement extends Component {
 		this.Fetch('accounts');
 		this.Fetch('stores');
 	}
-
+	
+	componentWillUnmount() {
+		return true;
+	}
 
 	/* This function is used to request and retrieve the stores and/or accounts
 	 * from the database.
@@ -75,14 +75,13 @@ class AccountsManagement extends Component {
 			var apiURL = this.state.global.apiURL;
 			var isCompany = this.state.global.isCompany;
 			
-			let request = null;
 			let requestResponse = [null,null];
 
 			if(!this.state.isLoading && type==='accounts') //Run an API request to fetch the accounts list
-			{ request = RunFetch_GetAccounts(isCompany,apiURL,username,companyName,requestResponse); }
+			{ RunFetch_GetAccounts(isCompany,apiURL,username,companyName,requestResponse); }
 		
 			else if(!this.state.isLoading && type==='stores') //Run an API request to fetch the stores list
-			{ request = RunFetch_GetStores(isCompany,apiURL,username,companyName,requestResponse); }
+			{ RunFetch_GetStores(isCompany,apiURL,username,companyName,requestResponse); }
 			
 			
 			var stopwatch = { eclapsed: 0 };
@@ -94,10 +93,11 @@ class AccountsManagement extends Component {
 				if(requestResponse[0] !== null) {
 					clearInterval(interval);
 					me.setState({isLoading:false});
-
+					var json = '';
+					
 					//Good response for accounts (set accountslist)
 					if(requestResponse[0] === true && type==='accounts'){
-						var json = JSON.parse(requestResponse[1]).Accounts;
+						json = JSON.parse(requestResponse[1]).Accounts;
 						
 						for(var i = 0; i < json.length; i++) {
 							json[i].type = 'storeaccount';
@@ -106,23 +106,18 @@ class AccountsManagement extends Component {
 								{ json[i].stores=null; }
 						}
 						
-						console.log("new accounts == ",JSON.stringify(json));
-						
 						me.setParentState('primaryAccountsList',JSON.stringify(json));
 						me.setState({queueSoftRefresh:true, currentAccount:null, currentStore:null});
 					}
 					//Good response for stores (set storeslist)
 					if(requestResponse[0] === true && type==='stores'){
-						var json = JSON.parse(requestResponse[1]).stores;
-						
-						console.log("case stores raw === ", json);
-
+						json = JSON.parse(requestResponse[1]).stores;
 						me.setParentState('primaryStoresList',JSON.stringify(json));
 						me.setState({queueSoftRefresh:true, currentAccount:null, currentStore:null});
 					}
 				}
 				//timeout after 12 seconds
-				if(stopwatch.eclapsed == 24) {
+				if(stopwatch.eclapsed === 24) {
 					console.log("Fetch-loop timeout!");
 					me.setState({isLoading:false});
 					clearInterval(interval);
@@ -279,10 +274,6 @@ class Modifications extends Component {
 		//Making sure that the "currentForm" variable is a string and is not null.
 		if(typeof this.props.currentForm === 'string' && !isEmptyOrSpaces(this.props.currentForm)) {
 			var formToDisplay;
-			
-			console.log("---------companyStoresList === ",this.getParentState('primarystoreslist'));
-			
-			console.log("this.props.curAccount==",this.props.curAccount);
 			
 			//Determining which form to display
 			switch(this.props.currentForm.toLowerCase()) {

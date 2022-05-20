@@ -4,13 +4,11 @@
  *  - Full name: Marcus Hickey
  *  - Student ID: 6344380 */
 
-import React, { useState, Component } from 'react';
-import {Account} from './am_account';
+import React, {useState} from 'react';
 
 import { 
-	RunFetch_CreateStore, RunFetch_DeleteStore, RunFetch_UpdateStore,
-	RunFetch_CreateStoreAccount, RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount,
-	RunFetch_UpdateStoreAccount_Stores
+	RunFetch_CreateStore, RunFetch_DeleteStore, RunFetch_CreateStoreAccount,
+	RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount
 } from '../../services/middleware/accounts_mw';
 
 import StoresEditor from "./elements/am_storeseditor";
@@ -27,22 +25,9 @@ import "./am_style.css";
 // **************************************************************************************************
 // **************************************************************************************************
 
+
 function isEmptyOrSpaces(str){
     return str === null || str.match(/^ *$/) !== null;
-}
-
-function isPositiveIntegerString(str) {
-  if (typeof str !== 'string') {
-    return false;
-  }
-
-  const num = Number(str);
-
-  if (Number.isInteger(num) && num > 0) {
-    return true;
-  }
-
-  return false;
 }
 
 function IsJsonString(str) {
@@ -51,59 +36,82 @@ function IsJsonString(str) {
     return true;
 }
 
-function verifyID(value) {
-	if(isEmptyOrSpaces(value)) //if empty, null or whitespace
-	{ return ([false, "Required field."]); }
-	else if(!isPositiveIntegerString(value)) //if not a positive integer
-	{ return ([false, "Field must contain a positive integer"]); }
-	else
-	{ return ([true, ""]); }
-}
+/*//Deprecated
+ *function isPositiveIntegerString(str) {
+ *  if (typeof str !== 'string') {
+ *    return false;
+ *  }
+ *
+ *  const num = Number(str);
+ *
+ *  if (Number.isInteger(num) && num > 0) {
+ *    return true;
+ *  }
+ *
+ *  return false;
+ *}
+ */
 
-function verifyName(value) {
-	if(isEmptyOrSpaces(value))
-	{ return ([false, "Required field."]); }
-	else
-	{ return ([true, ""]); }
-}
+/*//Deprecated
+ *function verifyID(value) {
+ *	if(isEmptyOrSpaces(value)) //if empty, null or whitespace
+ *	{ return ([false, "Required field."]); }
+ *	else if(!isPositiveIntegerString(value)) //if not a positive integer
+ *	{ return ([false, "Field must contain a positive integer"]); }
+ *	else
+ *	{ return ([true, ""]); }
+ *}
+ */
 
-function verifyStoresList(value) {
-	if (isEmptyOrSpaces(value))
-	{ return ([true, "Not required field, but is suggested.", "orange"]); }
-	else if(IsJsonString(value))
-	{ return ([true, ""]); }
-	else
-	{ return ([false, "Data must be in \"stores list\" JSON format.", "red"]); }
-}
+/*//Deprecated
+ *function verifyName(value) {
+ *	if(isEmptyOrSpaces(value))
+ *	{ return ([false, "Required field."]); }
+ *	else
+ *	{ return ([true, ""]); }
+ *}
+ */
 
-function verifyPassword(value) {
-	if(isEmptyOrSpaces(value))
-	{ return ([false, "Required field."]); }
-	else
-	{ return ([true, ""]); }
-}
+/*//Deprecated
+ *function verifyStoresList(value) {
+ *	if (isEmptyOrSpaces(value))
+ *	{ return ([true, "Not required field, but is suggested.", "orange"]); }
+ *	else if(IsJsonString(value))
+ *	{ return ([true, ""]); }
+ *	else
+ *	{ return ([false, "Data must be in \"stores list\" JSON format.", "red"]); }
+ *}
+ */
+ 
+/*//Deprecated
+ *function verifyPassword(value) {
+ *	if(isEmptyOrSpaces(value))
+ *	{ return ([false, "Required field."]); }
+ *	else
+ *	{ return ([true, ""]); }
+ *}
+ */
 
 function HandleAccount(type, global, data) {
-	var response1 = [null,null];
-	var response2 = [null,null];
-	
-	console.log("HandleAccount", type, global.apiURL, global.isCompany, global.userID, data);
+	var response = [null,null];
+	//console.log("HandleAccount", type, global.apiURL, global.isCompany, global.userID, data);
 	
 	switch(type.toLowerCase()) {
 		case 'create': 
-			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response1);
+			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response);
 			break;
-		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response1); break;
+		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
 		case 'modify': 
 			if(IsJsonString(data.newAccount.stores)) {
 				data.newAccount.stores = JSON.parse(data.newAccount.stores);
-				//data.newAccount.stores = JSON.stringify(data.newAccount.stores);
-				
-				RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, data.oldAccount, data.newAccount, response1);
+				RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, data.oldAccount, data.newAccount, response);
 			}
 			else {
 				alert("Modify account request rejected! \"Store/s\" field does not contain valid json.");
 			}
+			break;
+		default: 
+			console.log("Error. In function Handle Account - Switch case defaulted due to unrecognised \"type\" ");
 			break;
 	}
 	
@@ -128,11 +136,6 @@ function doErrorCheck(arr) {
 //export async function RunFetch_DeleteStore( url, isCompany, data, global) {
 
 function HandleStore(type, global, data) {
-	
-	console.log("HandleStore", type, global.apiURL, global.isCompany, global.userID, data);
-	
-	console.log(typeof global.isCompany)
-	
 	var response = [null,null];
 	switch(type.toLowerCase()) {
 		case 'create': RunFetch_CreateStore(global.apiURL, global.isCompany, global.userID, data, response); break;
@@ -140,6 +143,9 @@ function HandleStore(type, global, data) {
 		case 'modify':
 			//RunFetch_UpdateStore(global.apiURL, global.isCompany, global.userID, data.oldStore, data.newStore, response);
 			alert("Rejection: Store modification is currently unsupported by the API.\n\nInstead, please delete the store and re-create it with the desired data.");
+			break;
+		default:
+			console.log("Error. In function Handle Account - Switch case defaulted due to unrecognised \"type\" ");
 			break;
 	}
 }
@@ -152,10 +158,12 @@ function HandleStore(type, global, data) {
 export function ModifyStoreForm(props) {
 	const global = props.global;
 	const oldStore = {ID:props.store.ID,store:props.store.store,company:global.companyName}
-
+	
+	/*
 	const handleSubmission = (e) => {
 		HandleStore('create', global, {ID:id, companyName:global.companyName, store});
 	}
+	*/
 	
 	const [id, setId] = useState(oldStore.ID); 
 	const [idError, setIdError] = useState([null,""]);
@@ -244,8 +252,6 @@ export function ModifyAccountForm(props) {
 	const global = props.global;
 	const companyStoresList = props.companyStoresList;
 	const oldAccount = {company:global.userID, username:props.account.username, stores:JSON.stringify(props.account.stores)}
-	
-	console.log("companyStoresList===",companyStoresList);
 	
 	const handleSubmission = (e) =>
 		{ HandleAccount('modify', global, {oldAccount, newAccount:{company:oldAccount.company, username, stores, password}}); }
