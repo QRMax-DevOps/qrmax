@@ -9,7 +9,7 @@ const {
   deleteAllUserInput
 } = require('./middleware/cronJobs');
 //const port = process.env.PORT || 5000
-const port = 4200
+const port = 80
 
 connectDB()
 

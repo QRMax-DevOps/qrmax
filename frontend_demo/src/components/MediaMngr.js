@@ -29,8 +29,8 @@ class MediaMngr extends Component {
         currentCompany: "mediaCompany",
         currentStore: "mediaStore",
         currentDisplay: "None Selected",
-        currentObj: {media: [{mediaName: 'Nothing'},{TTL: '0'}]}, 
-        currentObjDisplay: {displays: [{display: ""}]},
+        currentObj: {media: [{mediaName: ''},{TTL: '0'}]}, 
+        currentObjDisplay: {displays: [{displayName: ""}]},
         selectedMedia: 0,
         mediaInput: '',
         mediaUpdate: 'default',
@@ -99,13 +99,11 @@ class MediaMngr extends Component {
     updateMedia(){
         if(this.state.selectedMedia < this.state.mediaCount){
         var newName = this.getNewName();
-        var nameVar = "media";
-        var fileVar = "mediaFile";
-        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaUpdate, fields: ["media", "mediaFile", "TTL"], values: [newName, this.state.imgString, this.state.mediaLength]};
+        var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaUpdate, fields: ["mediaName", "mediaFile", "TTL"], values: [newName, this.state.imgString, this.state.mediaLength]};
         this.fetchMedia("patch", data, 1);
         console.log("inside updateMedia");
         console.log(data);
-        window.location.reload();
+        //window.location.reload();
         }else{
             console.log("can't update new media")
             alert("You can't update +New Media")
@@ -120,14 +118,14 @@ class MediaMngr extends Component {
         let newName = this.getNewName();
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: newName, mediaFile: this.state.imgString, TTL: this.state.mediaLength};
         this.fetchMedia("put", data, 1);
-        window.location.reload();
+        //window.location.reload();
     }
 
     deleteMedia() {
         if(this.state.selectedMedia < this.state.mediaCount){
             var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaInput};
             this.fetchMedia("delete", data, 1);
-            window.location.reload();
+           // window.location.reload();
         }else{
           console.log("can't delete null media")
           alert("You can't delete +New Media")
@@ -213,7 +211,7 @@ class MediaMngr extends Component {
                     <DropdownButton id="displayDrop" title="Display">
                             {this.state.currentObjDisplay.displays.map((val, key) => {
                                 return (
-                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay}>{val.display}</Dropdown.Item>
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay}>{val.displayName}</Dropdown.Item>
                                 );
                             })}
                     </DropdownButton>
@@ -224,7 +222,7 @@ class MediaMngr extends Component {
                             {this.state.currentObj.media.map((val, key) => {
                                 {this.state.mediaCount = key + 1}
                                 return (
-                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.media}</li>
+                                 <li className='media-list-item' key={key} value={key} onClick={this.selectMedia}>{val.mediaName}</li>
                                  );
                              })}
                              <li className='media-list-item' key={this.state.mediaCount} value={this.state.mediaCount} onClick={this.selectMedia}>+New Media</li>
