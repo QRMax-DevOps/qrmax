@@ -290,7 +290,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   const legalFields = ['mediaName', 'mediaFile', 'TTL'];
   for(let i = 0; i<sFields.length; i++){
     if (!(legalFields.includes(sFields[i]))){
-      res.status(400).json({status:"fail", cause:"Illegal operation on field "+field});
+      res.status(400).json({status:"fail", cause:"Illegal operation on field "+sFields[i]});
       throw new Error("Illegal operation on field") 
     }
   }
@@ -318,7 +318,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
       mediaFileModel.deleteMany({mediaID:foundMedia._id});
       //create new ones
         
-      var mediaFileNumChunks = Math.ceil(mediaFile.length / 1024);
+      var mediaFileNumChunks = Math.ceil(sValues[i].length / 1024);
       var mediaFileChunks = new Array(mediaFileNumChunks);
 
       mediaFileChunks.forEach((chunk, i)=>{
