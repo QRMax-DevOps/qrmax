@@ -299,7 +299,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   for (let i=0; i<sFields.length;i++){
     let field = sFields[i];
     let value = sValues[i];
-    if (field == 'fileName'){
+    if (field == 'mediaName'){
       //check fileName no already used
       if(await mediaModel.findOne({mediaName:value, display:foundDisplay._id})){
         res.status(400).json({status:"fail", cause:"Media name already in use"+field});
@@ -311,7 +311,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   //sFields.forEach(async (field, i)=>{
   for(let i=0, j=0; i<sFields.length; i++, j++){
     let field = sFields[i];
-    if (field == 'fileName'){
+    if (field == 'mediaName'){
       //change fileName
       await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{mediaName:sValues[j]}})
       mediaName = sValues[j];
