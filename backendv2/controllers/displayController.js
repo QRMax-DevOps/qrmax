@@ -260,7 +260,7 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
 // @review  Complete
 const patchDisplayMedia = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
-  const mediaName = req.body.mediaName;
+  let mediaName = req.body.mediaName;
   const { fields, values } = req.body;
   const sFields = fields.split(',');
   const sValues = values.split(',');
@@ -310,18 +310,18 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
 
   //sFields.forEach(async (field, i)=>{
   for(let i=0, j=0; i<sFields.length; i++, j++){
-    console.log(i+" - "+j);
     let field = sFields[i];
     if (field == 'fileName'){
       //change fileName
       await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{mediaName:sValues[j]}})
+      mediaName = sValues[j];
     } 
     else if (field == 'mediaFile'){
       //value combine
       let mediaFileValue = sValues[j]+sValues[j+1];
       j++;
       //delete all old mediaFiles
-      mediaFileModel.deleteMany({mediaID:foundMedia._id});
+      await mediaFileModel.deleteMany({mediaID:foundMedia._id});
       //create new ones
       var mediaFileNumChunks = Math.ceil(mediaFileValue.length / 1024);
       var mediaFileChunks = new Array(mediaFileNumChunks);
