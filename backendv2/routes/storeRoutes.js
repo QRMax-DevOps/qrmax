@@ -24,7 +24,7 @@ router.delete('/Account/', companyProtect.protect, deleteStoreAccount); //done
   //StoresList
   router.put('/Account/storesList/', companyProtect.protect, addStoresToAccount); //done
   router.delete('/Account/storesList/', companyProtect.protect, deleteStoresFromAccount); //done
-  router.post('/Account/storesList/', companyProtect.protect, getStoresFromAccount); //done
+  router.post('/Account/storesList/', companyStoreProtect.protect, getStoresFromAccount); //done
 
   //Settings
   router.post('/Account/Settings/', protect, postStoreAccountSettings); //done

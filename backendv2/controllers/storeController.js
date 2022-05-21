@@ -263,11 +263,18 @@ const deleteStoresFromAccount = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Underway
 const getStoresFromAccount = asyncHandler(async (req,res)=>{
-  const storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
-  // Check storeAccount exists
+
+  let storeAcct
+  if(!req.company){
+    storeAcct = await storeAccount.findById(req.store.id);
+  }
+  else{
+    storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
+  }
+    // Check storeAccount exists
   if (!storeAcct) {
-	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
-	  throw new Error('Store account not found');
+    res.status(401).json({stattus:"fail", cause:"Store account not found"});
+    throw new Error('Store account not found');
   }
   //get list of stores
   const stores = storeAcct.stores;
