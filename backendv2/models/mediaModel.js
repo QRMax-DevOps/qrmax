@@ -7,16 +7,16 @@ const mediaSchema = mongoose.Schema(
 		required: [true, 'please provide display reference']
 	},
 	QRID: {
-	  type: String,
-	  required: false,
+		type: String,
+		required: false,
 	},
     QR_History: {   
-	  type: Array,
-      required: false,
+		type: Array,
+		required: false,
     },
 	mediaName: {
-	  type: String,
-	  required: false
+		type: String,
+		required: false
 	},
     mediaFileChunks: {
         type: Number,
