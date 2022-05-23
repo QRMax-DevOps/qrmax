@@ -83,7 +83,8 @@ class DisplayMngr extends Component {
      }
 
      fetchDisplays(type, data) {
-        var url = "http://localhost:80/";
+        var url = "https://api.qrmax.app/";
+        var target = "display";
         //var data = {company: "demoCompany", store: "demoStore"};
 
         let request = null;
@@ -92,7 +93,7 @@ class DisplayMngr extends Component {
         var me = this;
         var timer = {elapsed: 0};
 
-        request = handleDisplay(type, url, data, response);
+        request = handleDisplay(target, type, url, data, response);
         
 
         var interval = setInterval(function() {

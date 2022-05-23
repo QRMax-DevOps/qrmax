@@ -13,7 +13,7 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
  export async function ActionQRID(data, global, isLocalHost) {
 	//json:{company, store, display, QRID}
 	var url = getApiURL(isLocalHost);
-	var endpoint = url+'api/v1/QR/';
+	var endpoint = url+'api/v2/QR';
 	var bodyGen = JSON.stringify({
 		QRID: data.QRID
 	})
@@ -23,6 +23,8 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 		headers: getDefaultHeaders(),
 		body: bodyGen
 	};
+
+	console.log("body: " + requestOptions.body);
 	
 	// GET request using fetch with basic error handling	
 	const asyncFetch = await fetchAPI(endpoint,requestOptions);
@@ -32,15 +34,15 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 }
 
 export async function registerVote(type, url, data, global) {
-	var endpoint = url+'api/v1/Display/Media/'+data.QRID;
+	var endpoint = url+'api/v1/QR/'+data.QRID;
 
 	var methodGen = null;
 	var inputGen  = null;
 
 	if(type == "VOTE") {
-		methodGen = 'PATCH';
+		methodGen = 'POST';
 		inputGen = JSON.stringify({
-			voteCount: data.voteCount
+			voteCount: data.QRID
 		})
 	}
 

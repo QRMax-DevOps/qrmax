@@ -9,7 +9,7 @@ export function prepDisplayCall(target, type, url, data, global) {
 	
 	switch(target.toLowerCase()) {
 		case 'display':
-			endpointGen = url+'api/v1/display';
+			endpointGen = url+'api/v2/display';
 			switch(type.toUpperCase()) {
 				case 'PUT':
 					methodGen = 'PUT';
@@ -47,7 +47,7 @@ export function prepDisplayCall(target, type, url, data, global) {
 			break;
 		
 		case 'display/interactions':
-			endpointGen = url+'api/v1/display/interactions';
+			endpointGen = url+'api/v2/display/interactions';
 			switch(type.toUpperCase()) {
 				case 'POST':
 					methodGen = 'POST';
@@ -67,7 +67,7 @@ export function prepDisplayCall(target, type, url, data, global) {
 			break;
 		
 		case 'display/settings':
-			endpointGen = url+'api/v1/display/settings';
+			endpointGen = url+'api/v2/display/settings';
 			switch(type.toUpperCase()) {
 				case 'POST':
 					methodGen = 'POST';

@@ -16,19 +16,17 @@ class ResponseGood extends React.Component {
 	componentDidMount() {
 
 		var _display = new URLSearchParams(useLocation.search).get("display");
-		var _QRID = new URLSearchParams(useLocation.search).get("qrid")
+		var _QRID = this.props.qrid;
 
 		var url = "http://localhost:80/";
         var data = {company: "displayCompany", store: "displayStore", display: _display, QRID: _QRID};
-
         let request = null;
         let response = [null,null];
 
         var me = this;
         var timer = {elapsed: 0};
 
-        request = registerVote("VOTE", url, data, response);
-        
+        request = ActionQRID(data, response, true);
 
         var interval = setInterval(function() {
             timer.elapsed++;
@@ -55,7 +53,7 @@ class ResponseGood extends React.Component {
                 clearInterval(interval);
             }
         }, 500);
-
+		console.log("Post request");
 	}
  render() {
          return (

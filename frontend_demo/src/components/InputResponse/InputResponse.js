@@ -87,6 +87,7 @@ export default function InputResponse() {
 	//const store = useQuery().get("store");
 	//const display = useQuery().get("display");
 	const QRID = useQuery().get("qrid");
+	//console.log("Input response check: " + QRID);
 	
 	const data = {QRID};
 	
@@ -137,7 +138,7 @@ export default function InputResponse() {
 	else {
 		if(checkComplete && counter > 2) {
 			if(checkPassed) {
-				return ( <div><ResponseGood/></div> )
+				return ( <div><ResponseGood qrid={QRID}/></div> )
 			}
 			else {
 				return ( <div><ResponseBad/></div> )

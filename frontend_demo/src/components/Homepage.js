@@ -7,7 +7,6 @@ import {HandleMedia} from "./../services/middleware/media_mw"
 import { handleDisplay } from '../services/middleware/display_mw';
 import QRCode from 'qrcode.react';
 import Draggable from 'react-draggable';
-import { ListenTo } from '../services/deprecated/(demo) listener_mw';
 
 
 class Homepage extends Component {
@@ -20,9 +19,9 @@ class Homepage extends Component {
             selectedMediaArray: [],
             oldMediaVotes: [],
             mediaVotes: [],
-            firstPass: true,
-            currentObj: {displays: [{display: '', media: [{mediasrc: '', QRID: ''}], src: ''}]},
-            //Example objects to setup dynamic display
+            displayMedia: {display: '', media: []},
+            passes: 0,
+            currentObj: {displays: [{display: '', media: [], baseMedia: ''}]}, // set default empty values allowing screen loading before fetch
 			media: null
         }
         var interval = 0;
@@ -30,41 +29,52 @@ class Homepage extends Component {
 		this.display = "display1";
 		this.mediaName = "london";
         this.setDisplay = this.setDisplay.bind(this);
-        this.setMedia = this.setMedia.bind(this);
         this.setMediaVotes = this.setMediaVotes.bind(this);
         this.setVotedMedia = this.setVotedMedia.bind(this);
         //this.fillObject = this.fillObject.bind(this);
 		//this.getMedia();
     }
 
+    // create an array of votes upon refresh to compare to previous votes and detect a change
     setMediaVotes() {
-        console.log("Setting votes...")
+        
         var newVotes = []; // to store qr vote numbers
-        var tempMediaArray = this.state.currentObj.displays[this.state.selectedDisplay].media; //Assign media array as temp
+        var tempMediaArray = this.state.displayMedia.media; //Assign media array as temp
         for (var i = 0; i < tempMediaArray.length; i++) {
             newVotes[i] = tempMediaArray[i].voteCount //store voteCount in temp array
         }
-        if(this.state.firstPass == false) {
+        console.log(this.state.passes);
+        if(this.state.passes > 1) {
+            console.log("not first pass");
             this.setVotedMedia(newVotes);
         }
         
+        console.log("Setting votes: " + newVotes);
         this.setState({
+            passes: this.state.passes + 1,
             mediaVotes: newVotes //store voteCounts in state
         })
     }
 
+    // Makes a fetch request to the API to set the current object the screen will work with
     fillCurrentObject() {
-        var url = "http://localhost:80/";
+        //var url = "https://api.qrmax.app/";
+        var url = "https://localhost:80/";
         var data = {company: "demoCompany", store: "demoStore"};
+        var data2 = {company: "dmeoCompany", store: "demoStore", display: "display1"};
 
         let request = null;
+        let request2 = null;
         let response = [null, null];
+        let response2 = [null, null];
 
         var me = this;
         var timer = {elapsed: 0};
         var json;
+        var json2;
 
         request = handleDisplay("display", "GETLIST", url, data, response);
+        request2 = HandleMedia("GETLIST", url, data2, response2);
         console.log(data.company + " " + data.store);
 
         this.interval = setInterval(function() {
@@ -76,10 +86,14 @@ class Homepage extends Component {
 
                 if(response[0] === true){
                     
-                    console.log("Inside fill")
+                    console.log("Inside fill");
                     json = JSON.parse(response[1]);
+                    json2 = JSON.parse(response2[1]);
                     
-                    me.setState({currentObj: json});
+                    me.setState({
+                        currentObj: json,
+                        displayMedia: json2
+                    });
                     me.setMediaVotes();
                     console.log("Where is this " + me.state.currentObj);
                 }
@@ -95,24 +109,9 @@ class Homepage extends Component {
         }, 5000);
     }
 
-    async loadData() {
-        var url = "http://localhost:80/";
-        var data = {company: "demoCompany", store: "demoStore"};
-
-        let request = null;
-        let response = [null,null];
-
-        var me = this;
-        var timer = {elapsed: 0};
-
-        request = handleDisplay("GETLIST", url, data, response);
-
-
-    }
-
+    // Fetch request that returns the image linked to the highest voted media
 	getMedia(_data) {
 
-		//Marcus was here. Lol.
 		//I am no longer supplying the parameters through URL params. They're stored in "Session Storage" now.
 		var companynameParam = sessionStorage.companyName;
 		var usernameParam = sessionStorage.username;
@@ -188,54 +187,24 @@ class Homepage extends Component {
                 company: "demoCompany",
                 store: "demoStore",
                 display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
-                mediaName: this.state.currentObj.displays[this.state.selectedDisplay].display.media[this.state.selectedMedia].media
+                mediaName: this.state.displayMedia.media[this.state.selectedMedia].mediaName
             }
             image_string = this.getMedia(_data);
         } else {
-            console.log(this.state.currentObj.displays[this.state.selectedDisplay].src);
+            console.log(this.state.currentObj.displays[this.state.selectedDisplay].baseMedia);
             console.log("Getting default image");
-            image_string = this.state.currentObj.displays[this.state.selectedDisplay].src;
+            image_string = this.state.currentObj.displays[this.state.selectedDisplay].baseMedia;
         }
         console.log(image_string);
         return image_string;
-    }
-
-    setMedia(e) {
-        this.setState({
-            selectedMedia: e.target.value
-        })
-        this.setMediaArray();
-    }
-
-    setMediaArray() {
-        this.setState({
-            selectedMediaArray: this.getMediaArray()
-        })
-        
-    }
-
-    getMediaArray() {
-        return this.state.displayList[this.state.selectedDisplay].media;
     }
     
     getQrArray() {
         return this.getMediaArray[this.state.selectedMedia].qrList;
     }
 
-    //unused
-    /*async fillObject() {
-        var url = "http://localhost:80/";
-        var data = {company: "demoCompany", store: "demoStore"};
-
-        let request = null;
-        let response = [null,null];
-        request = await handleDisplay("GETLIST", url, data, response);
-        var json = JSON.parse(response[1]);
-        return json;
-
-    } */
-
     getHighestVotedMedia() {
+    
         let highestVote = 0;
         let media = null;
         this.state.currentObj.displays[this.state.selectedDisplay].media.forEach(element => {
@@ -252,28 +221,20 @@ class Homepage extends Component {
         console.log("Mount flag " + this.state.currentObj);
         this.setMediaVotes();
         this.setState({
-            firstPass: false
+            passes: this.state.passes + 1
         })
     }
 
     componentWillUnmount() {
         console.log("unmounting");
         this.setState({
-            firstPass: true // reset first pass attrib
+            passes: 0 // reset first pass attrib
         })
         clearInterval(this.interval);
     }
 
-    async getItems() {
-        fetch("http://localhost:80/Display")
-            .then(result => result.json())
-            .then(result => this.setState({items: result}))
-    }
-
-    
-
     setVotedMedia(newVotes) {
-        console.log("Choosing voted media...")
+        
         var mediaChangedIndex = -1;  // var to track which qr vote increased
         for(var i = 0; i < newVotes.length; i++) {
             if(newVotes[i] > this.state.mediaVotes[i]) {
@@ -281,8 +242,9 @@ class Homepage extends Component {
             }
         }
         if(mediaChangedIndex > -1) {
-            mediaChangedIndex = this.state.currentObj.displays[this.selectedDisplay].media[mediaChangedIndex];
+            mediaChangedIndex = this.state.displayMedia.media[mediaChangedIndex];
         }
+        console.log("Media Chosen: " + mediaChangedIndex);
         this.setState({
             selectedMedia: mediaChangedIndex
         })
@@ -318,7 +280,7 @@ class Homepage extends Component {
                                     return (
                                         //<li className="qr-list-item" key={key}>
                                             <Draggable key={key}>
-                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.currentObj.displays[this.state.selectedDisplay].media[key].QRID}/>
+                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.displayMedia.media[key].QRID}/>
                                             </Draggable>
                                         //</li>
                                     )
