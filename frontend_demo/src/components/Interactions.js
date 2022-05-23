@@ -21,11 +21,9 @@ class Interactions extends Component {
         this.selectCompDisplay = this.selectCompDisplay.bind(this);
     }
     state = {
-        currentCompany: "mediaCompany",
-        currentStore: "mediaStore",
         currentObj: {displays: [{display: ""}]},
-        currentObjInt: {interactions: [["Null", 0]]},
-        currentObjComp: {interactions: [["Null", 0]]},
+        currentObjInt: {votes: [["Null", 0]]},
+        currentObjComp: {votes: [["Null", 0]]},
         currentDisplay: "None Selected",
         currentDisplayComp: "None Selected",
         currentPeriod: "All Time",
@@ -155,7 +153,7 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                            <div class='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>
+                            <div className='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>
                             
                             <h5>Current Period: {this.state.currentPeriod}</h5>
                             
@@ -165,10 +163,11 @@ class Interactions extends Component {
                         <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
-                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.display}</Dropdown.Item>
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.displayName}</Dropdown.Item>
                                 );
                             })}
                         </DropdownButton>
+                        
                         <DropdownButton id="periodDrop" title="Period" as={ButtonGroup}>
                             <Dropdown.Item onClick={this.selectPeriod}>All Time</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Today</Dropdown.Item>
@@ -181,7 +180,7 @@ class Interactions extends Component {
                         <br />
                         <div id='styled-container'>
                         <ul id='interactions-list'>
-                            {this.state.currentObjInt.interactions.map((val, key) => {
+                            {this.state.currentObjInt.votes.map((val, key) => {
                                 return (
                                  <li className='interactions-list-item' width={500} key={key} value={key}>{val[0]} intertactions:    {val[1]}</li>
                                  );
@@ -205,7 +204,7 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                        <div class='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>
+                        <div className='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>
                             
                             <h5>Current Period: {this.state.currentPeriod}</h5>
 
@@ -214,7 +213,7 @@ class Interactions extends Component {
                         <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
-                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.display}</Dropdown.Item>
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.displayName}</Dropdown.Item>
                                 );
                             })}
                         </DropdownButton>
@@ -227,7 +226,7 @@ class Interactions extends Component {
                         <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
                         {this.state.currentObj.displays.map((val, key) => {
                                 return (
-                                    <Dropdown.Item key={key} value={key} onClick={this.selectCompDisplay} >{val.display}</Dropdown.Item>
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectCompDisplay} >{val.displayName}</Dropdown.Item>
                                 );
                             })}
                         </DropdownButton>
@@ -238,7 +237,7 @@ class Interactions extends Component {
                         <br />
                         <div id='styled-container'>
                         <ul id='interactions-list'>
-                            {this.state.currentObjInt.interactions.map((val, key) => {
+                            {this.state.currentObjInt.votes.map((val, key) => {
                                 return (
                                  <li className='interactions-list-item' width={500} key={key} value={key}>{val[0]} intertactions:    {val[1]}</li>
                                  );
@@ -249,7 +248,7 @@ class Interactions extends Component {
                         <h4>Current Comparison Display: {this.state.currentDisplayComp}</h4>
                         <div id='styled-container'>
                         <ul id='interactions-list'>
-                            {this.state.currentObjComp.interactions.map((val, key) => {
+                            {this.state.currentObjComp.votes.map((val, key) => {
                                 return (
                                  <li className='interactions-list-item' width={500} key={key} value={key}>{val[0]} intertactions:    {val[1]}</li>
                                  );

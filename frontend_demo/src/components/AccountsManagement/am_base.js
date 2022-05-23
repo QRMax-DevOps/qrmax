@@ -6,7 +6,7 @@
 
 import React, {Component} from 'react';
 import {RunFetch_GetStores, RunFetch_GetAccounts} from './../../services/middleware/accounts_mw';
-import {getApiURL} from './../../services/core_mw';
+import {getApiURL, log} from './../../services/core_mw';
 
 import {Options} from './am_options';
 import {CreateAccountForm, ModifyAccountForm, CreateStoreForm, ModifyStoreForm, ErrorOccured} from './am_forms';
@@ -61,7 +61,7 @@ class AccountsManagement extends Component {
 	}
 	
 	componentWillUnmount() {
-		return true;
+		this._toUnmount = true;
 	}
 
 	/* This function is used to request and retrieve the stores and/or accounts
@@ -89,7 +89,13 @@ class AccountsManagement extends Component {
 			
 			var interval = setInterval(function() {
 				stopwatch.eclapsed++;
-
+				
+				if(me._toUnmount) {
+					log("Accounts Management Screen - screen switched, response from pending fetch will be ignored.");
+					clearInterval(interval);
+					return;
+				}
+				
 				if(requestResponse[0] !== null) {
 					clearInterval(interval);
 					me.setState({isLoading:false});
