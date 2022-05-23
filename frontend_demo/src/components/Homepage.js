@@ -1,3 +1,9 @@
+/*
+    Contributing Authors:
+        Name:           Trent Russell
+        Student No.:    5454244
+*/
+
 import React, { Component } from 'react';
 import Sidebar from './Sidebar';
 import './Homepage.css';
