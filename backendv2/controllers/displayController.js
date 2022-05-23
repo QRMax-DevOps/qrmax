@@ -1023,6 +1023,21 @@ const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
           }
             res.status(200).json({status:"success"});
         }
+        else if(field == 'selectPosition') {
+          let potentialPosition = value;
+          if (potentialPosition >= 0 && potentialPosition < findMedia.positions.length) {
+            const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:potentialPosition}})
+            if (!updatePositions) {
+              res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
+              throw new Error('Could not updated positions');
+            }
+          }
+          else {
+            res.status(400).json({status:"fail", cause:"Could not update to selected position value"});
+            throw new Error('Could not updated positions');
+          }
+            res.status(200).json({status:"success"});
+        }
         else{
           res.status(400).json({status:"fail", cause:"Cannot update that field"});
           throw new Error('Cannot update that field'); 
