@@ -1,10 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const storeAccount = require('../models/storeAccountModel');
 const companyAccount = require('../models/companyAccountModel');
+const displayController = require('../controllers/displayController.js')
 const store = require('../models/storeModel');
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
 const jwt = require('jsonwebtoken');
+const storeModel = require('../models/storeModel');
 
 // @desc    Register store account
 // @route   PUT /api/v2/Store/Account
@@ -189,6 +191,10 @@ const deleteStoreAccount = asyncHandler(async (req, res) => {
 
   await storeAcct.remove();
 
+  //remove from store AccountList
+  let sID = storeAcct._id
+  console.log(await store.updateOne({company:req.company.id, accounts:sID}, {$pull:{accounts:sID}}))
+
   res.status(200).json({ status: "success"});
 })
 
@@ -307,7 +313,6 @@ const postStoreAccountSettings = asyncHandler(async (req,res)=>{
 // @review  Complete
 const patchStoreAccountSettings = asyncHandler(async (req,res)=>{
   const updatedAccount = await storeAccount.findById(req.store.id);
-  console.log(updatedAccount)
   
   if(!updatedAccount){
     res.status(401).json({status:"fail",cause:'Issue finding store'});
@@ -325,6 +330,20 @@ const patchStoreAccountSettings = asyncHandler(async (req,res)=>{
   res.status(200).json({status:"success"});
 })
 
+async function deleteAll(companyID){
+  //delete all store accounts
+  await storeAccount.deleteMany({company:companyID});
+  //for each store
+  let stores = await store.find({company:companyID});
+  stores.forEach(async (s) =>{
+    //delete all displays
+    await displayController.deleteAll(s._id);
+    //then delete the store
+    await store.findByIdAndDelete(s._id);
+  })
+  return true;
+}
+
 
 module.exports = {
   putStoreAccount,
@@ -335,5 +354,6 @@ module.exports = {
   deleteStoresFromAccount,
   getStoresFromAccount,
   postStoreAccountSettings,
-  patchStoreAccountSettings
+  patchStoreAccountSettings,
+  deleteAll
 }

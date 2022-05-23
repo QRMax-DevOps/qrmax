@@ -41,12 +41,8 @@ const postUserInput = asyncHandler(async (req, res) => {
     let responseLon;
     await axios.get(apiURL)
         .then((res) => {
-            console.log(`Status: ${res.status}`);
-            //console.log('Body: ', res.data);
         responseLat = parseFloat(res.data.latitude);
         responseLon = parseFloat(res.data.longitude);
-        //console.log(responseLat);
-        //console.log(responseLon);
         }).catch((err) => {
             console.error(err);
         });
@@ -77,7 +73,6 @@ const postUserInput = asyncHandler(async (req, res) => {
     var d = R * c; // Distance in km
     
     /*
-    console.log(d);
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
       //Mobile data

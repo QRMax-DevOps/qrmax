@@ -5,6 +5,8 @@ const storeAccount = require('../models/storeAccountModel');
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
 const jwt = require('jsonwebtoken');
+const storeController = require('../controllers/storeController.js');
+const displayController = require('../controllers/displayController.js');
 
 // @desc    Register company
 // @route   PUT /api/v2/Company/Account
@@ -114,8 +116,7 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
         // hash password
         const hash = pbkdf2 (values.split(',')[i], salt, 80000, 32).toString('hex');
         // store company salt and hash
-        console.log(req.company.id);
-        console.log(hash);
+
         await companyAccount.findByIdAndUpdate(req.company.id, {$set:{password:hash, salt:salt}})
         res.status(200).json({status:"success", token: generateToken(companyAcct._id)});
       }
@@ -137,6 +138,7 @@ const deleteCompanyAccount = asyncHandler(async (req, res) => {
   }
 
   await companyAcct.remove()
+  await storeController.deleteAll(req.company.id);
 
   res.status(200).json({ status: "success"})
 })
@@ -213,12 +215,18 @@ const deleteStore = asyncHandler(async (req, res) => {
   //lower all greater IDs by 1
   const stores = await store.find({company:req.company.id});
   stores.forEach(async (s)=>{
-    console.log(storeNum+" - "+s.ID);
     if (s.ID>storeNum){
       var sNum = s.ID-1
       await store.findByIdAndUpdate(s._id, {$set:{ID:sNum}})
     }
   })
+
+  //delete all connected displays
+  await displayController.deleteAll(storeToBeDeleted._id);
+
+  //remove from store
+  let sID = storeToBeDeleted._id;
+  await storeAccount.updateOne({company:req.company.id, stores:sID}, {$pull:{stores:sID}})
 
 	res.status(200).json({status:"success"});
 })
