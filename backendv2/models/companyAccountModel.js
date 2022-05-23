@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const companyAccountSchema = mongoose.Schema(
   {
     company: {
-	  type: String,
+    type: String,
       required: [true, 'Please add company name'],
     },
     salt: {

@@ -87,7 +87,7 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
 
   let legal = true;
   //ensure field is a legal field to operate on
-  fields.split(',').forEach((field, i)=>{
+  fields.split(',').forEach((field)=>{
     if (!(field == "company" || field == 'password')){
       if (legal)
         res.status(400).json({status:"fail", cause:"Illegal operation on field "+field});
@@ -152,7 +152,7 @@ const addStore = asyncHandler(async (req, res) => {
   
    // Check for company
   if (!companyAcct) {
-    res.status(400).json({status:"fail", cause:'Company not found'});;
+    res.status(400).json({status:"fail", cause:'Company not found'});
     throw new Error('Company not found');
   }
   
