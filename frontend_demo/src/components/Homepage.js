@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import Sidebar from './Sidebar';
 import './Homepage.css';
 import '../App.css';
-import {getApiURL} from "./../services/core_mw"
+import {fetchAPI, getApiURL} from "./../services/core_mw"
 import {HandleMedia} from "./../services/middleware/media_mw"
 import { handleDisplay } from '../services/middleware/display_mw';
 import QRCode from 'qrcode.react';
@@ -20,6 +20,7 @@ class Homepage extends Component {
         super(props);
         this.state = {
             items: null,
+            listenObj: null,
             selectedDisplay: 0,
             selectedMedia: -1,
             selectedMediaArray: [],
@@ -64,13 +65,57 @@ class Homepage extends Component {
 
     mediaListen() {
         var listenUrl = "http://localhost:80/api/v2/Display/media/listen";
+        var requestOptions = {
+            body: {
+                company: "demoCompany",
+                store: "demoStore",
+                display: "display1"
+            }
+        }
+
+        var request = null;
+        var response = [null, null];
+
+        var me = this;
+        var timer = 0;
+        var json;
+
+        request = fetchAPI(listenUrl, requestOptions);
         
+        var interval = setInterval(function() {
+            timer++;
+            
+            if(response[0] !== null) {
+                clearInterval(interval)
+                me.setState({loading:false});
+
+                if(response[0] === true){
+                    
+                    console.log("Inside listen");
+                    json = JSON.parse(response[1]);
+                                        
+                    me.setState({
+                        listenObj: json,
+                    });
+                    me.setMediaVotes();
+                    console.log("Listen obj flag " + me.state.listenObj);
+                }
+            }
+
+            //timeout after 3 seconds
+            if(timer.elapsed == 24) {
+                console.log("Fetch-loop timeout!");
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+            console.log("Is it here now? " + me.state.listenObj);
+        }, 5000);
     }
 
     // Makes a fetch request to the API to set the current object the screen will work with
     fillCurrentObject() {
         //var url = "https://api.qrmax.app/";
-        var url = "https://localhost:80/";
+        var url = "http://localhost:80/";
         var data = {company: "demoCompany", store: "demoStore"};
         var data2 = {company: "dmeoCompany", store: "demoStore", display: "display1"};
 
@@ -154,8 +199,6 @@ class Homepage extends Component {
 		var interval = setInterval(function() {
 			timer.eclapsed++;
 			
-			//console.log(timer)
-			
 			if(response[0] !== null) {
 				clearInterval(interval);
 				me.setState({loading:false});
@@ -164,7 +207,6 @@ class Homepage extends Component {
 				if(response[0] === true){
 					
                     var json = JSON.parse(response[1]);
-                    //me.setState({media:"data:image/png;base64," + json.mediaFile});
 					console.log(me.state.media);
 				}
 				
