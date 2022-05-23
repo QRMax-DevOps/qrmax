@@ -7,35 +7,31 @@
 import React, { Component } from 'react';
 import "./am_style.css";
 
+
 function IsJsonString(str) {
-		try {
-			JSON.parse(str);
-		} catch (e) {
-			return false;
-		}
-		return true;
+	try {
+		JSON.parse(str);
+	} catch (e) {
+		return false;
 	}
+	return true;
+}
+
 
 class ListItem_Account extends Component {
 	constructor(props) {
 		super(props);
 		this.account = this.props.account;
-		
 		this.setParentState = this.props.setParentState;
 		this.getParentState = this.props.getParentState;
 		this.UpdateCurrentSelected = this.props.UpdateCurrentSelected;
 		this.buildAccountComponent = this.buildAccountComponent.bind(this);
-		
-		//console.log('Constructing ACCOUNT object from data: ',this.account);
-		
 		this.state = {account:this.account};
+		//console.log('Constructing ACCOUNT object from data: ',this.account);
 	}
 	
 	getStoresString(stores) {
 		var json = stores;
-		
-		//console.log("generating stores string from: ",json);
-		
 		var toReturn ='';
 		
 		if(json && json.length>0) {
@@ -51,11 +47,9 @@ class ListItem_Account extends Component {
 				
 			}
 		}
-		
 		if(!json || json.length<1) {
 			toReturn="No stores";
 		}
-		
 		return toReturn;
 	}
 	
@@ -97,26 +91,21 @@ class ListItem_Store extends Component {
 	constructor(props) {
 		super(props);
 		this.storeData = this.props.storeData;
-		
 		this.setParentState = this.props.setParentState;
 		this.getParentState = this.props.getParentState;
 		this.UpdateCurrentSelected = this.props.UpdateCurrentSelected;
-		
 		//console.log('Constructing STORE object from data: ',this.storeData);
 	}
 	
 	render() {
 		let bgColor = '#E7E7E7';
-
 		let classDesc = "";
-
+		
 		if(this.props.selected === true) {
 			classDesc = "Selected"
 		}
 		
-		
 		return(
-		
 			<button		
 				id="AccountDisplayButton"
 				onClick={() => this.UpdateCurrentSelected('store', this.storeData)}
@@ -124,10 +113,10 @@ class ListItem_Store extends Component {
 				<label id="storeID" className="DataField"><span style={{color:"rgb(0, 59, 117)", fontStyle:"italic"}}>ID:</span> {this.storeData.ID}</label>
 				<label id="storeName" className="DataField"><span style={{color:"rgb(0, 59, 117)", fontStyle:"italic"}}>Store:</span> {this.storeData.store}</label>
 			</button>
-
 		);
 	}
 }
+
 
 export class Viewer extends Component {
 	constructor(props) {
@@ -147,6 +136,7 @@ export class Viewer extends Component {
 		this.type = this.props.type;
 		this.state = {ListItems:[], currentlySelected:''};
 	}
+
 
 	UpdateCurrentSelected(type, account) {
 		//Close all forms (prevent data clashes when doing reselection)
@@ -180,9 +170,9 @@ export class Viewer extends Component {
 	//Returns a mapped list of "ListItem" objects.
 	BuildList(type, source) {
 		if(source && source.length > 0) {
-			return {ListItems:source.map((data) => this.BuildListItem(type, data))};
+			return source.map((data) => this.BuildListItem(type, data));
 		} else {
-			return 'none';
+			return 'None';
 		}
 	}
 	
@@ -207,11 +197,19 @@ export class Viewer extends Component {
 			{ isSelected = true; }
 			
 			return  (
-				<li key={data.ID}>
+				<li key={data.store}>
 					<ListItem_Store UpdateCurrentSelected={this.UpdateCurrentSelected.bind(this)} getParentState={this.getParentState.bind(this)} setParentState={this.setParentState.bind(this)} selected={isSelected} storeData={data}/>
 				</li>
 			);
 		}
+	}
+	
+	componentDidMount() { 
+		this._mounted = true;
+	}
+
+	componentWillUnmount() {
+		this._mounted = false;
 	}
 	
 	componentDidUpdate(prevProps, prevState) {
@@ -221,8 +219,9 @@ export class Viewer extends Component {
 		if(prevState.currentlySelected !== this.state.currentlySelected) {
 			this.setParentState('queueSoftRefresh',true);
 		}
-		
-		if(this.getParentState('queueSoftRefresh') === true) {
+		if(this.getParentState('queueSoftRefresh') === true && this._mounted) {
+			
+
 			
 			if(this.type === 'stores') {
 				this.SoftRefresh(this.STORESLIST);
@@ -242,30 +241,29 @@ export class Viewer extends Component {
 			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
 				this.setParentState('currentForm',null);
 			}
+			this.setState({currentlySelected:null});
+			this.setParentState('currentForm',null);
+				
 			this.Fetch(this.type);
 	}
 	
 	SoftRefresh(target) {
-		if(IsJsonString(target)) {		
-			if(this.getParentState('currentForm') != 'createaccount' && this.getParentState('currentForm') != null) {
-				this.setParentState('currentForm',null);
-			}
-			
+		if(IsJsonString(target)) {
+			this.setParentState('currentForm',null);
+
 			let results = [];
 			var json =  JSON.parse(target);
-			
-			//console.log(json)
 			
 			if(json) {
 				if(this.type === 'stores' && !json.status) {
 					//Safe guarding.  The API will sometimes return an object in an array instead of a single object.
 					if(Array.isArray(json)) {
-						json[0].stores.forEach((element) => {
+						json.forEach((element) => {
 							results.push(element)
 						});
 					}
 					else {
-						json.stores.forEach((element) => {
+						json.forEach((element) => {
 							results.push(element)
 						});
 					}
@@ -276,12 +274,11 @@ export class Viewer extends Component {
 					});
 				}
 				
-				
 				if(this.type==='accounts') {
-					this.setState(this.BuildList('accounts', results));
+					this.setState({ListItems:this.BuildList('accounts', results)});
 				}
 				else if(this.type==='stores') {
-					this.setState(this.BuildList('stores', results));
+					this.setState({ListItems:this.BuildList('stores', results)});
 				}
 			}
 		}
@@ -300,16 +297,23 @@ export class Viewer extends Component {
 		
 		//console.log(this.state)
 	}
-
+	
 	render() {
-
 		return(
 			<div id="ViewerContainer">
 				<div id="SearchContainer">
-					<input className="ViewerSearch" disabled={true} onChange={(e) => this.SearchAccounts(e.target.value)} type="text"/>
-					
-					<button className="ViewerBtn" onClick={() => this.HardRefresh()} style={{marginLeft:"10px", marginTop:"10px", width:"100px"}}>Refresh</button>
-					
+					<input
+						className="ViewerSearch"
+						disabled={true}
+						onChange={(e) => this.SearchAccounts(e.target.value)}
+						type="text"/>
+						
+					<button
+						className="ViewerBtn"
+						onClick={() => this.HardRefresh()}
+						style={{marginLeft:"10px", marginTop:"10px", width:"100px"}}>
+							Refresh
+					</button>
 				</div>
 				<nav >
 					<ul className="ViewerNav">

@@ -13,6 +13,15 @@ const {
   postDisplaySettings,
   patchDisplaySettings,
   postDisplayMediaRefresh,
+  putDisplayMediaBaseMedia,
+  postDisplayMediaBaseMedia,
+  postDisplayMediaListen,
+  postDisplayInteractions,
+  putDisplayMediaPositions,
+  postDisplayMediaPositions,
+  patchDisplayMediaPositions,
+  deleteDisplayMediaPositions,
+
 } = require('../controllers/displayController');
 const { protect } = require('../middleware/authStoreMiddleware');
 
@@ -30,31 +39,27 @@ router.delete('/Media', protect, deleteDisplayMedia); //done
   //Media/File
   router.post('/Media/File', protect, postDisplayMediaFile); //done
 
-  /*Media/Listen
+  //Media/Listen
   router.post('/Media/Listen', protect, postDisplayMediaListen);
-  */
 
   //Media/Refresh
-  router.post('/Media/Refresh', protect, postDisplayMediaRefresh);
+  router.post('/Media/Refresh', protect, postDisplayMediaRefresh); //done
 
-  /*Media/Positions
+  //Media/Positions
   router.put('/Media/Positions', protect, putDisplayMediaPositions);
   router.post('/Media/Positions', protect, postDisplayMediaPositions);
   router.patch('/Media/Positions', protect, patchDisplayMediaPositions);
   router.delete('/Media/Positions', protect, deleteDisplayMediaPositions);
-  */
 
-  /*Media/BaseMedia
-  router.put('/Media/BaseMedia', protect, putDisplayMediaBaseMedia);
-  router.post('/Media/BaseMedia', protect, postDisplayMediaBaseMedia);
-  */
+  //Media/BaseMedia
+  router.put('/Media/BaseMedia', protect, putDisplayMediaBaseMedia); //done
+  router.post('/Media/BaseMedia', protect, postDisplayMediaBaseMedia); //done
 
 //Settings
-router.post('/Settings', protect, postDisplaySettings);
-router.patch('/Settings', protect, patchDisplaySettings);
+router.post('/Settings', protect, postDisplaySettings); //done
+router.patch('/Settings', protect, patchDisplaySettings); //done
 
-/*Interactions
+//Interactions
 router.post('/Interactions', protect, postDisplayInteractions);
-*/
 
 module.exports = router;

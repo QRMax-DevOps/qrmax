@@ -69,8 +69,6 @@ class StoresList extends Component {
 	constructor(props) {
 		super(props);
 		
-		console.log(props)
-		
 		var titleGen = 'null';
 		var typeGen = 'add';
 		
@@ -92,22 +90,17 @@ class StoresList extends Component {
     render() {
 		let recordsExist = (this.props.storesRecords && this.props.storesRecords.length > 0);
 		
-		console.log("recordsExist == ", recordsExist);
-		console.log("this.props.storesRecords == ", this.props.storesRecords);
-		
 		return(
 			<div style={{height:"100%", width:"100%", marginLeft:"10px",marginRight:"10px"}}>
 				<div className="StoreTableTitle"><p>{this.state.title}</p></div>
-				<table class="scroll">
+				<table className="scroll">
 					<tbody style={{margin:"0", padding:"0"}}>
 						{recordsExist && 
 							<>
 								{this.props.storesRecords.map((item)=>{ return(
-									<div key={item.ID}>
-										<tr>
-											<td><StoreRecord record={item} type={this.state.type} updateDistribution={this.props.updateDistribution}/></td>
-										</tr>
-									</div>
+									<tr key={item.store}>
+										<td><StoreRecord record={item} type={this.state.type} updateDistribution={this.props.updateDistribution}/></td>
+									</tr>
 								);})}
 							</>
 						}
@@ -134,8 +127,6 @@ class StoresList extends Component {
  */
 function getStores(mode, companyAcc_stores, storeAcc_stores) {
 	mode = enumToString(mode); //If "symbol" type enum provided (I.e., )
-	
-	console.log("COMPANY ACCOUNT STORES === ", companyAcc_stores)
 	
 	if((!isEmptyOrSpaces(mode) && mode !== false) && companyAcc_stores, storeAcc_stores) {
 		
@@ -165,8 +156,6 @@ function getStores(mode, companyAcc_stores, storeAcc_stores) {
 			
 				for(let i = 0; i < companyAcc_stores.length; i++) {
 					var storeFound = false;
-					
-					console.log(i + ", ---------- ", companyAcc_stores[i]);
 					
 					for(let j = 0; j < storeAcc_stores.length; j++) {
 						
@@ -302,7 +291,6 @@ class StoresEditor extends Component {
 		if(!isEmptyOrSpaces(type)) {
 			
 			if(type.toLowerCase()==='add') { //Remove from 'available', add to 'selected'
-				console.log("this state: ",this.state);
 			
 				var check = checkForDuplicates(storeRecord, this.state.stores.selected);
 				

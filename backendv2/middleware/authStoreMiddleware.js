@@ -15,16 +15,20 @@ const protect = asyncHandler(async (req, res, next) => {
       token = token.split(' ')[1]
 
       // Verify token
+      // eslint-disable-next-line no-undef
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
       //const decoded = jwt.verify(token, 'zzz4564')
 
       // Get company from the token
       req.store = await StoreAccount.findById(decoded.id).select('-password')
+      if(!req.store){
+        throw new Error('Store account not found');
+      }
 
       next()
     } catch (error) {
       console.log(error)
-      res.status(401).json({status:"fail",cause:"Not authorized"});
+      res.status(401).json({status:"fail",cause:"Not authorized, check bearer token"});
       throw new Error('Not authorized')
     }
   }

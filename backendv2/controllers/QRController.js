@@ -4,7 +4,6 @@ const Display = require('../models/displayModel')
 const Media = require('../models/mediaModel')
 const createDOMPurify = require("dompurify");
 const {JSDOM} = require("jsdom");
-const e = require("express");
 const axios = require('axios');
 const math = require('mathjs');
 
@@ -27,15 +26,9 @@ const postUserInput = asyncHandler(async (req, res) => {
         cleanIdentifier+=identifierArray[i];
       }
     }
-    console.log(cleanIdentifier);
 
     const dirtyQRID = req.body.QRID;
     const QRID = DOMPurify.sanitize(dirtyQRID);
-    console.log(QRID);
-
-    const company = req.body.company;
-    const store = req.body.store;
-    const display = req.body.display;
     
     /*Need More Validation Here*/
 
@@ -58,46 +51,58 @@ const postUserInput = asyncHandler(async (req, res) => {
             console.error(err);
         });
       
+    var result = await Media.findOne({QRID:QRID});
+    if (!result) {
+      res.status(400).json({status:"fail", cause:"Invalid QR"});
+      throw new Error('Invalid QR');
+    }
+    let displayID = result.display;
+    var findDisplay = await Display.findById(displayID);
+    if (!result) {
+      res.status(400).json({status:"fail", cause:"Could not find display"});
+      throw new Error('Could not find display');
+    }
     //-37.80981, 144.96984 - success
     //-37.835030, 144.953620 - fail
-    let testLat = -37.80981;
-    let testLon = 144.96984;
+    let testLat = findDisplay.lat;
+    let testLon = findDisplay.lon;
     
     var R = 6371;
     var dLat = (testLat-responseLat) * (math.pi/180);
     var dLon = (testLon-responseLon) * (math.pi/180);
-      var a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(responseLat * (math.pi/180)) * math.cos(testLat * (math.pi/180)) * math.sin(dLon/2) * math.sin(dLon/2);
-      var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
-      var d = R * c; // Distance in km
+    var a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(responseLat * (math.pi/180)) * math.cos(testLat * (math.pi/180)) * math.sin(dLon/2) * math.sin(dLon/2);
+    var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
+    //re-enable d when turning location check back on
+    // eslint-disable-next-line no-unused-vars
+    var d = R * c; // Distance in km
     
+    /*
+    console.log(d);
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
       //Mobile data
       if (d>1000) {
-        res.status(400);
+        res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
     }
     else {
       if (d>1) {
-        res.status(400);
+        res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
     }
-    //recording interaction in correct media
-    var result = await Media.findOne({QRID:QRID});
-    let voteCount;
-    let lifetimeVotes;
-	  for(var i = 0; i < result.media.length; i++){
-        if(result.media[i].QRID === QRID){
-          voteCount = result.media[i].voteCount;
-          lifetimeVotes = result.media[i].lifetimeVotes;
-        }
-	  }
-    voteCount += 1;
-    lifetimeVotes += 1;
-    //increment voteCount
-    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
+    */
+	
+	const previousInputs = await UserInput.find({UserIdentifier:cleanIdentifier});
+	const currentDate = new Date(Date.now());
+	
+	for (let i=0; i < previousInputs.length; i++) {
+		if (math.abs(previousInputs[i].TimeOfInput - currentDate) < 10000) {
+          res.status(400).json({status:"fail", cause:"Tried voting too quickly, wait 10 seconds between votes"});
+          throw new Error('Tried voting too quickly, wait 10 seconds between votes');
+		}
+	}
     
     const userInput = await UserInput.create({
       QR: QRID,
@@ -106,34 +111,23 @@ const postUserInput = asyncHandler(async (req, res) => {
     });
 
     if (userInput) {
-      res.status(201).json({
-        _id: userInput.id,
-        QR: userInput.QR,
-        UserIdentifier: userInput.UserIdentifier,
-        TimeOfInput: userInput.TimeOfInput
-      });
+      res.status(201).json({status:"success"});
     } 
     else {
-      res.status(400);
+      res.status(400).json({status:"fail", cause:"failed user log"});
       throw new Error('Invalid user data');
     }
-/*
-    //Regex
-    if (/[a-f0-9]{20}$/i.exec(QRID) && QRID.length == 20) {
-      //Validation
-      if (await UserInputDAO.validate(company, store, display, QRID) && await UserInputDAO.checkLastVote(cleanIdentifier) && await UserInputDAO.geoLocate(cleanIdentifier)) {
-        UserInputDAO.postUserInput(cleanIdentifier, company, store, display, QRID);
-        DisplayDAO.addVote(company, store, display, QRID);
-        res.json({status:"success"});
-      }
-      else {
-        throw "Validation failed";
-      }
+
+    //recording interaction in correct media
+    result = await Media.findOne({QRID:QRID});
+    if(!result){
+      res.status(404).json({status:"fail", cause:"Could not find matching media"})
+      throw new Error('Could not find matching media');
     }
-    else {
-      throw "Regex failed";
-    }
-*/
+    let voteCount = result.voteCount +1;
+    let lifetimeVotes = result.lifetimeVotes +1;
+    //increment voteCount
+    await Media.updateOne({QRID:QRID}, {$set:{voteCount:parseInt(voteCount), lifetimeVotes:parseInt(lifetimeVotes)}});
   }
   else {
     res.status(400);

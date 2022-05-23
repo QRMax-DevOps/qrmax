@@ -13,7 +13,7 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
  export async function ActionQRID(data, global, isLocalHost) {
 	//json:{company, store, display, QRID}
 	var url = getApiURL(isLocalHost);
-	var endpoint = url+'api/v2/QR';
+	var endpoint = url+'api/v2/QR/';
 	var bodyGen = JSON.stringify({
 		QRID: data.QRID
 	})

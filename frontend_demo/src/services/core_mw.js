@@ -19,7 +19,7 @@ export function log(message) {
 //Typically used to notify the reader of a notable, but not critical issue.
 export function logWarn(message) {
 	let curTime = new Date().toLocaleTimeString();
-	console.warn("["+curTime+"] : "+message);
+	console.warn("[",curTime,"] : ",message);
 }
 
 //Note that if provided a floating number, this function will round it down.
@@ -53,8 +53,7 @@ function getHeadersString(headers, shortenToken) {
 	var arr = new Array();
 	
 	for (let entry of headers.entries()) { 
-		var i = 0;
-		
+	
 		if(shortenToken === true && entry[0].toLowerCase() === 'authorization') {
 			var reducedToken = (entry[1].substring(0, 12)+"..."+entry[1].substring(entry[1].length-5,entry[1].length));
 			arr.push('"'+entry[0]+'":"'+reducedToken);
@@ -65,9 +64,9 @@ function getHeadersString(headers, shortenToken) {
 	
 	for(let i = 0; i < arr.length; i++) {
 		if(i==(arr.length-1)) {
-			str=str+arr[i]+"}";
+			str=str+arr[i]+"\"}";
 		} else {
-			str=str+arr[i]+",";
+			str=str+arr[i]+"\",";
 		}
 	}
 	
@@ -86,7 +85,7 @@ export async function fetchAPI(address, requestOptions) {
 		let curTime = new Date().toLocaleTimeString();
 		
 		//If login token exists, then create/append Authorization field to headers
-		if(checkLoginToken()===true) {
+		if(checkLoginToken()===true && !requestOptions.headers.get('Authorization')) {
 			var loginToken = getLoginToken();
 			requestOptions.headers.append('Authorization','Bearer '+loginToken);
 		}
@@ -95,7 +94,7 @@ export async function fetchAPI(address, requestOptions) {
 		console.log("["+curTime+"] : ",requestOptions.method," to API"
 			,"\n    > Target  = ",address
 			,"\n    > Data    = ",requestOptions
-			,"\n    > Headers = ",getHeadersString(requestOptions.headers, true)
+			,"\n    > Headers = ",getHeadersString(requestOptions.headers, false)
 			,"\n ");
 		
 		//Doing the actual request
@@ -103,16 +102,23 @@ export async function fetchAPI(address, requestOptions) {
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
-				console.log("Error: " + res.status + " " + res.error);
+				
+				console.log(res);
+				
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
-					logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
-					+"\n    > Response = ",JSON.stringify(res));
-					return [false,JSON.stringify(res)];
+					if(typeof res === 'string') {
+						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
+						,"\n    > Response = ",res);
+						return [false,res];
+					}
+					else {
+						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
+						+"\n    > Response = "+JSON.stringify(res));
+						return [false,JSON.stringify(res)];
+					}
 				} 
 				else {
-					
 					console.log("["+curTime+"] : ",requestOptions.method," to API was SUCCESSFUL!\n   > Received: ",res,"\n ");
-					
 					return [true,JSON.stringify(res),"The API accepted the POST request!"];
 				}
 			})

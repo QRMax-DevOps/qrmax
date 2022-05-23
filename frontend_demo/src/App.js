@@ -26,12 +26,12 @@ import TestEnv from './services/test_environment';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-	document.title = "Test Application";
+	document.title = "QRMAX | official web app";
+	
 	
 	return (
 		<Routes>
 			<Route exact path="/" element={<LoadLoginScreen/>}/>
-			
 			<Route path="/login" element={<LoadLoginScreen/>}/>
 			<Route path="/inputresponse" element={<InputResponse/>}/>
 			<Route path="/inputresponse_good" element={<InputResponse_Good/>}/>
@@ -41,7 +41,7 @@ function App() {
 			<Route path="/homepage" element={<Homepage/>}/>
 			<Route path="/interactions" element={<Interactions/>}/>
 			<Route path="/display_mngr" element={<DisplayMngr/>}/>
-			<Route path="/accounts" element={<AccountsManagement/>}/>
+			<Route path="/accounts" element={<AccountsManagement key={1}/>}/>
 			<Route path="/testenv" element={<TestEnv/>}/>
 			<Route path="/media_mngr" element={<MediaMngr/>}/>
 			

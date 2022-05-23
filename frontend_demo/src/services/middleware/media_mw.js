@@ -10,7 +10,7 @@ import {enumToString, getDefaultHeaders} from '../utilities/common_util';
 // ...................................................................................................
 
 
-//DISPLAY HANDLER (POST,PUT,DELETE @ /api/v1/Display)
+//DISPLAY HANDLER (POST,PUT,DELETE @ /api/v2/Display)
  export async function HandleMedia(type, url, data, global) {
 	//Enum handler
 	type = enumToString(type);

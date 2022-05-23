@@ -4,7 +4,7 @@ const userInputSchema = mongoose.Schema(
   {
     QR: {
       //type: mongoose.Schema.Types.ObjectId,
-	  type: String,
+    type: String,
       required: true,
       ref: 'User',
     },
