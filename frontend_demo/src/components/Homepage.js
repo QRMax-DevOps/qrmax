@@ -62,6 +62,11 @@ class Homepage extends Component {
         })
     }
 
+    mediaListen() {
+        var listenUrl = "http://localhost:80/api/v2/Display/media/listen";
+        
+    }
+
     // Makes a fetch request to the API to set the current object the screen will work with
     fillCurrentObject() {
         //var url = "https://api.qrmax.app/";
