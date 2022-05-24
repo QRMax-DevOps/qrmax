@@ -2,6 +2,12 @@ const cron = require('node-cron');
 const mediaModel = require('../models/mediaModel');
 const UserInput = require('../models/userInputModel')
 const { v4: uuidv4 } = require('uuid');
+const companyAccount = require('../models/companyAccountModel');
+const store = require('../models/storeModel');
+const storeAccount = require('../models/storeAccountModel');
+const displayModel = require('../models/displayModel');
+const media = require('../models/mediaModel');
+const mediaFileModel = require('../models/mediaFileModel');
 
 function refreshAllQR(){
    cron.schedule('* */30 * * * *', async function(){
@@ -23,7 +29,7 @@ function refreshAllQR(){
             await mediaModel.findByIdAndUpdate(media._id, {$set:{QRID:cleanQRID}, $push:{QR_History:currentQR}})
        })
    })
-};
+}
 
 function deleteAllUserInput(){
     cron.schedule('0 0 0 * * *', async function(){
@@ -31,7 +37,17 @@ function deleteAllUserInput(){
     });
 }
 
+async function clearDB(){
+    await companyAccount.deleteMany();
+    await store.deleteMany();
+    await storeAccount.deleteMany();
+    await displayModel.deleteMany();
+    await media.deleteMany();
+    await mediaFileModel.deleteMany();
+}
+
 module.exports = {
+    clearDB,
     refreshAllQR,
     deleteAllUserInput
 }
