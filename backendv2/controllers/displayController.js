@@ -721,6 +721,10 @@ const postDisplayMediaListen = asyncHandler(async (req, res)=>{
   }
 
   let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  if(!storeID){
+    res.status(400).json({status:"fail", cause:"No store found"});
+    throw new Error('No store found'); 
+  }
   storeID = storeID._id;
 
   let foundDisplay = await displayModel.findOne({store:storeID, displayName:display}) 
