@@ -13,6 +13,8 @@ import {HandleMedia} from "./../services/middleware/media_mw"
 import { handleDisplay } from '../services/middleware/display_mw';
 import QRCode from 'qrcode.react';
 import Draggable from 'react-draggable';
+import { getDefaultHeaders } from '../services/utilities/common_util';
+import { ListenFor } from '../services/middleware/listen_mw';
 
 
 class Homepage extends Component {
@@ -63,14 +65,61 @@ class Homepage extends Component {
         })
     }
 
-    mediaListen() {
+    mediaListen2() {
+        var url = "http://localhost:80/";
+        var data = {company: "demoCompany", store: "demoStore", display: "display1"};
+        
+        var response = [null, null];
+        var request = null;
+        
+        var me = this;
+        var timer = 0;
+        var json;
+
+        request = ListenFor("LISTEN", url, data, response);
+
+        var interval = setInterval(function() {
+            timer++;
+            console.log("Inside listen " + timer);
+            console.log(response[1]);
+
+            if(response[0] !== null) {
+                clearInterval(interval)
+                me.setState({loading:false});
+
+                if(response[0] === true){
+                    
+                    console.log("Inside listen");
+                    json = JSON.parse(response[1]);
+                    console.log("Listen obj flag " + json);                    
+                    me.setState({
+                        listenObj: json,
+                    });
+                    //me.setMediaVotes();
+                    
+                }
+            }
+
+            //timeout after 3 seconds
+            if(timer == 24) {
+                console.log("Fetch-loop timeout!");
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+            console.log("Is it here now? " + me.state.listenObj);
+        }, 5000);
+    }
+
+    async mediaListen() {
         var listenUrl = "http://localhost:80/api/v2/Display/media/listen";
         var requestOptions = {
-            body: {
+            method: "POST",
+            headers: getDefaultHeaders(),
+            body: JSON.stringify({
                 company: "demoCompany",
                 store: "demoStore",
                 display: "display1"
-            }
+            })
         }
 
         var request = null;
@@ -80,10 +129,11 @@ class Homepage extends Component {
         var timer = 0;
         var json;
 
-        request = fetchAPI(listenUrl, requestOptions);
+        response = await fetchAPI(listenUrl, requestOptions);
         
         var interval = setInterval(function() {
             timer++;
+            console.log("Inside listen 1");
             
             if(response[0] !== null) {
                 clearInterval(interval)
@@ -270,9 +320,10 @@ class Homepage extends Component {
     }
 
     componentDidMount() {
-        this.fillCurrentObject();
+        this.mediaListen2();
+        //this.fillCurrentObject();
         console.log("Mount flag " + this.state.currentObj);
-        this.setMediaVotes();
+        //this.setMediaVotes();
         this.setState({
             passes: this.state.passes + 1
         })

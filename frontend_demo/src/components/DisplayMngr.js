@@ -1,3 +1,11 @@
+/*
+    Contributing Authors:
+        Name:               Trent Ruseell
+        Student No.:        5454244
+
+        
+*/
+
 import React, { Component } from 'react';
 import { handleDisplay } from '../services/middleware/display_mw';
 import { HandleDisplay } from '../services/middleware/qr_mw';
@@ -11,6 +19,10 @@ class DisplayMngr extends Component {
         super(props);
         this.selectDisplay = this.selectDisplay.bind(this);
         this.changeCurrentDisplayInput = this.changeCurrentDisplayInput.bind(this);
+        this.changeLat = this.changeLat.bind(this);
+        this.changeLon = this.changeLon.bind(this);
+        this.changeDisplayType = this.changeDisplayType.bind(this);
+        this.changeCurrentBaseMediaNameInput = this.changeCurrentBaseMediaNameInput.bind(this);
         this.updateDsiplay = this.updateDsiplay.bind(this);
         this.createDisplay = this.createDisplay.bind(this);
         this.deleteDisplay = this.deleteDisplay.bind(this);
@@ -19,11 +31,16 @@ class DisplayMngr extends Component {
     }
     state = { 
         currentStore: "demoStore",
-        currentObj: {displays: [{display: ''}]},
+        currentObj: {status: '', displays: [{displayName: ''}]},
         selectedDisplay: 0,
         displayInput: 'default',
         createNewDisplayName: null,
         open: false,
+        lat: null,
+        lon: null,
+        baseMediaNameInout: null,
+        displayType: null,
+        baseMedia: null,
         selectedFile: null,
         imgString: null
      }
@@ -42,9 +59,9 @@ class DisplayMngr extends Component {
      }
 
      selectDisplay(e) {
-         this.setState({
-             selectedDisplay: e.target.value
-            });
+        this.setState({
+            selectedDisplay: e.target.value
+        });
      }
 
      changeCurrentDisplayInput(e) {
@@ -53,16 +70,50 @@ class DisplayMngr extends Component {
         })
      }
 
+     changeCurrentBaseMediaNameInput(e) {
+         this.setState({
+            baseMediaNameInput: e.target.vlaue
+         });
+     }
+
+     changeTTL(e) {
+        this.setState({
+            ttlInput: e.target.vlaue
+         });
+     }
+
+     changeDisplayType(e) {
+        this.setState({
+            displayType: e.target.value
+        });
+     }
+
+     changeLat(e) {
+         this.setState({
+             lat: e.target.value
+         });
+     }
+
+     changeLon(e) {
+        this.setState({
+            lon: e.target.value
+        });
+    }
+
      async setSelectedFile(e) {
          const file = e.target.files[0];
          const base64 = await this.getBase64(file);
          this.setState({
              imgString: base64
-         })
+         });
      }
     
      updateDsiplay(){
-        var data = {id: "6232a8819d0e35f4708ad8e8", company: "demoCompany", store: "demoStore", display: this.state.displayInput};
+        var data = {
+            id: "", 
+            company: "demoCompany", 
+            store: "demoStore", 
+            displayName: this.state.displayInput};
         this.fetchDisplays("UPDATE", data);
         console.log("inside updateDisplay");
      }
@@ -71,26 +122,69 @@ class DisplayMngr extends Component {
          return this.state.displayInput;
      }
 
+     getNewBaseMediaName() {
+         return this.state.baseMediaNameInput;
+     }
+
+     getLat(){
+         return this.state.lat;
+     }
+
+     getLon(){
+         return this.state.lon;
+     }
+
+     getDisplayType() {
+         return this.state.displayType;
+     }
+
+     getTTL(){
+         return this.state.TTL;
+     }
+
      createDisplay() {
         let newName = this.getNewName();
-        var data = {company: "demoCompany", store: "demoStore", display: newName, src: this.state.imgString};
+        let newBaseMediaName = this.getNewBaseMediaName();
+        let newTTL = this.getTTL();
+        let newLat = this.getLat();
+        let newLon = this.getLon();
+        let newDisplayType = this.getDisplayType();
+        var data = {
+            company: "demoCompany", 
+            store: "demoStore", 
+            display: newName,
+            lat: newLat,
+            lon: newLon,
+            displayType: newDisplayType
+        };
+            //baseMedia: newBaseMediaName,
+            //baseMediaFile: this.state.imgString};
         this.fetchDisplays("CREATE", data);
+        this.fetchDisplays("GETLIST", data);
+       /* data.baseMedia = newBaseMediaName;
+        data.baseMediaFile = this.state.imgString;
+        data.TTL = newTTL;
+        this.fetchDisplays("CREATE", data);*/
      }
 
      deleteDisplay() {
-         var data = {company: "demoCompany", store: "demoStore", display: this.state.currentObj.displays[this.state.selectedDisplay].display};
+         var data = {company: "demoCompany", 
+         store: "demoStore", 
+         displayName: this.state.currentObj.displays[this.state.selectedDisplay].displayName
+        };
          this.fetchDisplays("DELETE", data);
      }
 
      fetchDisplays(type, data) {
-        var url = "https://api.qrmax.app/";
+        //var url = "https://api.qrmax.app/";
+        var url = "http://localhost:80/";
         var target = "display";
         //var data = {company: "demoCompany", store: "demoStore"};
 
         let request = null;
         let response = [null,null];
 
-        var me = this;
+        var me = this; // what is this
         var timer = {elapsed: 0};
 
         request = handleDisplay(target, type, url, data, response);
@@ -107,10 +201,13 @@ class DisplayMngr extends Component {
 
                 if(response[0] === true){
                     
+                    console.log("Check response NOTNULL "+response[1]);
                     var json = JSON.parse(response[1]);
                     
-                    me.setState({currentObj: json});
-                    //console.log(me.state.currentObj);
+                    if(type == "GETLIST"){
+                        me.setState({currentObj: json});
+                    }
+                    console.log("Object notNull check: "+me.state.currentObj);
                 }
             }
 
@@ -144,6 +241,12 @@ class DisplayMngr extends Component {
          console.log("did mount");
      }
 
+     /*componentDidUpdate(){
+        var data;
+        this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore"});
+        console.log("did update");
+     }*/
+
     render() { 
         return (
 			<div className="background">
@@ -159,7 +262,7 @@ class DisplayMngr extends Component {
                         {console.log(this.state.currentObj)}
                         {this.state.currentObj.displays.map((val, key) => {
                                 return (
-                                    <li className="display-list-item" key={key} value={key} onClick={this.selectDisplay}>{val.display}</li>
+                                    <li className="display-list-item" key={key} value={key} onClick={this.selectDisplay}>{val.displayName}</li>
                                     
                                 );
                             })}
@@ -167,8 +270,12 @@ class DisplayMngr extends Component {
                     {console.log(this.state.selectedFile)}
                     <div id='settings-box'>
                         <h5 id="settings-box-header" ></h5>
-                        <label htmlFor='name-field'>Name</label>
-                        <input id="name-field" type="text"  onChange={this.changeCurrentDisplayInput}></input>
+                        <input id="name-field" type="text" placeholder='Display Name' onChange={this.changeCurrentDisplayInput}></input>
+                        <input id="lat-field" type="text" placeholder='Lattitude' onChange={this.changeLat}></input>
+                        <input id="lon-field" type="text" placeholder='Longitude' onChange={this.changeLon}></input>
+                        <input id="displayType-field" type="text" placeholder='Display Type' onChange={this.changeDisplayType}></input>
+                        <input id="mediaName-field" type="text" placeholder='Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
+                        <input id="mediaLength-field" type="text" placeholder='Media Length' onChange={this.changeDisplayType}></input>
                         <input type="file" onChange={this.setSelectedFile}/>
                     </div>
                     <button 
@@ -217,13 +324,3 @@ class DisplayMngr extends Component {
 }
  
 export default DisplayMngr;
-
-/*
-    Passing objects to components
-    Storing objects locally
-    Creating QR
-    Linking displays
-    Writing interface design
-    Similarity between adding codes and displays
-    Using QR middleware
-*/

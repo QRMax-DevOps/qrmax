@@ -99,19 +99,22 @@ export async function fetchAPI(address, requestOptions) {
 		
 		//Doing the actual request
 		console.log(requestOptions.body);
+		console.log(address);
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
 				
-				console.log(res);
+				console.log("Response flag 1: "+res);
 				
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
 					if(typeof res === 'string') {
+						console.log("1st fail");
 						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
 						,"\n    > Response = ",res);
 						return [false,res];
 					}
 					else {
+						console.log("2nd fail");
 						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
 						+"\n    > Response = "+JSON.stringify(res));
 						return [false,JSON.stringify(res)];
