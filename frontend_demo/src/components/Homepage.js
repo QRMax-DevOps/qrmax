@@ -67,7 +67,7 @@ class Homepage extends Component {
 
     mediaListen2() {
         var url = "http://localhost:80/";
-        var data = {company: "demoCompany", store: "demoStore", display: "display1"};
+        var data = {company: "demoCompany", store: "demoStore2", display: "display1"};
         
         var response = [null, null];
         var request = null;
@@ -166,8 +166,8 @@ class Homepage extends Component {
     fillCurrentObject() {
         //var url = "https://api.qrmax.app/";
         var url = "http://localhost:80/";
-        var data = {company: "demoCompany", store: "demoStore"};
-        var data2 = {company: "dmeoCompany", store: "demoStore", display: "display1"};
+        var data = {company: "demoCompany", store: "demoStore2"};
+        var data2 = {company: "dmeoCompany", store: "demoStore2", display: "display1"};
 
         let request = null;
         let request2 = null;

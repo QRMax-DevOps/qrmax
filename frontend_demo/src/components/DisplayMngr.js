@@ -30,7 +30,7 @@ class DisplayMngr extends Component {
     
     }
     state = { 
-        currentStore: "demoStore",
+        currentStore: "demoStore2",
         currentObj: {status: '', displays: [{displayName: ''}]},
         selectedDisplay: 0,
         displayInput: 'default',
@@ -151,16 +151,17 @@ class DisplayMngr extends Component {
         let newDisplayType = this.getDisplayType();
         var data = {
             company: "demoCompany", 
-            store: "demoStore", 
+            store: "demoStore2", 
             display: newName,
             lat: newLat,
             lon: newLon,
             displayType: newDisplayType
         };
+        console.log(data);
             //baseMedia: newBaseMediaName,
             //baseMediaFile: this.state.imgString};
         this.fetchDisplays("CREATE", data);
-        this.fetchDisplays("GETLIST", data);
+        //this.fetchDisplays("GETLIST", data);
        /* data.baseMedia = newBaseMediaName;
         data.baseMediaFile = this.state.imgString;
         data.TTL = newTTL;
@@ -179,7 +180,7 @@ class DisplayMngr extends Component {
         //var url = "https://api.qrmax.app/";
         var url = "http://localhost:80/";
         var target = "display";
-        //var data = {company: "demoCompany", store: "demoStore"};
+        var data = {company: "demoCompany", store: "demoStore2"};
 
         let request = null;
         let response = [null,null];
@@ -237,7 +238,7 @@ class DisplayMngr extends Component {
 
      componentDidMount() {
          var data;
-         this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore"});
+         this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore2"});
          console.log("did mount");
      }
 
