@@ -25,7 +25,8 @@ class ResponseBad extends React.Component {
 						<div className="text-center" style={{margin:"0", height:"100%"}}>
 							<p style={{lineHeight:"50px", fontSize:"50px", fontWeight:"bold", color:"#cf0000"}}> Oops! </p>
 							<p style={{fontWeight:"bold", fontSize:"20px", color:"#cf0000"}}> Looks like an error has occured.</p>
-							<p style={{marginTop:"5vh", fontSize:"20px", color:"#949494"}}> If you send us some diagnostics<br/>information, you'll be saving us<br/>quite the headache.</p>
+							<p style={{marginTop:"5vh", fontSize:"20px", color:"#949494"}}> If you send us some<br/>diagnostics information,<br/>you'll be saving us<br/>
+							quite the headache.</p>
 							<div style={{marginTop:"5vh"}}>
 								<button id="GiveDataButton">Send Diagnostics Data</button>
 							</div>
