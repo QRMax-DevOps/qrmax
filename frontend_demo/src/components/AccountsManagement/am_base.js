@@ -123,7 +123,7 @@ class AccountsManagement extends Component {
 					}
 				}
 				//timeout after 12 seconds
-				if(stopwatch.eclapsed === 24) {
+				if(stopwatch.eclapsed === 64) {
 					console.log("Fetch-loop timeout!");
 					me.setState({isLoading:false});
 					clearInterval(interval);

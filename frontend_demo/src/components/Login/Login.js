@@ -2,7 +2,7 @@ import React from "react";
 
 import {log, getApiURL} from "../../services/core_mw";
 import {RunFetch_Login} from "../../services/middleware/login_mw";
-import {saveLoginToken} from "../../services/utilities/auth_util";
+import {saveLoginToken, clearSessionData} from "../../services/utilities/auth_util";
 import {getNiceError} from "./login_util";
 
 import Img1 from "../../graphics/updated_logo.PNG";
@@ -46,7 +46,8 @@ export default class Page extends React.Component {
     constructor(props) {
         super(props);
         
-        
+        clearSessionData();
+		
         this.state = {
             loading : false, //When loading==true, show "LoadingScreen"
             passwordBox : '',

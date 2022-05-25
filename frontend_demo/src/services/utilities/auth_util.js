@@ -16,7 +16,7 @@ export function saveLoginToken(input) {
 		logWarn("Authentication (\"saveLoginToken\") - Denied (Input is empty, unassigned, null or whitespace)");
 	}
 	else {
-		sessionStorage.setItem('token',input);
+		sessionStorage.setItem("token",input);
 		log("Authentication (\"saveLoginToken\") - Accepted");
 	}
 }
@@ -45,12 +45,7 @@ export function getLoginToken() {
 }
 
 
-export function clearLoginToken() {
-	if(isEmpty(sessionStorage.token)) {
-		logWarn("Authentication (\"clearLoginToken\") - Denied (Input is empty, unassigned, null or whitespace)");
-	}
-	else {
-		sessionStorage.token=null;
-		//log("Authentication (\"clearLoginToken\") - Accepted. Token has been nullified.");
-	}
+export function clearSessionData() {
+	sessionStorage.clear();
+	//log("Authentication (\"clearLoginToken\") - Accepted. Token has been nullified.");
 }
