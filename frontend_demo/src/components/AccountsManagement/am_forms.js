@@ -99,6 +99,35 @@ function HandleAccount(type, global, data) {
 	switch(type.toLowerCase()) {
 		case 'create': 
 			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response);
+			
+			//loop until response
+			
+			
+			var stopwatch = {eclapsed: 0};
+			var me = this;
+			
+			var interval = setInterval(function() {
+				stopwatch.eclapsed++;
+				
+				if(response[0] !== null) {
+					clearInterval(interval);
+					
+					//Good response (account created)
+					if(response[0] === true) {
+						const oldAccount = {company:global.userID, username:data.username, stores:null};
+						const newAccount = {company:global.userID, username:data.username, stores:data.stores, password:data.password};
+						
+						//Updating the stores field, as the account creation request (due to backend limitations) does not create the stores list.
+						RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, oldAccount, newAccount, response);
+					}
+				}
+				//timeout after 12 seconds
+				if(stopwatch.eclapsed === 64) {
+					console.log("While waiting for account creation response: Fetch-loop timeout!");
+					clearInterval(interval);
+				}
+			}, 500);
+			
 			break;
 		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
 		case 'modify': 
