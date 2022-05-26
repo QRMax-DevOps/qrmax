@@ -58,7 +58,9 @@ class MediaMngr extends Component {
 
     selectStore(e){
         this.setState({
-            currentStore: e.target.innerHTML
+            currentStore: e.target.innerHTML,
+            currentDisplay: "None Selected",
+            currentObj: {media: [{mediaName: ''},{TTL: '0'}]}
         });
         this.getDisplay(e);
     }
