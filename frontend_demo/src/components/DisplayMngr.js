@@ -2,8 +2,6 @@
     Contributing Authors:
         Name:               Trent Ruseell
         Student No.:        5454244
-
-        
 */
 
 import React, { Component } from 'react';
@@ -27,6 +25,10 @@ class DisplayMngr extends Component {
         this.createDisplay = this.createDisplay.bind(this);
         this.deleteDisplay = this.deleteDisplay.bind(this);
         this.setSelectedFile = this.setSelectedFile.bind(this);
+
+        var company = sessionStorage.companyName;
+        var user = sessionStorage.username;
+        
     
     }
     state = { 
@@ -176,6 +178,14 @@ class DisplayMngr extends Component {
          this.fetchDisplays("DELETE", data);
      }
 
+     fetchStores(isCompany, username, companyName) {
+        var url = "http://localhost:80/";
+        request = null;
+        response = [null, null];
+
+        
+     }
+
      fetchDisplays(type, data) {
         //var url = "https://api.qrmax.app/";
         var url = "http://localhost:80/";
@@ -239,6 +249,7 @@ class DisplayMngr extends Component {
      componentDidMount() {
          var data;
          this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore2"});
+         this.RunFetch_GetStores(true, )
          console.log("did mount");
      }
 
@@ -269,8 +280,12 @@ class DisplayMngr extends Component {
             <div className="main-container">
                 <h2 className="page-header">Display Management</h2>
                 <h4 id="selected-store-header">Showing store: {this.getCurrentStoreObj()}</h4>
-                <div id="styled-container">
+                <div>
+                    <select onChange={this.setStore}>
 
+                    </select>
+                </div>
+                <div id="styled-container">
                     <ul id="display-list">
                         {console.log(this.state.currentObj)}
                         {this.state.currentObj.displays.map((val, key) => {

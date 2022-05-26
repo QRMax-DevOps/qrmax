@@ -1,3 +1,9 @@
+/*
+    Contributing Authors:
+        Name:           Trent Russell
+        Student No.:    5454244
+*/
+
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import './Sidebar.css';

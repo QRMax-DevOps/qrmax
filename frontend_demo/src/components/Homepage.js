@@ -22,6 +22,7 @@ class Homepage extends Component {
         super(props);
         this.state = {
             items: null,
+            picture: null,
             listenObj: null,
             baseMedia: {baseMedia: "", baseMediaFile: ""},
             selectedDisplay: 0,
@@ -31,12 +32,6 @@ class Homepage extends Component {
             currentObj: {displays: [{display: '', media: [], baseMedia: ''}]}, // set default empty values allowing screen loading before fetch
 			media: null
         }
-        var interval = 0;
-        var interval2 = 0;
-        var interval3 = 0;
-		this.store = "store1";
-		this.display = "display1";
-		this.mediaName = "london";
         this.setDisplay = this.setDisplay.bind(this);
 		//this.getMedia();
     }
@@ -146,7 +141,7 @@ class Homepage extends Component {
     }
 
     // Fetch request that returns the image linked to the highest voted media
-	getMedia(type, _data) {
+	async getMedia(type, _data) {
 
 		//I am no longer supplying the parameters through URL params. They're stored in "Session Storage" now.
 		var companynameParam = sessionStorage.companyName;
@@ -182,15 +177,15 @@ class Homepage extends Component {
 			
 			if(response[0] !== null) {
 				clearInterval(interval);
-				//me.setState({loading:false});
-
                 
 				if(response[0] === true){
 					
                     json = JSON.parse(response[1]);
-				}
+                    me.setState({
 
-                
+                    });
+                    console.log("getMedia: ", json);
+				}
 				
 			}
             
@@ -200,8 +195,7 @@ class Homepage extends Component {
 				//me.setState({loading:false});
 				clearInterval(interval);
 			}
-		}, 1000);
-        console.log("getMedia: " + json);
+		}, 5000);
         return json;
 	}
 
@@ -211,7 +205,7 @@ class Homepage extends Component {
         })
     }
 
-    getDisplayImage() {
+    async getDisplayImage() {
         var image_string = ""
     
         var _data = {
@@ -230,7 +224,8 @@ class Homepage extends Component {
                 mediaName: this.state.listenObj.display
             }
             console.log("_data:"+_data);
-            image_string = this.getMedia("GETMEDIAFILE", _data);
+            image_string = await this.getMedia("GETMEDIAFILE", _data);
+            
         } else {
             image_string = this.state.baseMedia.baseMediaFile;
         }
@@ -258,9 +253,6 @@ class Homepage extends Component {
 
     componentWillUnmount() {
         console.log("Component is unmounting!");
-        clearInterval(this.interval);
-        clearInterval(this.interval2);
-        clearInterval(this.interval3);
     }
 
     render() {
@@ -315,6 +307,12 @@ class Homepage extends Component {
         );
     }
     
+    
+
 }
+
+const Child = ({data}) => (
+    <img className='image' src={data.picture} />
+);
 
 export default Homepage;
