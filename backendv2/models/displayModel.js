@@ -1,20 +1,18 @@
-const { string, boolean } = require('mathjs')
 const mongoose = require('mongoose')
-const { stringify } = require('uuid')
 
 const displaySchema = mongoose.Schema(
   {
 	displayName: {
-	  type: String,
-	  required: [true, 'Please add name'],
+		type: String,
+		required: [true, 'Please add name'],
 	},
     store: {
-	  type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'Please add store'],
+		type: mongoose.Schema.Types.ObjectId,
+		required: [true, 'Please add store'],
     },
 	settings: {
-	  type: Array,
-	  required: false
+		type: Array,
+		required: false
 	},
 	media: {
 		type: Array,

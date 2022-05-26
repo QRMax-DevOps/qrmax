@@ -277,8 +277,6 @@ export async function RunFetch_UpdateCompanyAccount(oldAccount, newAccount, glob
 function generateStoresList(stores) {
 	var result = '[';
 	
-	console.log(stores);
-	
 	if(typeof stores === 'string') {
 		try {
 			stores = JSON.parse(stores);
@@ -307,8 +305,6 @@ function generateStoresList(stores) {
 function generateStoresModificaiton(stores) {
 	var result = '';
 	
-	console.log(stores);
-	
 	if(typeof stores === 'string') {
 		try {
 			stores = JSON.parse(stores);
@@ -333,15 +329,8 @@ function generateStoresModificaiton(stores) {
 }
 
 export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAccount, newAccount, global) {
-		
-		console.log('RunFetch_UpdateStoreAccount ',url,isCompany,user,oldAccount,newAccount);
-		
-		
 		var stores = generateStoresModificaiton(newAccount.stores);
-		
-		console.log('stores===',stores);
-		
-		
+
 		var passwordField = '';
 		var passwordValue = '';
 		
@@ -353,9 +342,7 @@ export async function RunFetch_UpdateStoreAccount( url, isCompany, user, oldAcco
 		}
 		
 		var body = '';
-		
-		
-		
+
 		if(oldAccount.username === newAccount.username) {
 			if(!isEmptyOrSpaces(newAccount.password)) {
 				body = JSON.stringify({

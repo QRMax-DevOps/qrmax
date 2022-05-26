@@ -4,10 +4,8 @@ const media = require('../models/mediaModel');
 const mediaFileModel = require('../models/mediaFileModel');
 const userInput = require('../models/userInputModel');
 const { v4: uuidv4 } = require('uuid');
-const pbkdf2  = require('pbkdf2-sha256');
-const jwt = require('jsonwebtoken');
-const gridfs = require('gridfs');
 const mediaModel = require('../models/mediaModel');
+const storeModel = require('../models/storeModel');
 
 // @desc    Create display
 // @route   PUT /api/v2/Display
@@ -16,30 +14,32 @@ const mediaModel = require('../models/mediaModel');
 const putDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   const {lat, lon} = req.body;
+
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+
   //Check if display exists
-  const displayExists = await displayModel.findOne({store:req.store.id, displayName:displayName });
+  const displayExists = await displayModel.findOne({store:storeID, displayName:displayName });
   if (displayExists) {
-	  res.status(400).json({status:"fail",cause:"Display already exists"});
-	  throw new Error('Display already exists');
+    res.status(400).json({status:"fail",cause:"Display already exists"});
+    throw new Error('Display already exists');
   }
 
   if(!(req.body.displayType&&req.body.lat&&req.body.lon)){
     res.status(400).json({status:"fail",cause:"Missing display information"});
-	  throw new Error('Missing display information');
+    throw new Error('Missing display information');
   }
 
   var displaytype = req.body.displayType;
 
   if (displaytype != 'static' && displaytype != 'dynamic'){
     res.status(400).json({status:"fail",cause:"Invalid display type"});
-	  throw new Error('Invalid display type');
+    throw new Error('Invalid display type');
   }
 
-  var location = req.body.location;
-  
   const displayCreate = await displayModel.create({
     displayName: displayName,
-	  store: req.store.id,
+    store: storeID,
     media:[],
     currentContent:{media:null, mediaBase:true, liveTime:new Date(Date.now()), TTL:0},
     displayType:displaytype,
@@ -53,8 +53,8 @@ const putDisplay = asyncHandler(async (req, res) => {
     res.status(201).json({status:"success"});
   } 
   else {
-	  res.status(400).json({status:"fail",cause:"Invalid display data"});
-	  throw new Error('Invalid display data');
+    res.status(400).json({status:"fail",cause:"Invalid display data"});
+    throw new Error('Invalid display data');
   }
 });
 
@@ -63,14 +63,15 @@ const putDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const postDisplay = asyncHandler(async (req, res) => {
-  const storeID = req.store.id;
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
   
   //Check if display exists
   const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1});
 	
   if (!displays) {
-	  res.status(400).json({status:"success",cause:"No displays for store"});
-	  throw new Error('No displays for store');
+    res.status(400).json({status:"success",cause:"No displays for store"});
+    throw new Error('No displays for store');
   }
 
   for (let i = 0; i<displays.length; i++){
@@ -88,16 +89,26 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+
   
   //Check if display exists
-  const displayExists = await displayModel.find({store:req.store.id, displayName:displayName});
+  const displayExists = await displayModel.findOne({store:storeID, displayName:displayName});
 	
   if (!displayExists) {
-	  res.status(400).json({status:"fail",cause:'No displays found'});
-	  throw new Error('No displays found');
+    res.status(400).json({status:"fail",cause:'No displays found'});
+    throw new Error('No displays found');
   }
+
+  displayExists.media.forEach(async (media)=>{
+    //delete all mediaFile
+    await mediaFileModel.deleteMany({media:media})
+    //delete media
+    await mediaModel.findByIdAndDelete(media)
+  })
   
-  await displayModel.remove({store:req.store.id, displayName:displayName});
+  await displayModel.deleteOne({store:storeID, displayName:displayName});
   res.status(200).json({status:"success"});
 });
 
@@ -108,13 +119,16 @@ const deleteDisplay = asyncHandler(async (req, res) => {
 const patchDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   const { fields, values} = req.body;
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+
 
   if(!(fields&&values&&displayName)){
     res.status(400).json({status:"fail", cause:"Missing patch information"});
     throw new Error('Missing patch information') 
   }
 
-  const displayAcct = await displayModel.findOne({store:req.store.id, displayName:displayName});
+  const displayAcct = await displayModel.findOne({store:storeID, displayName:displayName});
   
   if (!displayAcct) {
     res.status(400).json({status:"fail", cause:"Display does not exist"});
@@ -122,7 +136,7 @@ const patchDisplay = asyncHandler(async (req, res) => {
   }
 
   //ensure field is a legal field to operate on
-  fields.split(',').forEach((field, i)=>{
+  fields.split(',').forEach((field)=>{
     if (!(field == "displayName" || field == 'displayType' || field == 'location')){
       res.status(400).json({status:"fail", cause:"Illegal operation on field "+field});
     }
@@ -130,11 +144,11 @@ const patchDisplay = asyncHandler(async (req, res) => {
 
   fields.split(',').forEach(async (field, i)=>{
     if(field == 'displayName'){
-      if (await displayModel.findOne({store:req.store.id, displayName:values.split(',')[i]})) {
-	      res.status(400).json({status:"fail", cause:"Display name already in use"});
+      if (await displayModel.findOne({store:storeID, displayName:values.split(',')[i]})) {
+        res.status(400).json({status:"fail", cause:"Display name already in use"});
       }
       else{
-        await displayModel.updateOne({store:req.store.id, displayName:displayName}, {$set:{displayName:values.split(',')[i]}});
+        await displayModel.updateOne({store:storeID, displayName:displayName}, {$set:{displayName:values.split(',')[i]}});
         res.status(200).json({status:"success"});
       }
               
@@ -147,7 +161,7 @@ const patchDisplay = asyncHandler(async (req, res) => {
     }
 
     if(!res.headersSent){
-      await displayModel.updateOne({store:req.store.id, displayName:displayName}, {$set:{[field]:values.split(',')[i]}});     
+      await displayModel.updateOne({store:storeID, displayName:displayName}, {$set:{[field]:values.split(',')[i]}});     
       res.status(200).json({status:"success"});
     }
   })
@@ -159,11 +173,13 @@ const patchDisplay = asyncHandler(async (req, res) => {
 // @review  Complete
 const putDisplayMedia = asyncHandler(async (req, res) => {  
   //get all the info and check it is ok
-  const {display, mediaName, mediaFile, TTL} = req.body;
-  if(!(display&&mediaName&&mediaFile&&TTL)){
+  const {store, display, mediaName, mediaFile, TTL} = req.body;
+  if(!(store&&display&&mediaName&&mediaFile&&TTL)){
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
   //generate a clean QRID
   const QRID = uuidv4();
   let cleanQRID = "";
@@ -183,7 +199,7 @@ const putDisplayMedia = asyncHandler(async (req, res) => {
   }
 
   //check if display exists
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:display, store:storeID})
   if(!(foundDisplay)){
     res.status(400).json({status:"fail", cause:"Display not found"});
     throw new Error('Display not found') 
@@ -211,7 +227,7 @@ const putDisplayMedia = asyncHandler(async (req, res) => {
   })
 
   //add media to store
-  await displayModel.updateOne({store:req.store.id, displayName:display}, {$push:{media:createdMedia.id}})
+  await displayModel.updateOne({store:storeID, displayName:display}, {$push:{media:createdMedia.id}})
 
   //for each mediaFileChunk make a new mediaFileChunk object
   mediaFileChunks.forEach((chunk, i)=>{
@@ -236,9 +252,11 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
     res.status(400).json({status:"fail", cause:"Missing display"});
     throw new Error('Missing display'); 
   }
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
 
   //get all media id from display
-  let displays = await displayModel.findOne({displayName:display, store:req.store.id}, {_id:0, displayName:1, media:1});
+  let displays = await displayModel.findOne({displayName:display, store:storeID}, {_id:0, displayName:1, media:1});
 
   //check if display exists
   if(!(displays)){
@@ -260,17 +278,21 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
 // @review  Complete
 const patchDisplayMedia = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
-  const mediaName = req.body.mediaName;
-  const { fields, values } = req.body;
+  let mediaName = req.body.mediaName;
+  const {store, fields, values } = req.body;
+
   const sFields = fields.split(',');
   const sValues = values.split(',');
+  
 
-  if(!(fields&&values&&displayName)){
+  if(!(store&&fields&&values&&displayName)){
     res.status(400).json({status:"fail", cause:"Missing patch information"});
     throw new Error('Missing patch information') 
   }
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
 
-  let foundDisplay = await displayModel.findOne({displayName:displayName, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:displayName, store:storeID})
 
   //check if display exists
   if(!(foundDisplay)){
@@ -290,7 +312,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   const legalFields = ['mediaName', 'mediaFile', 'TTL'];
   for(let i = 0; i<sFields.length; i++){
     if (!(legalFields.includes(sFields[i]))){
-      res.status(400).json({status:"fail", cause:"Illegal operation on field "+field});
+      res.status(400).json({status:"fail", cause:"Illegal operation on field "+sFields[i]});
       throw new Error("Illegal operation on field") 
     }
   }
@@ -299,7 +321,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   for (let i=0; i<sFields.length;i++){
     let field = sFields[i];
     let value = sValues[i];
-    if (field == 'fileName'){
+    if (field == 'mediaName'){
       //check fileName no already used
       if(await mediaModel.findOne({mediaName:value, display:foundDisplay._id})){
         res.status(400).json({status:"fail", cause:"Media name already in use"+field});
@@ -308,18 +330,27 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     } 
   }
 
-  sFields.forEach(async (field, i)=>{
-    if (field == 'fileName'){
+  //sFields.forEach(async (field, i)=>{
+  for(let i=0, j=0; i<sFields.length; i++, j++){
+    let field = sFields[i];
+    if (field == 'mediaName'){
       //change fileName
-      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{mediaName:sValues[i]}})
+      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{mediaName:sValues[j]}})
+      mediaName = sValues[j];
     } 
     else if (field == 'mediaFile'){
+      //value combine
+      let mediaFileValue = sValues[j]+sValues[j+1];
+      j++;
       //delete all old mediaFiles
-      mediaFileModel.deleteMany({mediaID:foundMedia._id});
+      await mediaFileModel.deleteMany({mediaID:foundMedia._id});
       //create new ones
-        
-      var mediaFileNumChunks = Math.ceil(mediaFile.length / 1024);
+      var mediaFileNumChunks = Math.ceil(mediaFileValue.length / 1024);
       var mediaFileChunks = new Array(mediaFileNumChunks);
+      
+      for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
+        mediaFileChunks[i] = mediaFileValue.substr(o, 1024)
+      }
 
       mediaFileChunks.forEach((chunk, i)=>{
         mediaFileModel.create({
@@ -331,9 +362,9 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     }
     else if (field == 'TTL'){
       //change TTL
-      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{TTL:sValues[i]}})
+      await mediaModel.findByIdAndUpdate(foundMedia._id, {$set:{TTL:sValues[j]}})
     }
-  })
+  }
 
   res.status(201).json({status:"success"});
 });
@@ -344,13 +375,16 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
 // @review  Complete
 const deleteDisplayMedia = asyncHandler(async (req, res) => {
   //get all the info and check it is ok
-  const {display, mediaName} = req.body;
-  if(!(display&&mediaName)){
+  const {store, display, mediaName} = req.body;
+  if(!(store&&display&&mediaName)){
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
+
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
   
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:display, store:storeID})
 
   //check if display exists
   if(!(foundDisplay)){
@@ -373,6 +407,13 @@ const deleteDisplayMedia = asyncHandler(async (req, res) => {
   await mediaFileModel.deleteMany({mediaID:foundMedia._id});
 
   //remove from display
+  let mID = foundMedia._id;
+  mID = mID.toString().replace('new ObjectId("', '');
+  mID = mID.replace('")"', '');
+  console.log(mID)
+  console.log('test')
+  console.log(await displayModel.findByIdAndUpdate(foundDisplay._id, {$pull:{media:mID}}));
+
  
   let id = foundMedia._id.toString();
   await displayModel.updateOne({displayName:display, store:req.store.id}, {$pull:{media:id}})
@@ -380,18 +421,21 @@ const deleteDisplayMedia = asyncHandler(async (req, res) => {
   res.status(200).json({status:"success"});
 }); 
 
-// @desc    Delete media object
-// @route   DELETE /api/v2/Display/media
+// @desc    get media file
+// @route   POST /api/v2/Display/media/file
 // @access  Private
 // @review  Complete
 const postDisplayMediaFile = asyncHandler(async (req, res)=>{ 
-  const {display, mediaName} = req.body;
-  if(!(display&&mediaName)){
+  const {store, display, mediaName} = req.body;
+  if(!(store&&display&&mediaName)){
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
   
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+  
+  let foundDisplay = await displayModel.findOne({displayName:display, store:storeID})
 
   //check if display exists
   if(!(foundDisplay)){
@@ -421,8 +465,12 @@ const postDisplayMediaFile = asyncHandler(async (req, res)=>{
 // @access  Private
 // @review  Complete
 const postDisplaySettings = asyncHandler(async (req, res)=>{ 
-  const {display} = req.body;
-  const settings = await displayModel.findOne({store:req.store.id, displayName:display}, {_id:0, settings:1});
+  const { display} = req.body;
+
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+
+  const settings = await displayModel.findOne({store:storeID, displayName:display}, {_id:0, settings:1});
   
   if(!settings){
     res.status(401).json({status:"fail",cause:'Issue finding company'});
@@ -438,7 +486,9 @@ const postDisplaySettings = asyncHandler(async (req, res)=>{
 // @review  Complete
 const patchDisplaySettings = asyncHandler(async (req, res)=>{ 
   const {display} = req.body;
-  const updatedAccount = displayModel.findOne({store:req.store.id, displayName:display});
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+  const updatedAccount = displayModel.findOne({store:storeID, displayName:display});
   
   if(!updatedAccount){
     res.status(401).json({status:"fail",cause:'Issue finding store'});
@@ -449,8 +499,8 @@ const patchDisplaySettings = asyncHandler(async (req, res)=>{
   var values = req.body.values.split(',');
 
   fields.forEach(async (field, index)=>{
-    await displayModel.updateOne({store:req.store.id, displayName:display}, {$pull:{settings:{[field]:{$exists:true}}}});
-    await displayModel.updateOne({store:req.store.id, displayName:display}, {$push:{settings:{[field]:values[index]}}});
+    await displayModel.updateOne({store:storeID, displayName:display}, {$pull:{settings:{[field]:{$exists:true}}}});
+    await displayModel.updateOne({store:storeID, displayName:display}, {$push:{settings:{[field]:values[index]}}});
   })
   
   res.status(200).json({status:"success"});
@@ -462,6 +512,9 @@ const patchDisplaySettings = asyncHandler(async (req, res)=>{
 // @review  Complete
 const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
   const {display, mediaName} = req.body;
+
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
   
   //update single media
   if (mediaName && display){
@@ -476,7 +529,7 @@ const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
     cleanQRID = cleanQRID.slice(0,20);
     newQRID = cleanQRID;
 
-    let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display});
+    let foundDisplay = await displayModel.findOne({store:storeID, displayName:display});
     if(!foundDisplay){
       res.status(401).json({status:"fail",cause:'Issue finding display'});
       throw new Error('Issue finding display');
@@ -498,7 +551,7 @@ const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
 
   //update all in display
   else if(display){
-    let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display});
+    let foundDisplay = await displayModel.findOne({store:storeID, displayName:display});
     if(!foundDisplay){
       res.status(401).json({status:"fail",cause:'Issue finding display'});
       throw new Error('Issue finding display');
@@ -524,7 +577,7 @@ const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
   //update all in store
   else{
     //find all displays
-    let displays = await displayModel.find({store:req.store.id});
+    let displays = await displayModel.find({store:storeID});
     if(!displays){
       res.status(401).json({status:"fail",cause:'Issue finding displays'});
       throw new Error('Issue finding displays');
@@ -557,11 +610,13 @@ const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
 // @access  Private
 // @review  Complete
 const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
-  const {display, baseMedia, baseMediaFile, TTL }= req.body;
-  if(!(display&&baseMedia&&baseMediaFile&&TTL)){
+  const {store, display, baseMedia, baseMediaFile, TTL }= req.body;
+  if(!(store&&display&&baseMedia&&baseMediaFile&&TTL)){
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
   //generate a clean QRID
   const QRID = uuidv4();
   let cleanQRID = "";
@@ -581,7 +636,7 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   }
 
   //check if display exists
-  let foundDisplay = await displayModel.findOne({displayName:display, store:req.store.id})
+  let foundDisplay = await displayModel.findOne({displayName:display, store:storeID})
   if(!(foundDisplay)){
     res.status(400).json({status:"fail", cause:"Display not found"});
     throw new Error('Display not found') 
@@ -589,7 +644,6 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   
   
   let foundMedia = await mediaModel.findOne({display:foundDisplay._id, mediaName:baseMedia});
-  console.log(foundMedia);
   //check if media name already in use
   if(foundMedia){
     res.status(400).json({status:"fail", cause:"Media name already in use"});
@@ -608,8 +662,13 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
     TTL:TTL,
   })
 
+  //delete all old baseMedia mediaFiles
+  if (foundDisplay.baseMedia){
+    await mediaFileModel.deleteMany({media:foundDisplay.baseMedia});
+  }
+
   //add media to store
-  await displayModel.updateOne({store:req.store.id, displayName:display}, {baseMedia:createdMedia.id})
+  await displayModel.updateOne({store:storeID, displayName:display}, {baseMedia:createdMedia.id})
 
   //for each mediaFileChunk make a new mediaFileChunk object
   mediaFileChunks.forEach((chunk, i)=>{
@@ -629,13 +688,15 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
 // @review  Complete
 const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   //get all the info and check it is ok
-  const {display} = req.body;
-  if(!(display)){
-    res.status(400).json({status:"fail", cause:"Missing display"});
-    throw new Error('Missing display'); 
+  const {store,display} = req.body;
+  if(!(store&&display)){
+    res.status(400).json({status:"fail", cause:"Missing information"});
+    throw new Error('Missing information'); 
   }
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
   //get all media id from display
-  let baseMediaDisplay = await displayModel.findOne({displayName:display, store:req.store.id});
+  let baseMediaDisplay = await displayModel.findOne({displayName:display, store:storeID});
   if(!baseMediaDisplay.baseMedia){
     res.status(400).json({status:"fail", cause:"Missing base media"});
     throw new Error('Missing base media'); 
@@ -656,9 +717,23 @@ const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
 // @access  Private
 // @review  Not started
 const postDisplayMediaListen = asyncHandler(async (req, res)=>{
-  const {display} = req.body; 
-  let foundDisplay = await displayModel.findOne({store:req.store.id, displayName:display}) 
+  const {store, display} = req.body; 
+
+  if(!(store&&display)){
+    res.status(400).json({status:"fail", cause:"Missing information"});
+    throw new Error('Missing information'); 
+  }
+
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  if(!storeID){
+    res.status(400).json({status:"fail", cause:"No store found"});
+    throw new Error('No store found'); 
+  }
+  storeID = storeID._id;
+
+  let foundDisplay = await displayModel.findOne({store:storeID, displayName:display}) 
   let foundDisplayType = foundDisplay.displayType;
+
   if(!foundDisplay.baseMedia){
     res.status(400).json({status:"fail", cause:"Missing base media, please set a base media before continuing"});
     throw new Error('Missing base media'); 
@@ -775,11 +850,9 @@ const postDisplayMediaListen = asyncHandler(async (req, res)=>{
             let baseMediaID = foundDisplay.baseMedia;
             //set currentMediaID to baseMedia
             await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID}});
-            //get TTL
-            let baseMedia = await mediaModel.findById(baseMediaID);
             //get liveTime
             let newLiveTime = new Date(Date.now());
-            await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID, 'currentContent.mediaBase':true, 'currentContent.liveTime':newLiveTime, 'currentContent.TTL':999999999999999999999}});
+            await displayModel.findByIdAndUpdate(foundDisplay._id, {$set:{'currentContent.media':baseMediaID, 'currentContent.mediaBase':true, 'currentContent.liveTime':newLiveTime, 'currentContent.TTL':999999999999999}});
             loop = false;
           }
         }
@@ -807,7 +880,13 @@ const postDisplayMediaListen = asyncHandler(async (req, res)=>{
 // @review  Not started
 const postDisplayInteractions = asyncHandler(async (req, res)=>{
   const {display, period} = req.body
-  let result = await displayModel.findOne({store:req.store.id, displayName:display});
+  if(!display&&period){
+    res.status(400).json({status:"fail", cause:"Missing information"});
+    throw new Error('Missing information') 
+  }
+  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  storeID = storeID._id;
+  let result = await displayModel.findOne({store:storeID, displayName:display});
   let votes = [];
   if (period == 0){
     const media = result.media;
@@ -871,12 +950,10 @@ const postDisplayInteractions = asyncHandler(async (req, res)=>{
 async function getVoteStats(time, QRID){
   //for all user input where timeOfInput > current time - time
   let result = await userInput.find({QR:QRID, TimeOfInput:{$gt:time}})
-  console.log(result);
   let count = 0;
   for(let i = 0; i<result.length;i++){
     count++;
   } 
-  console.log(count);
   return count;
   //return count
 }
@@ -898,10 +975,10 @@ const putDisplayMediaPositions = asyncHandler(async (req, res)=>{
 	}
 	
 	const xyArray = position.split(':');
-  	const pos = {
-	  	x: xyArray[0],
-	  	y: xyArray[1]
-  	};
+    const pos = {
+      x: xyArray[0],
+      y: xyArray[1]
+    };
 	const addPosition = await media.updateOne({QRID:QRID}, {$push: {positions:pos}})
   var updateCurrentPosVal;
   if (!addPosition.currentQRPosition) {
@@ -957,10 +1034,9 @@ const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
     const varray = values.split(',');
     let i = -1;
     for (let field of farray){
-        console.log(field);
-      	i++;
-      	let value = varray[i];
-      	if (field == 'QRPositionAtCurrent'){
+        i++;
+        let value = varray[i];
+        if (field == 'QRPositionAtCurrent'){
           if (!findMedia.currentQRPosition) {
             const xyArray = value.split(':');
             var positionsArray = findMedia.positions;
@@ -976,7 +1052,6 @@ const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
           }
           else {
             const xyArray = value.split(':');
-            var positionsArray = findMedia.positions;
             let positionalVal = parseInt(findMedia.currentQRPosition);
                   positionsArray[positionalVal].x = parseInt(xyArray[0]);
                   positionsArray[positionalVal].y = parseInt(xyArray[1]);
@@ -988,8 +1063,8 @@ const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
             res.status(200).json({status:"success"});
             }
         }
-      	else if(field == 'nextQRPosition'){
-  	    	let positionalVal = parseInt(findMedia.currentQRPosition) + 1;
+        else if(field == 'nextQRPosition'){
+          let positionalVal = parseInt(findMedia.currentQRPosition) + 1;
           if (positionalVal < findMedia.positions.length) {
                   const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:positionalVal}})
             if (!updatePositions) {
@@ -1003,25 +1078,40 @@ const patchDisplayMediaPositions = asyncHandler(async (req, res)=>{
           }
           res.status(200).json({status:"success"});
         }
-      	else if(field == 'prevQRPosition'){
-  	    	let positionalVal = parseInt(findMedia.currentQRPosition) - 1;
-		    	if (positionalVal >= 0) {
-	          	const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:positionalVal}})
-				    if (!updatePositions) {
-			        res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
-			        throw new Error('Could not updated positions');
-				    }
-			    }
+        else if(field == 'prevQRPosition'){
+          let positionalVal = parseInt(findMedia.currentQRPosition) - 1;
+          if (positionalVal >= 0) {
+            const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:positionalVal}})
+          if (!updatePositions) {
+            res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
+            throw new Error('Could not updated positions');
+          }
+          }
           else {
             res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
             throw new Error('Could not updated positions');
           }
-          	res.status(200).json({status:"success"});
+            res.status(200).json({status:"success"});
         }
-      	else{
-	        res.status(400).json({status:"fail", cause:"Cannot update that field"});
-	        throw new Error('Cannot update that field'); 
-      	}
+        else if(field == 'selectPosition') {
+          let potentialPosition = value;
+          if (potentialPosition >= 0 && potentialPosition < findMedia.positions.length) {
+            const updatePositions = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition:potentialPosition}})
+            if (!updatePositions) {
+              res.status(400).json({status:"fail", cause:"Could not update to prev position value"});
+              throw new Error('Could not updated positions');
+            }
+          }
+          else {
+            res.status(400).json({status:"fail", cause:"Could not update to selected position value"});
+            throw new Error('Could not updated positions');
+          }
+            res.status(200).json({status:"success"});
+        }
+        else{
+          res.status(400).json({status:"fail", cause:"Cannot update that field"});
+          throw new Error('Cannot update that field'); 
+        }
     }
 });
 
@@ -1040,49 +1130,63 @@ const deleteDisplayMediaPositions = asyncHandler(async (req, res)=>{
         res.status(400).json({status:"fail", cause:"Could not find display"});
         throw new Error('Could not find display'); 
 	}
+  var positionsArray = findMedia.positions;
+  var newPositions = [];
 	if (!findMedia.currentQRPosition) {
-		var positionsArray = findMedia.positions;
 		let positionalVal = 0;
-    	var newPositions = [];
-    	for (let i=0; i<positionsArray.length; i++) {
-    		if(i != positionalVal) {
-    		  	newPositions.push(positionsArray[i]);
-    		}
-    	}
-  	  	const deletePosition = await media.updateOne({QRID:QRID}, {$set:{positions:newPositions}});
+      for (let i=0; i<positionsArray.length; i++) {
+        if(i != positionalVal) {
+            newPositions.push(positionsArray[i]);
+        }
+      }
+        const deletePosition = await media.updateOne({QRID:QRID}, {$set:{positions:newPositions}});
 		if (!deletePosition) {
-	        res.status(400).json({status:"fail", cause:"Could not updated positions"});
-	        throw new Error('Could not updated positions');
+          res.status(400).json({status:"fail", cause:"Could not updated positions"});
+          throw new Error('Could not updated positions');
 		}
 		res.status(200).json({status:"success"});
 	}
 	else {
-		var positionsArray = findMedia.positions;
 		let positionalVal = parseInt(findMedia.currentQRPosition);
-    	var newPositions = [];
-    	for (let i=0; i<positionsArray.length; i++) {
-    		if(i != positionalVal) {
-    		  	newPositions.push(positionsArray[i]);
-    		}
-    	}
-  	  if (positionalVal != 0) {
+      for (let i=0; i<positionsArray.length; i++) {
+        if(i != positionalVal) {
+          newPositions.push(positionsArray[i]);
+        }
+      }
+      if (positionalVal != 0) {
 			const deletePosition = await media.updateOne({QRID:QRID}, {$set:{currentQRPosition: parseInt(positionalVal-1),positions:newPositions}});
 			if (!deletePosition) {
-		        res.status(400).json({status:"fail", cause:"Could not updated positions"});
-		        throw new Error('Could not updated positions');
+        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+        throw new Error('Could not updated positions');
 			}
 		}
 		else {
 			const deletePosition = await media.updateOne({QRID:QRID}, {$set:{positions:newPositions}});
 			if (!deletePosition) {
-		        res.status(400).json({status:"fail", cause:"Could not updated positions"});
-		        throw new Error('Could not updated positions');
+        res.status(400).json({status:"fail", cause:"Could not updated positions"});
+        throw new Error('Could not updated positions');
 			}
-		}
-  	  	
+		} 	
 		res.status(200).json({status:"success"});
 	}
 });
+
+async function deleteAll(storeID){
+  //for each display
+  let displays = await displayModel.find({store:storeID});
+  displays.forEach(async (display)=>{
+    //for each media
+    display.media.forEach(async (media)=>{
+      //delete all mediaFile
+      await mediaFileModel.deleteMany({media:media})
+      //delete media
+      await mediaModel.findByIdAndDelete(media)
+    })
+    //delete display
+    await displayModel.findByIdAndDelete(display._id);
+  })
+  return true;
+}
   
 
 module.exports = {
@@ -1105,5 +1209,6 @@ module.exports = {
   putDisplayMediaPositions,
   postDisplayMediaPositions,
   patchDisplayMediaPositions,
-  deleteDisplayMediaPositions
+  deleteDisplayMediaPositions,
+  deleteAll
 }

@@ -1,10 +1,12 @@
 const asyncHandler = require('express-async-handler');
 const storeAccount = require('../models/storeAccountModel');
 const companyAccount = require('../models/companyAccountModel');
+const displayController = require('../controllers/displayController.js')
 const store = require('../models/storeModel');
 const { v4: uuidv4 } = require('uuid');
 const pbkdf2  = require('pbkdf2-sha256');
 const jwt = require('jsonwebtoken');
+const storeModel = require('../models/storeModel');
 
 // @desc    Register store account
 // @route   PUT /api/v2/Store/Account
@@ -15,14 +17,14 @@ const putStoreAccount = asyncHandler(async (req, res) => {
 
   //check company exists
   if (!await companyAccount.findById(req.company.id )) {
-	  res.status(400).json({status:"fail", cause:"Company does not exist"});
-	  throw new Error('Company does not exists');
+    res.status(400).json({status:"fail", cause:"Company does not exist"});
+    throw new Error('Company does not exists');
   }
   
   //Check if user exists
   if (await storeAccount.findOne({company:req.company.id, username:username })) {
-	  res.status(400).json({status:"fail",cause:"Username already in use"});
-	  throw new Error('User already exists');
+    res.status(400).json({status:"fail",cause:"Username already in use"});
+    throw new Error('User already exists');
   }
   
   // generate salt
@@ -33,8 +35,8 @@ const putStoreAccount = asyncHandler(async (req, res) => {
   
   const storeAcct = await storeAccount.create({
     username:username,
-	  company: req.company.id,
-	  salt:salt,
+    company: req.company.id,
+    salt:salt,
     password: hash,
     settings:[],
   });
@@ -43,8 +45,8 @@ const putStoreAccount = asyncHandler(async (req, res) => {
     res.status(201).json({status:"success"});
   } 
   else {
-	  res.status(400).json({status:"fail",cause:"invalid store account data"});
-	  throw new Error('Invalid storeAccount data');
+    res.status(400).json({status:"fail",cause:"invalid store account data"});
+    throw new Error('Invalid storeAccount data');
   }
 });
 
@@ -77,6 +79,7 @@ const postStoreAccount = asyncHandler(async (req, res) => {
 
 // Generate JWT
 const generateToken = (id) => {
+  // eslint-disable-next-line no-undef
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
   })
@@ -102,13 +105,13 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
   }
   //check company exists
   if (!companyCheck){
-	  res.status(400).json({status:"fail", cause:"Company does not exist"});
-	  throw new Error('Company does not exists');
+    res.status(400).json({status:"fail", cause:"Company does not exist"});
+    throw new Error('Company does not exists');
   }
   //check if the username is valid
   if (!await storeAccount.findOne({ username })){
-	  res.status(400).json({status:"fail", cause:"User does not exist"});
-	  throw new Error('User does not exists');
+    res.status(400).json({status:"fail", cause:"User does not exist"});
+    throw new Error('User does not exists');
   }
   //define a list of allowed fields to patch
   let valid = ['username', 'password', 'stores'];
@@ -117,12 +120,12 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
     let field = fields.split(',')[i];
     if(!valid.includes(field)){
       res.status(400).json({status:"fail", cause:"Cannot call patch operation on field: "+field});
-	    throw new Error('Cannot call patch operation on field');
+      throw new Error('Cannot call patch operation on field');
     }  
     else if (field=='username'){
       if(await storeAccount.findOne({company:company, username:values.split(',')[i]})){
         res.status(400).json({status:"fail", cause:"Username already in use"});
-	      throw new Error("Username already in use");
+        throw new Error("Username already in use");
       }
     }
   }
@@ -137,9 +140,8 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
       // hash password
       const hash = pbkdf2 (password, salt, 80000, 32).toString('hex');
       //set password
-      console.log(await storeAccount.findOne({username:username, company:companyCheck._id}));
-      let result = await storeAccount.updateOne({username:username, company:companyCheck._id}, {$set:{password:hash, salt:salt}})
-      console.log(await storeAccount.findOne({username:username, company:companyCheck._id}));
+      await storeAccount.updateOne({username:username, company:companyCheck._id}, {$set:{password:hash, salt:salt}})
+
       res.status(200).json({status:"success"});
     }
     else if (field =='stores'){
@@ -185,10 +187,14 @@ const deleteStoreAccount = asyncHandler(async (req, res) => {
   // Check for company
   if (!storeAcct) {
     res.status(401).json({status:"fail",cause:'Store account not found'});
-	  throw new Error('Store account not found');
+    throw new Error('Store account not found');
   }
 
   await storeAcct.remove();
+
+  //remove from store AccountList
+  let sID = storeAcct._id
+  console.log(await store.updateOne({company:req.company.id, accounts:sID}, {$pull:{accounts:sID}}))
 
   res.status(200).json({ status: "success"});
 })
@@ -202,8 +208,8 @@ const addStoresToAccount = asyncHandler(async (req, res) => {
   // Check storeAccount exists
   let storeAcctID = storeAcct._id;
   if (!storeAcct) {
-	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
-	  throw new Error('Store account not found');
+    res.status(401).json({stattus:"fail", cause:"Store account not found"});
+    throw new Error('Store account not found');
   }
 
   //check all stores exists
@@ -234,8 +240,8 @@ const deleteStoresFromAccount = asyncHandler(async (req, res) => {
   // Check storeAccount exists
   let storeAcctID = storeAcct._id;
   if (!storeAcct) {
-	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
-	  throw new Error('Store account not found');
+    res.status(401).json({stattus:"fail", cause:"Store account not found"});
+    throw new Error('Store account not found');
   }
   
   //check all stores exists
@@ -263,11 +269,18 @@ const deleteStoresFromAccount = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Underway
 const getStoresFromAccount = asyncHandler(async (req,res)=>{
-  const storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
-  // Check storeAccount exists
+
+  let storeAcct
+  if(!req.company){
+    storeAcct = await storeAccount.findById(req.store.id);
+  }
+  else{
+    storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
+  }
+    // Check storeAccount exists
   if (!storeAcct) {
-	  res.status(401).json({stattus:"fail", cause:"Store account not found"});
-	  throw new Error('Store account not found');
+    res.status(401).json({stattus:"fail", cause:"Store account not found"});
+    throw new Error('Store account not found');
   }
   //get list of stores
   const stores = storeAcct.stores;
@@ -301,7 +314,6 @@ const postStoreAccountSettings = asyncHandler(async (req,res)=>{
 // @review  Complete
 const patchStoreAccountSettings = asyncHandler(async (req,res)=>{
   const updatedAccount = await storeAccount.findById(req.store.id);
-  console.log(updatedAccount)
   
   if(!updatedAccount){
     res.status(401).json({status:"fail",cause:'Issue finding store'});
@@ -319,6 +331,20 @@ const patchStoreAccountSettings = asyncHandler(async (req,res)=>{
   res.status(200).json({status:"success"});
 })
 
+async function deleteAll(companyID){
+  //delete all store accounts
+  await storeAccount.deleteMany({company:companyID});
+  //for each store
+  let stores = await store.find({company:companyID});
+  stores.forEach(async (s) =>{
+    //delete all displays
+    await displayController.deleteAll(s._id);
+    //then delete the store
+    await store.findByIdAndDelete(s._id);
+  })
+  return true;
+}
+
 
 module.exports = {
   putStoreAccount,
@@ -329,5 +355,6 @@ module.exports = {
   deleteStoresFromAccount,
   getStoresFromAccount,
   postStoreAccountSettings,
-  patchStoreAccountSettings
+  patchStoreAccountSettings,
+  deleteAll
 }

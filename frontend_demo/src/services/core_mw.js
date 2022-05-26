@@ -19,7 +19,7 @@ export function log(message) {
 //Typically used to notify the reader of a notable, but not critical issue.
 export function logWarn(message) {
 	let curTime = new Date().toLocaleTimeString();
-	console.warn("["+curTime+"] : "+message);
+	console.warn("[",curTime,"] : ",message);
 }
 
 //Note that if provided a floating number, this function will round it down.
@@ -64,9 +64,9 @@ function getHeadersString(headers, shortenToken) {
 	
 	for(let i = 0; i < arr.length; i++) {
 		if(i==(arr.length-1)) {
-			str=str+arr[i]+"}";
+			str=str+arr[i]+"\"}";
 		} else {
-			str=str+arr[i]+",";
+			str=str+arr[i]+"\",";
 		}
 	}
 	return str;
@@ -101,10 +101,11 @@ export async function fetchAPI(address, requestOptions) {
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
+				
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
 					if(typeof res === 'string') {
 						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
-						+"\n    > Response = "+res);
+						,"\n    > Response = ",res);
 						return [false,res];
 					}
 					else {
@@ -114,9 +115,7 @@ export async function fetchAPI(address, requestOptions) {
 					}
 				} 
 				else {
-					
 					console.log("["+curTime+"] : ",requestOptions.method," to API was SUCCESSFUL!\n   > Received: ",res,"\n ");
-					
 					return [true,JSON.stringify(res),"The API accepted the POST request!"];
 				}
 			})

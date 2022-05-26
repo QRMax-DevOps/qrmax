@@ -4,7 +4,6 @@ const Display = require('../models/displayModel')
 const Media = require('../models/mediaModel')
 const createDOMPurify = require("dompurify");
 const {JSDOM} = require("jsdom");
-const e = require("express");
 const axios = require('axios');
 const math = require('mathjs');
 
@@ -30,10 +29,6 @@ const postUserInput = asyncHandler(async (req, res) => {
 
     const dirtyQRID = req.body.QRID;
     const QRID = DOMPurify.sanitize(dirtyQRID);
-
-    const company = req.body.company;
-    const store = req.body.store;
-    const display = req.body.display;
     
     /*Need More Validation Here*/
 
@@ -46,12 +41,8 @@ const postUserInput = asyncHandler(async (req, res) => {
     let responseLon;
     await axios.get(apiURL)
         .then((res) => {
-            console.log(`Status: ${res.status}`);
-            //console.log('Body: ', res.data);
         responseLat = parseFloat(res.data.latitude);
         responseLon = parseFloat(res.data.longitude);
-        //console.log(responseLat);
-        //console.log(responseLon);
         }).catch((err) => {
             console.error(err);
         });
@@ -77,10 +68,11 @@ const postUserInput = asyncHandler(async (req, res) => {
     var dLon = (testLon-responseLon) * (math.pi/180);
     var a = math.sin(dLat/2) * math.sin(dLat/2) + math.cos(responseLat * (math.pi/180)) * math.cos(testLat * (math.pi/180)) * math.sin(dLon/2) * math.sin(dLon/2);
     var c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a));
+    //re-enable d when turning location check back on
+    // eslint-disable-next-line no-unused-vars
     var d = R * c; // Distance in km
     
     /*
-    console.log(d);
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
       //Mobile data
@@ -103,7 +95,7 @@ const postUserInput = asyncHandler(async (req, res) => {
 	for (let i=0; i < previousInputs.length; i++) {
 		if (math.abs(previousInputs[i].TimeOfInput - currentDate) < 10000) {
           res.status(400).json({status:"fail", cause:"Tried voting too quickly, wait 10 seconds between votes"});
-	        throw new Error('Tried voting too quickly, wait 10 seconds between votes');
+          throw new Error('Tried voting too quickly, wait 10 seconds between votes');
 		}
 	}
     
@@ -122,8 +114,7 @@ const postUserInput = asyncHandler(async (req, res) => {
     }
 
     //recording interaction in correct media
-    var result = await Media.findOne({QRID:QRID});
-    console.log(result);
+    result = await Media.findOne({QRID:QRID});
     if(!result){
       res.status(404).json({status:"fail", cause:"Could not find matching media"})
       throw new Error('Could not find matching media');
