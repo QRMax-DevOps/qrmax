@@ -28,6 +28,14 @@
     margin: auto;
 }
 
+.displayDrop{
+    padding-left: 10px;
+}
+
+.periodDrop{
+    padding-left: 10px;
+}
+
 .buttons {
     outline: none;
     background-color: #1b5cab;

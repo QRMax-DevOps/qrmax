@@ -45,7 +45,6 @@ class Interactions extends Component {
    }
    //changing selected display to that selected from the list
     selectDisplay(e){
-        {console.log(e.target.value)}
         this.setState({
             currentDisplay: e.target.innerHTML
         });
@@ -53,7 +52,6 @@ class Interactions extends Component {
     }
     //changing selected display to that selected from the list for the comparison display
     selectCompDisplay(e){
-        {console.log(e.target.value)}
         this.setState({
             currentDisplayComp: e.target.innerHTML
         });
@@ -93,7 +91,7 @@ class Interactions extends Component {
     }
     //function to handle requests to the api and retrieve responses
     fetchDisplay(type, data, objectCount) {
-        var url = "http://localhost:80/";
+        var url = "https://api.qrmax.app/api/v2/";
         if(objectCount == 0)
         var target = "display";
         else
@@ -128,7 +126,6 @@ class Interactions extends Component {
                 }
             }
             if(timer.elapsed == 24) {
-                console.log("Fetch-loop timeout!");
                 me.setState({loading:false});
                 clearInterval(interval);
             }
@@ -139,7 +136,6 @@ class Interactions extends Component {
         var data;
         this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore}, 0);
         this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentPeriodCode}, 1);
-        console.log("did mount");
     }
 
 
@@ -162,7 +158,7 @@ class Interactions extends Component {
                         </div>
                         <div>
                             {/* A dropdown button used to show and select displays  */}
-                        <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
+                        <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}>
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
                                     <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.displayName}</Dropdown.Item>
@@ -170,7 +166,7 @@ class Interactions extends Component {
                             })}
                         </DropdownButton>
                         {/* A dropdown button used to show and select periods of time  */}
-                        <DropdownButton id="periodDrop" title="Period" as={ButtonGroup}>
+                        <DropdownButton className="periodDrop" title="Period" as={ButtonGroup}>
                             <Dropdown.Item onClick={this.selectPeriod}>All Time</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Today</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>One Hour</Dropdown.Item>
@@ -197,7 +193,7 @@ class Interactions extends Component {
         );
 
 
-        {/* If used to display comparison mode  */}
+        {/* If used to display comparison mode */}
     }else if(this.state.compareBoolean == 1){
         return (
             
@@ -215,7 +211,7 @@ class Interactions extends Component {
                         </div>
                         <div>
                             {/* A dropdown button used to show and select displays  */}
-                        <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
+                        <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}>
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
                                     <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.displayName}</Dropdown.Item>
@@ -223,14 +219,14 @@ class Interactions extends Component {
                             })}
                         </DropdownButton>
                         {/* A dropdown button used to show and select periods of time  */}
-                        <DropdownButton id="periodDrop" title="Period" as={ButtonGroup}>
+                        <DropdownButton className="periodDrop" title="Period" as={ButtonGroup}>
                             <Dropdown.Item onClick={this.selectPeriod}>All Time</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Today</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>One Hour</Dropdown.Item>
                             <Dropdown.Item onClick={this.selectPeriod}>Last 10 Minutes</Dropdown.Item>
                         </DropdownButton>
                         {/* A dropdown button used to show and select displays for comparison */}
-                        <DropdownButton id="displayDrop" title="Display" as={ButtonGroup}>
+                        <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}>
                         {this.state.currentObj.displays.map((val, key) => {
                                 return (
                                     <Dropdown.Item key={key} value={key} onClick={this.selectCompDisplay} >{val.displayName}</Dropdown.Item>

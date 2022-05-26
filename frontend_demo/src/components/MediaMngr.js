@@ -92,12 +92,9 @@ class MediaMngr extends Component {
         var newName = this.getNewName();
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaUpdate, fields: ["mediaName", "mediaFile", "TTL"], values: [newName, this.state.imgString, this.state.mediaLength]};
         this.fetchMedia("patch", data, 1);
-        console.log("inside updateMedia");
-        console.log(data);
         window.location.reload();
         }else{
             //ensuring the user can't update a non existent media 
-            console.log("can't update new media")
             alert("You can't update +New Media")
         }
     }
@@ -119,14 +116,13 @@ class MediaMngr extends Component {
             this.fetchMedia("delete", data, 1);
             window.location.reload();
         }else{
-          console.log("can't delete null media")
           alert("You can't delete +New Media")
         }
     }
 
     //function to handle requests to the api and retrieve responses
     fetchMedia(type, data, objectCount) {
-        var url = "http://localhost:80/";
+        var url = "https://api.qrmax.app/api/v2/";
 
         if(objectCount == 1)
         var target = "display/media";
@@ -162,7 +158,6 @@ class MediaMngr extends Component {
                 }
             }
             if(timer.elapsed == 24) {
-                console.log("Fetch-loop timeout!");
                 me.setState({loading:false});
                 clearInterval(interval);
             }
@@ -183,11 +178,10 @@ class MediaMngr extends Component {
             }
         });
     }
-    //an initial request made to fetch displats
+    //an initial request made to fetch displays
     componentDidMount() {
         var data;
         this.fetchMedia("post", data = {company: this.state.currentCompany, store: this.state.currentStore}, 0);
-        console.log("did mount");
     }
 
 
