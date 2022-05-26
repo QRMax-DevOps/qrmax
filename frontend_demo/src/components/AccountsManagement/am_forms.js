@@ -7,8 +7,10 @@
 import React, {useState} from 'react';
 
 import { 
+
 	RunFetch_CreateStore, RunFetch_DeleteStore, RunFetch_CreateStoreAccount,
 	RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount
+
 } from '../../services/middleware/accounts_mw';
 
 import StoresEditor from "./elements/am_storeseditor";
@@ -129,7 +131,7 @@ function HandleAccount(type, global, data) {
 			}, 500);
 			
 			break;
-		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
+		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response1); break;
 		case 'modify': 
 			if(IsJsonString(data.newAccount.stores)) {
 				data.newAccount.stores = JSON.parse(data.newAccount.stores);
@@ -281,6 +283,8 @@ export function ModifyAccountForm(props) {
 	const global = props.global;
 	const companyStoresList = props.companyStoresList;
 	const oldAccount = {company:global.userID, username:props.account.username, stores:JSON.stringify(props.account.stores)}
+	
+	console.log("companyStoresList===",companyStoresList);
 	
 	const handleSubmission = (e) =>
 		{ HandleAccount('modify', global, {oldAccount, newAccount:{company:oldAccount.company, username, stores, password}}); }

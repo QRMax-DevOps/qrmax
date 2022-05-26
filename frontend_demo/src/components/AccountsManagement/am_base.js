@@ -112,6 +112,8 @@ class AccountsManagement extends Component {
 								{ json[i].stores=null; }
 						}
 						
+						console.log("new accounts == ",JSON.stringify(json));
+						
 						me.setParentState('primaryAccountsList',JSON.stringify(json));
 						me.setState({queueSoftRefresh:true, currentAccount:null, currentStore:null});
 					}
@@ -280,6 +282,10 @@ class Modifications extends Component {
 		//Making sure that the "currentForm" variable is a string and is not null.
 		if(typeof this.props.currentForm === 'string' && !isEmptyOrSpaces(this.props.currentForm)) {
 			var formToDisplay;
+			
+			console.log("---------companyStoresList === ",this.getParentState('primarystoreslist'));
+			
+			console.log("this.props.curAccount==",this.props.curAccount);
 			
 			//Determining which form to display
 			switch(this.props.currentForm.toLowerCase()) {

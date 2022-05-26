@@ -87,10 +87,8 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
-
   let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
   storeID = storeID._id;
-  
   //Check if display exists
   const displayExists = await displayModel.findOne({store:storeID, displayName:displayName});
 	
@@ -277,6 +275,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   let mediaName = req.body.mediaName;
   const {store, fields, values } = req.body;
+  
   const sFields = fields.split(',');
   const sValues = values.split(',');
   
