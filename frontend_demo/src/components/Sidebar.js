@@ -13,7 +13,7 @@ function Sidebar() {
 	for(var i = 0; i < sidebarInfo.length; i++) {
 		var obj = sidebarInfo[i];
 		if(sessionStorage.getItem('isCompanyAccount') != null && (sessionStorage.getItem('isCompanyAccount') === true || sessionStorage.getItem('isCompanyAccount') === "true")) {
-			if(sidebarInfo[i].link === "/accounts") {
+			if(sidebarInfo[i].link === "/accounts" || sidebarInfo[i].link === "/login") {
 				sidebarInfo[i].disabled = false;
 			}
 			else {
@@ -32,14 +32,7 @@ function Sidebar() {
                 <ul className="SidebarList">
                     {sidebarInfo.map((val, key) => {
 						if(val.disabled === true) {
-							return (
-                                <li id="row" key={key} disabled>
-                                    <div>
-                                        <p className="navIcon_disabled">{val.icon}</p>
-                                        <p className="navTitle_disabled">{val.title}</p>
-                                    </div>
-                                </li>
-                            );
+
 						}
 						else {
 							return (
