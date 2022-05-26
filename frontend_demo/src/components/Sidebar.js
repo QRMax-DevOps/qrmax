@@ -10,6 +10,7 @@ function Sidebar() {
 	
 	let sidebarInfo = SidebarData;
 	
+	
 	for(var i = 0; i < sidebarInfo.length; i++) {
 		var obj = sidebarInfo[i];
 		if(sessionStorage.getItem('isCompanyAccount') != null && (sessionStorage.getItem('isCompanyAccount') === true || sessionStorage.getItem('isCompanyAccount') === "true")) {
@@ -31,12 +32,9 @@ function Sidebar() {
             <div className="ListContainer">
                 <ul className="SidebarList">
                     {sidebarInfo.map((val, key) => {
-						if(val.disabled === true) {
-
-						}
-						else {
+						if(!val.disabled) {
 							return (
-                                <li id="row" key={key} enabled>
+                                <li id="row" key={key}>
                                     <Link to={val.link}>
                                         <p className="navIcon">{val.icon}</p>
                                         <p className="navTitle">{val.title}</p>
