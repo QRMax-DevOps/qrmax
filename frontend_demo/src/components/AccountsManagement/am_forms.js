@@ -131,7 +131,7 @@ function HandleAccount(type, global, data) {
 			}, 500);
 			
 			break;
-		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response1); break;
+		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
 		case 'modify': 
 			if(IsJsonString(data.newAccount.stores)) {
 				data.newAccount.stores = JSON.parse(data.newAccount.stores);
