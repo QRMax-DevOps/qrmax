@@ -283,8 +283,8 @@ export default class Page extends React.Component {
 						<div id="innerbox_left">
 							<img style={{marginBottom:"20px"}} id="logo" src={Img1} alt=""/>
 							<p id="subtitle">
-								Helping businesses build<br/>
-								contactless kiosks since 2022!<br/><br/>
+								Proudly helping businesses<br/>
+								build contactless media<br/>displays since 2022!<br/><br/>
 								<i>(Release build 1.0)</i>
 							</p>
 						</div>
