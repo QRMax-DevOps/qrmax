@@ -116,7 +116,6 @@ const patchCompanyAccount = asyncHandler(async (req, res) => {
         // hash password
         const hash = pbkdf2 (values.split(',')[i], salt, 80000, 32).toString('hex');
         // store company salt and hash
-
         await companyAccount.findByIdAndUpdate(req.company.id, {$set:{password:hash, salt:salt}})
         res.status(200).json({status:"success", token: generateToken(companyAcct._id)});
       }

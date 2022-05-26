@@ -14,8 +14,10 @@ const storeModel = require('../models/storeModel');
 const putDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   const {lat, lon} = req.body;
+
   let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
   storeID = storeID._id;
+
   //Check if display exists
   const displayExists = await displayModel.findOne({store:storeID, displayName:displayName });
   if (displayExists) {
@@ -87,9 +89,9 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
-
   let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
   storeID = storeID._id;
+
   
   //Check if display exists
   const displayExists = await displayModel.findOne({store:storeID, displayName:displayName});
@@ -119,6 +121,7 @@ const patchDisplay = asyncHandler(async (req, res) => {
   const { fields, values} = req.body;
   let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
   storeID = storeID._id;
+
 
   if(!(fields&&values&&displayName)){
     res.status(400).json({status:"fail", cause:"Missing patch information"});
@@ -277,6 +280,7 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   let mediaName = req.body.mediaName;
   const {store, fields, values } = req.body;
+
   const sFields = fields.split(',');
   const sValues = values.split(',');
   
@@ -729,7 +733,7 @@ const postDisplayMediaListen = asyncHandler(async (req, res)=>{
 
   let foundDisplay = await displayModel.findOne({store:storeID, displayName:display}) 
   let foundDisplayType = foundDisplay.displayType;
-  
+
   if(!foundDisplay.baseMedia){
     res.status(400).json({status:"fail", cause:"Missing base media, please set a base media before continuing"});
     throw new Error('Missing base media'); 

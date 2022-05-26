@@ -402,6 +402,8 @@ export async function RunFetch_UpdateStore( url, isCompany, user, oldStore, newS
 export async function RunFetch_UpdateAccount(url, type, bodyGen, global) {
 	let endpoint=null
 	let methodGen=null;
+	
+	console.log("Running new fetch");
 
 	switch(type.toLowerCase()) {
 		  case 'companyaccount':			methodGen='PATCH';		endpoint=url+'api/v2/Company/Account';				break;

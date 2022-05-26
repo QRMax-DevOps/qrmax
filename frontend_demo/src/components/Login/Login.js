@@ -14,6 +14,10 @@ import LoadingGif from "../../graphics/loading_login.gif";
 
 
 
+/*Used to store networking information (I.e., responses from the server)
+ *Simply stored here for easy access*/
+var GLOBAL = [null,null];
+function resetGlobal() { GLOBAL = [null,null]; }
 
 /*Used to store networking information (I.e., responses from the server)
  *Simply stored here for easy access*/
@@ -55,14 +59,12 @@ export default class Page extends React.Component {
             usernameBox : '',
             rememberMeCheck : false,
             companyAccount : false,
-            localhost : false,
             loginError : '',
         };
 		
 		var recalled_username = localStorage.getItem("login_recall_username");
 		var recalled_company = localStorage.getItem("login_recall_company");
 		var recalled_companyChecked = localStorage.getItem("login_recall_companyChecked");
-		var recalled_localhostChecked = localStorage.getItem("login_recall_localhostChecked");
 		
 		if(recalled_username != null && recalled_username.length > 0) {
 			this.state.usernameBox = recalled_username;
@@ -74,10 +76,6 @@ export default class Page extends React.Component {
 		}
 		if(recalled_companyChecked != null) {
 			this.state.companyAccount = true;
-			this.state.rememberMeCheck = true;
-		}
-		if(recalled_localhostChecked != null) {
-			this.state.localhost = true;
 			this.state.rememberMeCheck = true;
 		}
 		
@@ -121,20 +119,12 @@ export default class Page extends React.Component {
 		else {
 			localStorage.removeItem("login_recall_companyChecked");
 		}
-		
-		if(this.state.localhost === true) {
-			localStorage.setItem("login_recall_localhostChecked", true);
-		}
-		else {
-			localStorage.removeItem("login_recall_localhostChecked");
-		}
 	}
 	
 	clearRememberedValues() {
 		localStorage.removeItem("login_recall_username");
 		localStorage.removeItem("login_recall_company");
 		localStorage.removeItem("login_recall_companyChecked");
-		localStorage.removeItem("login_recall_localhostChecked");
 	}
 	
 	navigateToHome() {
@@ -145,11 +135,6 @@ export default class Page extends React.Component {
 		}
 		else {
 			sessionStorage.setItem("username",this.state.usernameBox);
-		}
-		
-		sessionStorage.setItem("isLocalhost",false);
-		if(this.state.localhost===true) { 
-			sessionStorage.setItem("isLocalhost",true);
 		}
 		sessionStorage.setItem("isCompanyAccount",this.state.companyAccount);
 		if(this.state.companyAccount===true) { 
@@ -187,15 +172,6 @@ export default class Page extends React.Component {
 					localStorage.removeItem("login_recall_companyChecked");
 				}
 			}
-			
-			if(target.name === "localhost") {
-				if(target.checked === true && this.state.rememberMeCheck === true) {
-					localStorage.setItem("login_recall_localhostChecked", true);
-				}
-				else {
-					localStorage.removeItem("login_recall_localhostChecked");
-				}
-			}
 		}
 	}
 	
@@ -231,7 +207,7 @@ export default class Page extends React.Component {
 					
 					//Attempt login
 					RunFetch_Login(
-						getApiURL(me.state.localhost),
+						getApiURL(false),
 						me.state.companyAccount,
 						data,
 						GLOBAL
@@ -304,10 +280,6 @@ export default class Page extends React.Component {
 									<div id="RememberMe_Container" className="form-check">
 										<input name="companyAccount" type="checkbox" className="form-check-input" id="CompanyAccountCheck" checked={this.state.companyAccount} onChange={e => this.handleChange(e, true)}/>
 										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Company Account</label>
-									</div>
-									<div id="RememberMe_Container" className="form-check">
-										<input name="localhost" type="checkbox" className="form-check-input" id="LocalHostCheck" checked={this.state.localhost} onChange={e => this.handleChange(e, true)}/>
-										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Localhost</label>
 									</div>
 								</div>
 							  
