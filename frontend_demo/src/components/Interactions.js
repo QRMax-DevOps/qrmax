@@ -30,7 +30,7 @@ class Interactions extends Component {
         currentObjComp: {votes: [["Null", 0]]},
         currentObjStore: {stores: [{store: ""}]},
         currentStore: "None Selected",
-        currentDisplay: "demoDisplay",
+        currentDisplay: "None Selected",
         currentDisplayComp: "None Selected",
         currentPeriod: "All Time",
         currentPeriodCode: 0,
@@ -56,7 +56,10 @@ class Interactions extends Component {
     //changing selected store to that selected from the list
    selectStore(e){
     this.setState({
-        currentStore: e.target.innerHTML
+        currentStore: e.target.innerHTML,
+        currentDisplay: "None Selected",
+        currentObjInt: {votes: [["Null", 0]]},
+        currentObjComp: {votes: [["Null", 0]]}
     });
     this.getDisplay(e);
     }
