@@ -242,11 +242,23 @@ class DisplayMngr extends Component {
          console.log("did mount");
      }
 
-     /*componentDidUpdate(){
+     componentDidUpdate(){
+         console.log("Rendering");
+     }
+
+     /*componentDidUpdate(prevProps, prevState) {
         var data;
-        this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore"});
-        console.log("did update");
-     }*/
+        if (
+          prevState.currentObj.displays.length() !==
+          this.state.currentObj.displays.length()
+        ) {
+          this.fetchDisplays(
+            "GETLIST",
+            (data = { company: "demoCompany", store: "demoStore" })
+          );
+          console.log("did update");
+        }
+      }*/
 
     render() { 
         return (

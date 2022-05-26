@@ -33,6 +33,7 @@ class Homepage extends Component {
         }
         var interval = 0;
         var interval2 = 0;
+        var interval3 = 0;
 		this.store = "store1";
 		this.display = "display1";
 		this.mediaName = "london";
@@ -53,12 +54,13 @@ class Homepage extends Component {
 
         request = ListenFor("LISTEN", url, data, response);
 
-        this.interval2 = setInterval(function() {
+        var interval = setInterval(function() {
             timer++;
 
             if(response[0] !== null) {
-                //clearInterval(interval);
-                me.setState({loading:false});
+                clearInterval(interval);
+                console.log("Culprit: Listener");
+                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -73,8 +75,8 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer == 24) {
                 console.log("Fetch-loop timeout!");
-                me.setState({loading:false});
-                clearInterval(this.interval2);
+                //me.setState({loading:false});
+                clearInterval(interval);
             }
         }, 5000);
     }
@@ -96,12 +98,14 @@ class Homepage extends Component {
 
         request = handleDisplay(target, type, url, data, response);
 
-        this.interval = setInterval(function() {
+        var interval = setInterval(function() {
             timer.elapsed++;
             
             if(response[0] !== null) {
-                
-                me.setState({loading:false});
+            
+                clearInterval(interval);
+                console.log("Culprit: Fill Loading");
+                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -109,17 +113,20 @@ class Homepage extends Component {
                     
                     switch(target) {
                         case "display":
+                            console.log("Culprit: currentObj");
                             me.setState({
                                 currentObj: json
                             });
                             break;
                         case "display/media/basemedia":
                             console.log("setState baseMedia!");
+                            console.log("Culprit: baseMedia");
                             me.setState({
                                 baseMedia: json
                             });
                             break;
                         case "display/media":
+                            console.log("Culprit: DisplayMedia");
                             me.setState({
                                 displayMedia: json
                             });
@@ -132,8 +139,8 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer.elapsed == 24) {
                 console.log("Fetch-loop timeout!");
-                me.setState({loading:false});
-                clearInterval(this.interval);
+                //me.setState({loading:false});
+                clearInterval(interval);
             }
         }, 2500);
     }
@@ -175,30 +182,26 @@ class Homepage extends Component {
 			
 			if(response[0] !== null) {
 				clearInterval(interval);
-				me.setState({loading:false});
+				//me.setState({loading:false});
 
                 
 				if(response[0] === true){
 					
-                    var json = JSON.parse(response[1]);
+                    json = JSON.parse(response[1]);
 				}
 
-                console.log("getMedia: " + json)
-                if(type = "GETLIST") {
-                    me.setState({
-                        displayMedia: json
-                    });
-                }
+                
 				
 			}
-
+            
 			//timeout after 3 seconds
 			if(timer.eclapsed == 24) {
-				console.log("Fetch-loop timeout!");
-				me.setState({loading:false});
+                console.log("Fetch-loop timeout!");
+				//me.setState({loading:false});
 				clearInterval(interval);
 			}
-		}, 500);
+		}, 1000);
+        console.log("getMedia: " + json);
         return json;
 	}
 
@@ -209,7 +212,6 @@ class Homepage extends Component {
     }
 
     getDisplayImage() {
-        console.log("Retrieving display image..");
         var image_string = ""
     
         var _data = {
@@ -221,36 +223,44 @@ class Homepage extends Component {
         console.log("Checking Listen status: " +this.state.listenObj);
 
         if(this.state.listenObj != null) {
-            _data.mediaName = this.state.listenObj.mediaName;
+            _data = {
+                company: "demoCompany",
+                store: "demoStore2",
+                display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
+                mediaName: this.state.listenObj.display
+            }
+            console.log("_data:"+_data);
             image_string = this.getMedia("GETMEDIAFILE", _data);
         } else {
             image_string = this.state.baseMedia.baseMediaFile;
         }
-        
+        console.log("Inside getMedia()");
         
         return image_string;
     }
 
     componentDidMount() {
+        console.log("Component did mount!");
         // load displays
         this.fillCurrentObject("display", "POST", {company: "demoCompany", store: "demoStore2"});
         // load QR media
-        this.fillCurrentObject("display/media", "POST", {company: "demoCompany", store: "demoStore", display: "display1"});
+        this.fillCurrentObject("display/media", "POST", {company: "demoCompany", store: "demoStore2", display: "display1"});
         // load baseMedia
         this.fillCurrentObject("display/media/basemedia", "POST", {company: "demoCompany", 
                         store: "demoStore2", 
                         display: "display1"});
-        //this.mediaListen2();
-        console.log("Component did mount!");
+        this.mediaListen2();
+    }
+
+    componentDidUpdate(){
+        console.log("Something is causing a re-render!");
     }
 
     componentWillUnmount() {
         console.log("Component is unmounting!");
-        this.setState({
-            passes: 0 // reset first pass attrib
-        })
         clearInterval(this.interval);
         clearInterval(this.interval2);
+        clearInterval(this.interval3);
     }
 
     render() {
@@ -277,14 +287,12 @@ class Homepage extends Component {
                         </div>
 
                         <div>
-                            
-                                {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
+                            {console.log(this.state.displayMedia.media[0].QRID)}
+                                {this.state.currentObj.displays[0].media.map((val, key) => {
                                     return (
-                                        //<li className="qr-list-item" key={key}>
                                             <Draggable key={key}>
-                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore2&display=" + this.state.currentObj.displays[this.state.selectedDisplay].display + "&qrid=" + this.state.displayMedia.media[key].QRID}/>
+                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
                                             </Draggable>
-                                        //</li>
                                     )
                                 })}
                             
@@ -294,7 +302,9 @@ class Homepage extends Component {
                             {/* display media source inside this div */}
                             <div id="media-source-container">
                                 <br/>
+                                {console.log("Before calling the image")}
                                 <img className="image" src={this.getDisplayImage()}/> 
+                                {console.log("After calling the image")}
                             </div>
                         </div>
 
@@ -302,7 +312,7 @@ class Homepage extends Component {
                     </div>
                 </div>
             </div>
-            );
+        );
     }
     
 }
