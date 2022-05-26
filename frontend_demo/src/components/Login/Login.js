@@ -13,7 +13,6 @@ import "./login_style.css";
 import LoadingGif from "../../graphics/loading_login.gif";
 
 
-
 /*Used to store networking information (I.e., responses from the server)
  *Simply stored here for easy access*/
 var GLOBAL = [null,null];

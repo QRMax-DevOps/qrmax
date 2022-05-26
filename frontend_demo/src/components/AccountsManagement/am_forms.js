@@ -7,14 +7,10 @@
 import React, {useState} from 'react';
 
 import { 
-<<<<<<< main
+
 	RunFetch_CreateStore, RunFetch_DeleteStore, RunFetch_CreateStoreAccount,
 	RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount
-=======
-	RunFetch_CreateStore, RunFetch_DeleteStore, RunFetch_UpdateStore,
-	RunFetch_CreateStoreAccount, RunFetch_DeleteStoreAccount, RunFetch_UpdateStoreAccount,
-	RunFetch_UpdateStoreAccount_Stores
->>>>>>> server
+
 } from '../../services/middleware/accounts_mw';
 
 import StoresEditor from "./elements/am_storeseditor";
