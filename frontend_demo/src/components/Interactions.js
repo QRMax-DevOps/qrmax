@@ -11,6 +11,7 @@ import { Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap';
 
 import Sidebar from './Sidebar';
 import { handleDisplay } from '../services/middleware/display_mw';
+import { RunFetch_GetStores } from '../services/middleware/accounts_mw'; //including the middleware to send requests and recieve data
 
 class Interactions extends Component {
     //initializing a constructor
@@ -20,12 +21,16 @@ class Interactions extends Component {
         this.selectPeriod = this.selectPeriod.bind(this);
         this.comparison = this.comparison.bind(this);
         this.selectCompDisplay = this.selectCompDisplay.bind(this);
+        this.selectDisplay = this.selectDisplay.bind(this);
+        this.selectStore = this.selectStore.bind(this);
     }
     state = {   //initializing the state
         currentObj: {displays: [{display: ""}]},
         currentObjInt: {votes: [["Null", 0]]},
         currentObjComp: {votes: [["Null", 0]]},
-        currentDisplay: "None Selected",
+        currentObjStore: {stores: [{store: ""}]},
+        currentStore: "None Selected",
+        currentDisplay: "demoDisplay",
         currentDisplayComp: "None Selected",
         currentPeriod: "All Time",
         currentPeriodCode: 0,
@@ -43,6 +48,19 @@ class Interactions extends Component {
         });
     }
    }
+   //searching for displays based on store
+   getDisplay(e){
+    var data;
+    this.fetchDisplay("post", data = {company: this.state.currentCompany, store: e.target.innerHTML}, 0);
+    }
+    //changing selected store to that selected from the list
+   selectStore(e){
+    this.setState({
+        currentStore: e.target.innerHTML
+    });
+    this.getDisplay(e);
+    }
+
    //changing selected display to that selected from the list
     selectDisplay(e){
         this.setState({
@@ -89,9 +107,42 @@ class Interactions extends Component {
         var data;
         this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: e.target.innerHTML, period: this.state.currentPeriodCode}, 2);
     }
+
+    //function to handle requests to the api and retrieve responses
+    fetchStores() {
+        var url = "https://api.qrmax.app/";
+
+        let request = null;
+        let response = [null,null];
+
+        var me = this;
+        var timer = {elapsed: 0};
+
+        request = RunFetch_GetStores(false, url, sessionStorage.getItem("username"), sessionStorage.getItem("companyName"), response); 
+        
+
+        var interval = setInterval(function(){
+            timer.elapsed++;
+
+            if(response[0] !== null){
+                clearInterval(interval);
+                me.setState({loading:false});
+                if(response[0] === true){
+                    var json = JSON.parse(response[1]);
+                    //fetching the store
+                    me.setState({currentObjStore: json});
+                }
+            }
+            if(timer.elapsed == 24) {
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+        }, 500);
+    }
+
     //function to handle requests to the api and retrieve responses
     fetchDisplay(type, data, objectCount) {
-        var url = "https://api.qrmax.app/api/v2/";
+        var url = "https://api.qrmax.app/";
         if(objectCount == 0)
         var target = "display";
         else
@@ -131,11 +182,9 @@ class Interactions extends Component {
             }
         }, 500);
     }
-    //an initial request made to fetch displays
+    //an initial request made to fetch stores
     componentDidMount() {
-        var data;
-        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore}, 0);
-        this.fetchDisplay("GETLIST", data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, period: this.state.currentPeriodCode}, 1);
+        this.fetchStores();
     }
 
 
@@ -150,13 +199,24 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                            <div className='ViewerTitle'>Current Display: {this.state.currentDisplay}</div> {/* main title and current selected display */}
+                            <div className='ViewerTitle'>Current Store: {this.state.currentStore}</div> {/* main title and current selected store */}
                             
+                            <h5>Current Display: {this.state.currentDisplay}</h5> {/* current selected store */}
+
                             <h5>Current Period: {this.state.currentPeriod}</h5> {/* current selected period */}
                             
 
                         </div>
                         <div>
+
+                        <DropdownButton className="storeDrop" title="Store" as={ButtonGroup}> {/* A dropdown box that allows the user to select a store */}
+                            {this.state.currentObjStore.stores.map((val, key) => {
+                                return (
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectStore}>{val.store}</Dropdown.Item>
+                                );
+                            })}
+                        </DropdownButton>
+
                             {/* A dropdown button used to show and select displays  */}
                         <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}>
                             {this.state.currentObj.displays.map((val, key) => {
@@ -204,14 +264,24 @@ class Interactions extends Component {
                 <div className="MainContainer">
                     <div className="DisplayContainer">
                         <div>
-                        <div className='ViewerTitle'>Current Display: {this.state.currentDisplay}</div>{/* main title and current selected display */}
+                        <div className='ViewerTitle'>Current Store: {this.state.currentStore}</div> {/* main title and current selected store */}
                             
-                            <h5>Current Period: {this.state.currentPeriod}</h5>{/* current selected period */}
+                            <h5>Current Display: {this.state.currentDisplay}</h5> {/* current selected display */}
+
+                            <h5>Current Period: {this.state.currentPeriod}</h5> {/* current selected period */}
 
                         </div>
                         <div>
-                            {/* A dropdown button used to show and select displays  */}
-                        <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}>
+                           
+
+                        <DropdownButton className="storeDrop" title="Store" as={ButtonGroup}> {/* A dropdown box that allows the user to select a store */}
+                            {this.state.currentObjStore.stores.map((val, key) => {
+                                return (
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectStore}>{val.store}</Dropdown.Item>
+                                );
+                            })}
+                        </DropdownButton>
+                        <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}> {/* A dropdown button used to show and select displays  */}
                             {this.state.currentObj.displays.map((val, key) => {
                                 return (
                                     <Dropdown.Item key={key} value={key} onClick={this.selectDisplay} >{val.displayName}</Dropdown.Item>
