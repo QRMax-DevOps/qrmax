@@ -4,9 +4,6 @@
  *  - Full name: Marcus Hickey
  *  - Student ID: 6344380 */
 
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom'
-import { Route , withRouter} from 'react-router-dom';
 import {checkLoginToken, getLoginToken} from './utilities/auth_util';
 
 //Basic, but more appropriate logging function used to maintain logging format standard.
@@ -50,7 +47,7 @@ function isUnassigned(str){
 //Used for logging. Returns a nicer/readable headers string.
 function getHeadersString(headers, shortenToken) {
 	var str = "{";
-	var arr = new Array();
+	var arr = [];
 	
 	for (let entry of headers.entries()) { 
 	
@@ -63,7 +60,7 @@ function getHeadersString(headers, shortenToken) {
 	}
 	
 	for(let i = 0; i < arr.length; i++) {
-		if(i==(arr.length-1)) {
+		if(i===(arr.length-1)) {
 			str=str+arr[i]+"\"}";
 		} else {
 			str=str+arr[i]+"\",";
@@ -75,7 +72,7 @@ function getHeadersString(headers, shortenToken) {
 //The workhorse of the middleware. The function used to send requests to the API.
 export async function fetchAPI(address, requestOptions) {
 	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
-		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request \'method\' and/or \'body\' is unassigned.");
+		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request 'method' and/or 'body' is unassigned.");
 		return [false, 'An unexpected error has occured. Please check the console.'];
 	}
 	else {
@@ -121,7 +118,7 @@ export async function fetchAPI(address, requestOptions) {
 					+"\n    > This usually denotes a front-end bug or an interrupted connection between the front-end and the API!"
 					+"\n    > Nonetheless, please take a screenshot of your whole window and send it to the QRMAX development team "
 					+"with a description of what you were doing leading up to this error.");
-				return [false,'An unexpected error has occured. Please check the console.'];
+				return [false,res];
 			});
 	}
 }

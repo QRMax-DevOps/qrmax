@@ -158,7 +158,13 @@ export default class Page extends React.Component {
 
 		saveLoginToken(JSON.parse(GLOBAL[1]).token);
 		
-		window.location.href = window.location.protocol + "//" + window.location.host + "/homepage";
+		if(this.state.companyAccount) {
+			window.location.href = window.location.protocol + "//" + window.location.host + "/accounts";
+		}
+		else {
+			window.location.href = window.location.protocol + "//" + window.location.host + "/homepage";
+		}
+		
 	}
 	
 	//On component update, update "remembered" values.
