@@ -285,7 +285,7 @@ export default class Page extends React.Component {
 							<p id="subtitle">
 								Helping businesses build<br/>
 								contactless kiosks since 2022!<br/><br/>
-								<i>(Alpha-build 0.1)</i>
+								<i>(Release build 1.0)</i>
 							</p>
 						</div>
 					</div>
