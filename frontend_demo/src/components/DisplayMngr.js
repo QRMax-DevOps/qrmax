@@ -6,11 +6,11 @@
 
 import React, { Component } from 'react';
 import { handleDisplay } from '../services/middleware/display_mw';
-import { HandleDisplay } from '../services/middleware/qr_mw';
 import './DisplayMngr.css';
 import { ImageToBase64 } from '../services/utilities/base64_util';
 
 import Sidebar from './Sidebar';
+import { RunFetch_GetStores } from '../services/middleware/accounts_mw';
 
 class DisplayMngr extends Component {
     constructor(props) {
@@ -26,15 +26,16 @@ class DisplayMngr extends Component {
         this.deleteDisplay = this.deleteDisplay.bind(this);
         this.setSelectedFile = this.setSelectedFile.bind(this);
 
-        var company = sessionStorage.companyName;
+        var company = sessionStorage.company;
         var user = sessionStorage.username;
         
     
     }
     state = { 
-        currentStore: "demoStore2",
+        storesObj: {stores: [{store: ""}]},
         currentObj: {status: '', displays: [{displayName: ''}]},
         selectedDisplay: 0,
+        selectedStore: 0,
         displayInput: 'default',
         createNewDisplayName: null,
         open: false,
@@ -180,17 +181,46 @@ class DisplayMngr extends Component {
 
      fetchStores(isCompany, username, companyName) {
         var url = "http://localhost:80/";
-        request = null;
-        response = [null, null];
+        let request = null;
+        let response = [null, null];
 
-        
+        var timer = 0;
+        let me = this;
+
+        request = RunFetch_GetStores(isCompany, url, username, companyName, response);
+
+        var interval = setInterval(function() {
+            timer++;
+            
+            //console.log(timer)
+            
+            if(response[0] !== null) {
+                clearInterval(interval);
+                me.setState({loading:false});
+
+                if(response[0] === true){
+                    
+                    console.log("Check response NOTNULL "+response[1]);
+                    var json = JSON.parse(response[1]);
+                    
+                    me.setState({storesObj: json});
+                }
+            }
+
+            //timeout after 3 seconds
+            if(timer == 24) {
+                console.log("Fetch-loop timeout!");
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+        }, 500);
+
      }
 
      fetchDisplays(type, data) {
         //var url = "https://api.qrmax.app/";
         var url = "http://localhost:80/";
         var target = "display";
-        var data = {company: "demoCompany", store: "demoStore2"};
 
         let request = null;
         let response = [null,null];
@@ -248,8 +278,8 @@ class DisplayMngr extends Component {
 
      componentDidMount() {
          var data;
-         this.fetchDisplays("GETLIST",  data = {company: "demoCompany", store: "demoStore2"});
-         this.RunFetch_GetStores(true, )
+         this.fetchStores(true, sessionStorage.company, sessionStorage.username);
+         this.fetchDisplays("GETLIST",  data = {company: sessionStorage.company, store: this.state.storesObj.stores[this.state.selectedStore].store});
          console.log("did mount");
      }
 
