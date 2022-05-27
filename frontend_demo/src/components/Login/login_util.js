@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React, { useState, useEffect, useRef } from "react";
 
 export function getNiceError(input) {
@@ -5,7 +11,7 @@ export function getNiceError(input) {
 		var json = JSON.parse(input);
 	}
 	catch(err) {
-		return input;
+		return "A backend error may have occured. Please check the console.";
 	}
 	
 	if(json.cause) {

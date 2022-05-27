@@ -1,3 +1,14 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+ 
+ /* DEPRECATED!
+  * This is a deprecated source code file and will be 
+  * kept on record for legacy purposes
+  */
+
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';

@@ -1,6 +1,6 @@
 /*
     Contributing Authors:
-        Name:               Trent Ruseell
+        Name:               Trent Russell
         Student No.:        5454244
 */
 
@@ -19,6 +19,7 @@ class DisplayMngr extends Component {
         this.changeCurrentDisplayInput = this.changeCurrentDisplayInput.bind(this);
         this.changeLat = this.changeLat.bind(this);
         this.changeLon = this.changeLon.bind(this);
+        this.changeTTL = this.changeTTL.bind(this);
         this.changeDisplayType = this.changeDisplayType.bind(this);
         this.changeCurrentBaseMediaNameInput = this.changeCurrentBaseMediaNameInput.bind(this);
         this.updateDsiplay = this.updateDsiplay.bind(this);
@@ -26,7 +27,7 @@ class DisplayMngr extends Component {
         this.deleteDisplay = this.deleteDisplay.bind(this);
         this.setSelectedFile = this.setSelectedFile.bind(this);
 
-        var company = sessionStorage.company;
+        var company = sessionStorage.companyName;
         var user = sessionStorage.username;
         
     
@@ -37,15 +38,24 @@ class DisplayMngr extends Component {
         selectedDisplay: 0,
         selectedStore: 0,
         displayInput: 'default',
+        ttlInput: null,
         createNewDisplayName: null,
+        addressInput: null,
         open: false,
         lat: null,
         lon: null,
-        baseMediaNameInout: null,
-        displayType: null,
+        baseMediaNameInput: null,
+        displayType: "static",
         baseMedia: null,
         selectedFile: null,
-        imgString: null
+        imgString: null,
+        API_KEY: "AIzaSyDEmUfbp_5C6GgMRIFIY8kPRaX37bPb06g"
+     }
+
+     setStore(e) {
+         this.setState({
+             selectedStore: e.target.value
+         });
      }
 
      getDsiplayList() {
@@ -75,13 +85,13 @@ class DisplayMngr extends Component {
 
      changeCurrentBaseMediaNameInput(e) {
          this.setState({
-            baseMediaNameInput: e.target.vlaue
+            baseMediaNameInput: e.target.value
          });
      }
 
      changeTTL(e) {
         this.setState({
-            ttlInput: e.target.vlaue
+            ttlInput: e.target.value
          });
      }
 
@@ -114,11 +124,19 @@ class DisplayMngr extends Component {
      updateDsiplay(){
         var data = {
             id: "", 
-            company: "demoCompany", 
-            store: "demoStore", 
+            company: sessionStorage.companyName, 
+            store: this.state.storesObj.stores[this.state.selectedStore].store, 
             displayName: this.state.displayInput};
         this.fetchDisplays("UPDATE", data);
         console.log("inside updateDisplay");
+     }
+
+     isRadioSelected(e) {
+        if(e.target.value != this.state.displayType) {
+            return "";
+        } else {
+            return "checked";
+        }
      }
 
      getNewName() {
@@ -142,19 +160,30 @@ class DisplayMngr extends Component {
      }
 
      getTTL(){
-         return this.state.TTL;
+         return this.state.ttlInput;
      }
 
-     createDisplay() {
+     async setLatAndLong(){
+        return fetch("https://maps.googleapis.com/maps/api/geocode/json?address="+this.state.addressInput+'&key='+this.state.API_KEY)
+        .then(response => response.json())
+        .then(data => {
+          const latitude = data.results[0].geometry.location.lat;
+          const longitude = data.results[0].geometry.location.lng;
+        });
+     }
+
+     async createDisplay() {
         let newName = this.getNewName();
         let newBaseMediaName = this.getNewBaseMediaName();
+        console.log(newBaseMediaName);
         let newTTL = this.getTTL();
+        console.log(newTTL);
         let newLat = this.getLat();
         let newLon = this.getLon();
         let newDisplayType = this.getDisplayType();
         var data = {
-            company: "demoCompany", 
-            store: "demoStore2", 
+            company: sessionStorage.companyName, 
+            store: this.state.storesObj.stores[this.state.selectedStore].store, 
             display: newName,
             lat: newLat,
             lon: newLon,
@@ -163,24 +192,41 @@ class DisplayMngr extends Component {
         console.log(data);
             //baseMedia: newBaseMediaName,
             //baseMediaFile: this.state.imgString};
-        this.fetchDisplays("CREATE", data);
-        //this.fetchDisplays("GETLIST", data);
-       /* data.baseMedia = newBaseMediaName;
-        data.baseMediaFile = this.state.imgString;
-        data.TTL = newTTL;
-        this.fetchDisplays("CREATE", data);*/
+        let completed = await this.fetchDisplays("display", "CREATE", data);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        data = {
+            company: sessionStorage.companyName, 
+            store: this.state.storesObj.stores[this.state.selectedStore].store, 
+            display: newName,
+            lat: newLat,
+            lon: newLon,
+            baseMedia: this.state.baseMediaNameInput,
+            baseMediaFile: this.state.imgString,
+            TTL: this.state.ttlInput
+        };
+        var loops = 0;
+        while ( completed != true) {
+            loops++;
+            console.log(loops + " " +completed);
+            if(loops = 10000) {
+                completed = true;
+            }
+        }
+        console.log(data);
+        completed = await this.fetchDisplays("display/media/basemedia","PUT", data);
+        await new Promise(resolve => setTimeout(resolve, 1000));
      }
 
      deleteDisplay() {
-         var data = {company: "demoCompany", 
-         store: "demoStore", 
-         displayName: this.state.currentObj.displays[this.state.selectedDisplay].displayName
+         var data = {company: sessionStorage.companyName, 
+         store: this.state.storesObj.stores[this.state.selectedStore].store, 
+         display: this.state.currentObj.displays[this.state.selectedDisplay].displayName
         };
-         this.fetchDisplays("DELETE", data);
+         this.fetchDisplays("display", "DELETE", data);
      }
 
-     fetchStores(isCompany, username, companyName) {
-        var url = "http://localhost:80/";
+     async fetchStores(isCompany, username, companyName) {
+        var url = "http://localhost:4200/";
         let request = null;
         let response = [null, null];
 
@@ -188,6 +234,8 @@ class DisplayMngr extends Component {
         let me = this;
 
         request = RunFetch_GetStores(isCompany, url, username, companyName, response);
+
+        var completed = false;
 
         var interval = setInterval(function() {
             timer++;
@@ -203,6 +251,7 @@ class DisplayMngr extends Component {
                     console.log("Check response NOTNULL "+response[1]);
                     var json = JSON.parse(response[1]);
                     
+                    completed = true;
                     me.setState({storesObj: json});
                 }
             }
@@ -214,13 +263,12 @@ class DisplayMngr extends Component {
                 clearInterval(interval);
             }
         }, 500);
-
+        return completed;
      }
 
-     fetchDisplays(type, data) {
+     async fetchDisplays(target, type, data) {
         //var url = "https://api.qrmax.app/";
-        var url = "http://localhost:80/";
-        var target = "display";
+        var url = "http://localhost:4200/";
 
         let request = null;
         let response = [null,null];
@@ -230,7 +278,7 @@ class DisplayMngr extends Component {
 
         request = handleDisplay(target, type, url, data, response);
         
-
+        var completed = false;
         var interval = setInterval(function() {
             timer.elapsed++;
             
@@ -246,7 +294,14 @@ class DisplayMngr extends Component {
                     var json = JSON.parse(response[1]);
                     
                     if(type == "GETLIST"){
+                        completed = true;
                         me.setState({currentObj: json});
+                    }
+
+                    if(target == "display/media/basemedia"){
+                        if(type == "PUT") {
+                            completed = true;
+                        }
                     }
                     console.log("Object notNull check: "+me.state.currentObj);
                 }
@@ -259,6 +314,7 @@ class DisplayMngr extends Component {
                 clearInterval(interval);
             }
         }, 500);
+        return completed;
      }
 
      getBase64(file) {
@@ -276,10 +332,13 @@ class DisplayMngr extends Component {
          });
      }
 
-     componentDidMount() {
-         var data;
-         this.fetchStores(true, sessionStorage.company, sessionStorage.username);
-         this.fetchDisplays("GETLIST",  data = {company: sessionStorage.company, store: this.state.storesObj.stores[this.state.selectedStore].store});
+     async componentDidMount() {
+         var data = {myname: "Trent"};
+         data.lastname = "russell";
+         console.log(data);
+         let auth = await this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+         await new Promise(resolve => {setTimeout(resolve, 10000);});
+         let auth2 = await this.fetchDisplays("display", "GETLIST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
          console.log("did mount");
      }
 
@@ -295,7 +354,7 @@ class DisplayMngr extends Component {
         ) {
           this.fetchDisplays(
             "GETLIST",
-            (data = { company: "demoCompany", store: "demoStore" })
+            (data = { company: "sessionStorage.companyName", store: this.state.storesObj.stores[this.state.selectedStore].store })
           );
           console.log("did update");
         }
@@ -312,7 +371,11 @@ class DisplayMngr extends Component {
                 <h4 id="selected-store-header">Showing store: {this.getCurrentStoreObj()}</h4>
                 <div>
                     <select onChange={this.setStore}>
-
+                        {this.state.storesObj.stores.map((val,key) => {
+                                    return (
+                                        <option name={val.store} value={key} key={key}>{val.store}</option>
+                                    );
+                        })}
                     </select>
                 </div>
                 <div id="styled-container">
@@ -331,9 +394,14 @@ class DisplayMngr extends Component {
                         <input id="name-field" type="text" placeholder='Display Name' onChange={this.changeCurrentDisplayInput}></input>
                         <input id="lat-field" type="text" placeholder='Lattitude' onChange={this.changeLat}></input>
                         <input id="lon-field" type="text" placeholder='Longitude' onChange={this.changeLon}></input>
-                        <input id="displayType-field" type="text" placeholder='Display Type' onChange={this.changeDisplayType}></input>
-                        <input id="mediaName-field" type="text" placeholder='Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
-                        <input id="mediaLength-field" type="text" placeholder='Media Length' onChange={this.changeDisplayType}></input>
+                        <br/>
+                        <label htmlFor='displayType-field' >Display Type:</label>
+                        <br/>
+                        <input id="displayType-field" type="radio" checked={this.state.displayType === "static"} value="static" onChange={this.changeDisplayType}/>Static
+                        <input id="displayType-field" type="radio" checked={this.state.displayType === "dynamic"} value="dynamic" onChange={this.changeDisplayType}/>Dynamic
+                        <br/>
+                        <input id="mediaName-field" type="text" placeholder='Base Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
+                        <input id="mediaLength-field" type="text" placeholder='Base Media Length' onChange={this.changeTTL}></input>
                         <input type="file" onChange={this.setSelectedFile}/>
                     </div>
                     <button 
@@ -364,16 +432,6 @@ class DisplayMngr extends Component {
                         Delete Display
                     </button>
                     <br/>
-                    <button 
-                        type="button" 
-                        id="check-button" 
-                        className='buttons'
-                        onClick={this.uploadImage}
-                        
-                    >
-                        Check Image
-                    </button>
-                    {console.log("image string " + this.state.imgString)}
                 </div>
             </div>
 			</div>

@@ -46,3 +46,18 @@
     display: flex;
     flex-direction: row;
 }
+
+.fullscreen-image {
+    height: 100vh;
+    width: 100vw;
+    z-index: 2;
+}
+
+.fullscreen-qr {
+    transform: scale(2);
+    z-index: 3;
+}
+.fullscreen-drag {
+    transform: scale(2);
+    z-index: 3;
+}

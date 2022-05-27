@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
@@ -33,7 +39,7 @@ export async function handleDisplay(target, type, url, data, global) {
 	//Enum handler
 	target = enumToString(target);
 	type = enumToString(type);
-	console.log("inside mw " + data);
+	console.log("inside mw ", data);
 	
 	//Verify type
 	var typeValid = verifyFetchMethod(type);
@@ -69,7 +75,7 @@ export async function handleDisplay(target, type, url, data, global) {
 	
 	if(global[0] != false) {
 		//Doing the actual request.
-		console.log("reqOptionsCcheck: " +requestOptions);
+		console.log("reqOptionsCcheck: ", requestOptions);
 		const asyncFetch = await fetchAPI(requestOptions.endpoint,requestOptions);
 		//Note that: array values are references.
 		

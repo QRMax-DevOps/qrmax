@@ -22,7 +22,9 @@ class Homepage extends Component {
         super(props);
         this.state = {
             items: null,
-            picture: null,
+            unmounted: false,
+            prevPicture: "",
+            newPicture: "",
             listenObj: null,
             baseMedia: {baseMedia: "", baseMediaFile: ""},
             selectedDisplay: 0,
@@ -30,15 +32,29 @@ class Homepage extends Component {
             selectedMediaArray: [],
             displayMedia: {display: '', media: [{QRID: ""}]},
             currentObj: {displays: [{display: '', media: [], baseMedia: ''}]}, // set default empty values allowing screen loading before fetch
-			media: null
+			media: null,
+            imageString: null,
+            qrStyle: "qr",
+            imageStyle: "image",
+            draggableStyle: "drag"
         }
         this.setDisplay = this.setDisplay.bind(this);
+        this.getDisplayImage = this.getDisplayImage.bind(this);
+        this.goFullscreen = this.goFullscreen.bind(this);
 		//this.getMedia();
     }
 
+    goFullscreen() {
+        this.setState({
+            qrStyle: "fullscreen-qr",
+            imageStyle: "fullscreen-image",
+            draggableStyle: "fullscreen-drag"
+        })
+    }
+
     mediaListen2() {
-        var url = "http://localhost:80/";
-        var data = {company: "demoCompany", store: "demoStore2", display: "display1"};
+        var url = "http://localhost:4200/";
+        var data = {company: sessionStorage.companyName, store: "demoStore2", display: "display1"};
         
         var response = [null, null];
         var request = null;
@@ -54,15 +70,15 @@ class Homepage extends Component {
 
             if(response[0] !== null) {
                 clearInterval(interval);
-                console.log("Culprit: Listener");
-                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
                     json = JSON.parse(response[1]);                   
-                    me.setState({
-                        listenObj: json,
-                    });
+                    
+                    me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
+                        store: "demoStore2",
+                        display: "display1",
+                        mediaName: json.display});
                     
                 }
             }
@@ -81,8 +97,8 @@ class Homepage extends Component {
     // Makes a fetch request to the API to set the current object the screen will work with
     fillCurrentObject(target, type, data) {
         //var url = "https://api.qrmax.app/";
-        var url = "http://localhost:80/";
-        //var data = {company: "demoCompany", store: "demoStore2"};
+        var url = "http://localhost:4200/";
+        //var data = {company: sessionStorage.companyName, store: "demoStore2"};
 
         let request = null;
         let response = [null, null];
@@ -99,8 +115,6 @@ class Homepage extends Component {
             if(response[0] !== null) {
             
                 clearInterval(interval);
-                console.log("Culprit: Fill Loading");
-                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -108,23 +122,26 @@ class Homepage extends Component {
                     
                     switch(target) {
                         case "display":
-                            console.log("Culprit: currentObj");
                             me.setState({
                                 currentObj: json
                             });
                             break;
                         case "display/media/basemedia":
-                            console.log("setState baseMedia!");
-                            console.log("Culprit: baseMedia");
+                            me.setState({
+                                baseMedia: json.baseMediaFile,
+                                //prevPicture: this.state.newPicture
+                            });
+                            break;
+                        case "display/media":
+                            me.setState({
+                                displayMedia: json
+                            });
+                            break;
+                        case "display/media/file":
                             me.setState({
                                 baseMedia: json
                             });
                             break;
-                        case "display/media":
-                            console.log("Culprit: DisplayMedia");
-                            me.setState({
-                                displayMedia: json
-                            });
                         default:
                             break;
                     }
@@ -141,7 +158,7 @@ class Homepage extends Component {
     }
 
     // Fetch request that returns the image linked to the highest voted media
-	async getMedia(type, _data) {
+	getMedia(type, _data) {
 
 		//I am no longer supplying the parameters through URL params. They're stored in "Session Storage" now.
 		var companynameParam = sessionStorage.companyName;
@@ -181,10 +198,10 @@ class Homepage extends Component {
 				if(response[0] === true){
 					
                     json = JSON.parse(response[1]);
-                    me.setState({
-
-                    });
                     console.log("getMedia: ", json);
+                    this.setState({
+                        imageString: json
+                    })
 				}
 				
 			}
@@ -205,11 +222,11 @@ class Homepage extends Component {
         })
     }
 
-    async getDisplayImage() {
+    getDisplayImage() {
         var image_string = ""
     
         var _data = {
-            company: "demoCompany",
+            company: sessionStorage.companyName,
             store: "demoStore2",
             display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
         }
@@ -218,32 +235,35 @@ class Homepage extends Component {
 
         if(this.state.listenObj != null) {
             _data = {
-                company: "demoCompany",
+                company: sessionStorage.companyName,
                 store: "demoStore2",
                 display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
                 mediaName: this.state.listenObj.display
             }
             console.log("_data:"+_data);
-            image_string = await this.getMedia("GETMEDIAFILE", _data);
+            image_string = this.fillCurrentObject("display/media/file", "POST", _data);
+            //await new Promise(resolve => setTimeout(resolve, 1000));
             
         } else {
-            image_string = this.state.baseMedia.baseMediaFile;
+            this.setState({
+                imageString: this.state.baseMedia.baseMediaFile
+            }); 
         }
         console.log("Inside getMedia()");
         
-        return image_string;
     }
 
     componentDidMount() {
         console.log("Component did mount!");
         // load displays
-        this.fillCurrentObject("display", "POST", {company: "demoCompany", store: "demoStore2"});
+        this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: "demoStore2"});
         // load QR media
-        this.fillCurrentObject("display/media", "POST", {company: "demoCompany", store: "demoStore2", display: "display1"});
+        this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: "demoStore2", display: "display1"});
         // load baseMedia
-        this.fillCurrentObject("display/media/basemedia", "POST", {company: "demoCompany", 
+        this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: "demoStore2", 
                         display: "display1"});
+        //this.getDisplayImage();
         this.mediaListen2();
     }
 
@@ -252,11 +272,13 @@ class Homepage extends Component {
     }
 
     componentWillUnmount() {
+        this.setState({
+            unmounted: true
+        })
         console.log("Component is unmounting!");
     }
 
     render() {
-        
         return (
             <div className="background">
                 <div>
@@ -269,6 +291,7 @@ class Homepage extends Component {
                         <div id="dropContainer">
 							<p>Currently showing store: demoStore, display: {this.state.currentObj.displays[this.state.selectedDisplay].display}</p>
                             <select onChange={this.setDisplay}>
+                                {console.log(this.state.currentObj)}
                                 {this.state.currentObj.displays.map((val,key) => {
                                     return (
                                         <option name={val.display} value={key} key={key}>{val.display}</option>
@@ -276,31 +299,30 @@ class Homepage extends Component {
                                 })}
                                 
                             </select>
+                            <input type="button" value="Full Screen" onClick={this.goFullscreen}/>
                         </div>
 
                         <div>
                             {console.log(this.state.displayMedia.media[0].QRID)}
                                 {this.state.currentObj.displays[0].media.map((val, key) => {
                                     return (
-                                            <Draggable key={key}>
-                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
+                                            <Draggable key={key} >
+                                                    <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
                                             </Draggable>
                                     )
                                 })}
                             
                         </div>
 
-                        <div className="DisplayContainer" id="display-preview">
+                        <div className="DisplayContainer_Internal" id="display-preview">
                             {/* display media source inside this div */}
                             <div id="media-source-container">
                                 <br/>
-                                {console.log("Before calling the image")}
-                                <img className="image" src={this.getDisplayImage()}/> 
+                                {console.log("The render image: " + this.state.imageString)}
+                                <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
                                 {console.log("After calling the image")}
                             </div>
-                        </div>
-
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
@@ -310,9 +332,5 @@ class Homepage extends Component {
     
 
 }
-
-const Child = ({data}) => (
-    <img className='image' src={data.picture} />
-);
 
 export default Homepage;

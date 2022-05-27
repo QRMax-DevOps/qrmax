@@ -1,3 +1,9 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+
 #LoadingContainer {
 	box-shadow: inset 30px 0px 30px -30px rgba(0, 0, 0, 0.3);
 	z-index:1;

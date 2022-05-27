@@ -26,32 +26,26 @@ export let SidebarData = [
         icon: <DisplaySettingsIcon/>,
         link: "/display_mngr"
     },
-    {
-        id: 3,
-        title: "QR Settings",
-        icon: <QrCodeIcon/>,
-        link: "/gen_qr"
-    },
 	{
-        id: 4,
+        id: 3,
         title: "Accounts Management",
         icon: <AccountsIcon/>,
         link: "/accounts"
     },
     {
-        id: 5,
+        id: 4,
         title: "Interactions",
         icon: <QueryStatsIcon/>,
         link: "/interactions"
     },
     {
-        id: 6,
+        id: 5,
         title: "Media Management",
         icon: <MediaManagerIcon/>,
         link: "/media_mngr"
     },
     {
-        id: 7,
+        id: 6,
         title: "Exit",
         icon: <LogoutIcon/>,
         link: "/login"
