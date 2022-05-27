@@ -281,7 +281,7 @@ class Homepage extends Component {
                             
                         </div>
 
-                        <div className="DisplayContainer" id="display-preview">
+                        <div className="DisplayContainer_Internal" id="display-preview">
                             {/* display media source inside this div */}
                             <div id="media-source-container">
                                 <br/>

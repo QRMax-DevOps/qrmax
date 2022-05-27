@@ -28,9 +28,13 @@
 
 .DisplayContainer {
    background-color: White;
-    margin-left: 0 auto;
     height: 100%;
     width: 100%;
     margin: 20px;
     padding: 20px;
+}
+
+.DisplayContainer_Internal {
+   background-color: White;
+   width: 100%;
 }
