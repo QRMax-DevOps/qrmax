@@ -53,7 +53,7 @@ class StoreAccountController {
                 // PBKDF2 with HMAC-SHA-256 as core hash run 80,000 iterations
                 hash = pbkdf2 (req.body.password, salt, 80000, 32).toString('hex');
                 //send hashed password to DAO to check if correct
-                const rjson = await storeAccountDAO.checkLogin(company, username, hash)
+                const rjson = await storeAccountDAO.checkLogin(company, username, hash);
                 res.json(rjson);
             }
             else{

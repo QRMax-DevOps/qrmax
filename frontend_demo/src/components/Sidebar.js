@@ -1,3 +1,9 @@
+/*
+    Contributing Authors:
+        Name:           Trent Russell
+        Student No.:    5454244
+*/
+
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import './Sidebar.css';
@@ -35,7 +41,7 @@ function Sidebar() {
 						if(!val.disabled) {
 							return (
                                 <li id="row" key={key}>
-                                    <Link to={val.link}>
+                                    <Link className='page-links' to={val.link}>
                                         <p className="navIcon">{val.icon}</p>
                                         <p className="navTitle">{val.title}</p>
                                     </Link>

@@ -33,6 +33,7 @@ export async function handleDisplay(target, type, url, data, global) {
 	//Enum handler
 	target = enumToString(target);
 	type = enumToString(type);
+	console.log("inside mw " + data);
 	
 	//Verify type
 	var typeValid = verifyFetchMethod(type);
@@ -68,6 +69,7 @@ export async function handleDisplay(target, type, url, data, global) {
 	
 	if(global[0] != false) {
 		//Doing the actual request.
+		console.log("reqOptionsCcheck: " +requestOptions);
 		const asyncFetch = await fetchAPI(requestOptions.endpoint,requestOptions);
 		//Note that: array values are references.
 		

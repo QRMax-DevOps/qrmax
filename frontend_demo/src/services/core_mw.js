@@ -66,16 +66,19 @@ function getHeadersString(headers, shortenToken) {
 			str=str+arr[i]+"\",";
 		}
 	}
+	
 	return str;
 }
 
 //The workhorse of the middleware. The function used to send requests to the API.
 export async function fetchAPI(address, requestOptions) {
+	//console.log(requestOptions);
 	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
 		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request 'method' and/or 'body' is unassigned.");
 		return [false, 'An unexpected error has occured. Please check the console.'];
 	}
 	else {
+		
 		let curTime = new Date().toLocaleTimeString();
 		
 		//If login token exists, then create/append Authorization field to headers
@@ -92,17 +95,23 @@ export async function fetchAPI(address, requestOptions) {
 			,"\n ");
 		
 		//Doing the actual request
+		console.log(requestOptions.body);
+		console.log(address);
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
 				
+				console.log("Response flag 1: "+res);
+				
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
 					if(typeof res === 'string') {
+						console.log("1st fail");
 						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
 						,"\n    > Response = ",res);
 						return [false,res];
 					}
 					else {
+						console.log("2nd fail");
 						logWarn(requestOptions.method+" to API has FAILED. Handled rejection encountered."
 						+"\n    > Response = "+JSON.stringify(res));
 						return [false,JSON.stringify(res)];

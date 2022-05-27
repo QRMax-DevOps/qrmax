@@ -1,3 +1,9 @@
+/*
+    Contributing Authors:
+        Name:           Trent Russell
+        Student No.:    5454244
+*/
+
 import React from 'react';
 import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';

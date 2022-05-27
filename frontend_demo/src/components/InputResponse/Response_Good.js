@@ -6,10 +6,55 @@
 
 import React from "react";
 import {Container, Row, Col, Image} from 'react-bootstrap';
+import { useLocation } from "react-router-dom";
 import GreenTickImage from '../../graphics/tick.png'
+import { ActionQRID, registerVote } from "../../services/middleware/input_mw";
 import './InputResponse.css';
 
 class ResponseGood extends React.Component {
+
+	componentDidMount() {
+
+		var _display = new URLSearchParams(useLocation.search).get("display");
+		var _QRID = this.props.qrid;
+
+		var url = "http://localhost:80/";
+        var data = {company: "displayCompany", store: "displayStore", display: _display, QRID: _QRID};
+        let request = null;
+        let response = [null,null];
+
+        var me = this;
+        var timer = {elapsed: 0};
+
+        request = ActionQRID(data, response, true);
+
+        var interval = setInterval(function() {
+            timer.elapsed++;
+            
+            //console.log(timer)
+            
+            if(response[0] !== null) {
+                clearInterval(interval);
+                me.setState({loading:false});
+
+                if(response[0] === true){
+                    
+                    var json = JSON.parse(response[1]);
+                    
+                    me.setState({currentObj: json});
+                    //console.log(me.state.currentObj);
+                }
+            }
+
+            //timeout after 3 seconds
+            if(timer.elapsed == 24) {
+                console.log("Fetch-loop timeout!");
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+        }, 500);
+		console.log("Post request");
+	}
  render() {
          return (
              <div>
