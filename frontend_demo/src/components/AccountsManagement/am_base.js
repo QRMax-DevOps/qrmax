@@ -183,7 +183,7 @@ class AccountsManagement extends Component {
 				<div className="AmBackground SideBySide">
 					<div style={{height:"100%"}}> <Sidebar/> </div>
 					<div className="MainAccountsContainer">
-						<div className="FloatingContainer" style={{flexDirection:"row", boxShadow:"0 0 10px #5A5A5A"}}>
+						<div className="FloatingContainer" style={{flexDirection:"row", boxShadow:"0 0 10px #5A5A5A", backgroundColor:"white"}}>
 							<Options
 								type='stores'
 								Fetch={this.Fetch.bind(this)}
@@ -213,7 +213,7 @@ class AccountsManagement extends Component {
 				<div className="AmBackground SideBySide">
 					<div style={{height:"100%"}}> <Sidebar/> </div>
 					<div className="MainAccountsContainer">
-						<div className="FloatingContainer" style={{flexDirection:"row", boxShadow:"0 0 10px #5A5A5A"}}>
+						<div className="FloatingContainer" style={{flexDirection:"row", boxShadow:"0 0 10px #5A5A5A", backgroundColor:"white"}}>
 							{ this.getParentState('iscompany') === true &&
 								<Options
 									type='accounts'
