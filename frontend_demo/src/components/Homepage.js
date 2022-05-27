@@ -54,8 +54,6 @@ class Homepage extends Component {
 
             if(response[0] !== null) {
                 clearInterval(interval);
-                console.log("Culprit: Listener");
-                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -99,8 +97,6 @@ class Homepage extends Component {
             if(response[0] !== null) {
             
                 clearInterval(interval);
-                console.log("Culprit: Fill Loading");
-                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -108,20 +104,16 @@ class Homepage extends Component {
                     
                     switch(target) {
                         case "display":
-                            console.log("Culprit: currentObj");
                             me.setState({
                                 currentObj: json
                             });
                             break;
                         case "display/media/basemedia":
-                            console.log("setState baseMedia!");
-                            console.log("Culprit: baseMedia");
                             me.setState({
                                 baseMedia: json
                             });
                             break;
                         case "display/media":
-                            console.log("Culprit: DisplayMedia");
                             me.setState({
                                 displayMedia: json
                             });
@@ -181,9 +173,6 @@ class Homepage extends Component {
 				if(response[0] === true){
 					
                     json = JSON.parse(response[1]);
-                    me.setState({
-
-                    });
                     console.log("getMedia: ", json);
 				}
 				
@@ -225,6 +214,7 @@ class Homepage extends Component {
             }
             console.log("_data:"+_data);
             image_string = await this.getMedia("GETMEDIAFILE", _data);
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
         } else {
             image_string = this.state.baseMedia.baseMediaFile;
@@ -298,9 +288,7 @@ class Homepage extends Component {
                                 <img className="image" src={this.getDisplayImage()}/> 
                                 {console.log("After calling the image")}
                             </div>
-                        </div>
-
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
