@@ -15,7 +15,7 @@ import QRCode from 'qrcode.react';
 import Draggable from 'react-draggable';
 import { getDefaultHeaders } from '../services/utilities/common_util';
 import { ListenFor } from '../services/middleware/listen_mw';
-
+import { RunFetch_GetStores } from '../services/middleware/accounts_mw';
 
 class Homepage extends Component {
     constructor(props) {
