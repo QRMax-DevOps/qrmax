@@ -22,8 +22,9 @@ class Homepage extends Component {
         super(props);
         this.state = {
             items: null,
-            prevPicture: null,
-            newPicture: null,
+            unmounted: false,
+            prevPicture: "",
+            newPicture: "",
             listenObj: null,
             baseMedia: {baseMedia: "", baseMediaFile: ""},
             selectedDisplay: 0,
@@ -39,7 +40,7 @@ class Homepage extends Component {
 
     mediaListen2() {
         var url = "http://localhost:4200/";
-        var data = {company: "demoCompany", store: "demoStore2", display: "display1"};
+        var data = {company: sessionStorage.companyName, store: "demoStore2", display: "display1"};
         
         var response = [null, null];
         var request = null;
@@ -81,7 +82,7 @@ class Homepage extends Component {
     fillCurrentObject(target, type, data) {
         //var url = "https://api.qrmax.app/";
         var url = "http://localhost:4200/";
-        //var data = {company: "demoCompany", store: "demoStore2"};
+        //var data = {company: sessionStorage.companyName, store: "demoStore2"};
 
         let request = null;
         let response = [null, null];
@@ -111,8 +112,8 @@ class Homepage extends Component {
                             break;
                         case "display/media/basemedia":
                             me.setState({
-                                prevPicture: this.state.newPicture,
-                                newPicture: json.baseMediaFile
+                                baseMedia: json.baseMediaFile,
+                                //prevPicture: this.state.newPicture
                             });
                             break;
                         case "display/media":
@@ -200,7 +201,7 @@ class Homepage extends Component {
         var image_string = ""
     
         var _data = {
-            company: "demoCompany",
+            company: sessionStorage.companyName,
             store: "demoStore2",
             display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
         }
@@ -209,14 +210,14 @@ class Homepage extends Component {
 
         if(this.state.listenObj != null) {
             _data = {
-                company: "demoCompany",
+                company: sessionStorage.companyName,
                 store: "demoStore2",
                 display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
                 mediaName: this.state.listenObj.display
             }
             console.log("_data:"+_data);
-            image_string = await this.getMedia("GETMEDIAFILE", _data);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            image_string = this.getMedia("GETMEDIAFILE", _data);
+            //await new Promise(resolve => setTimeout(resolve, 1000));
             
         } else {
             image_string = this.state.baseMedia.baseMediaFile;
@@ -229,11 +230,11 @@ class Homepage extends Component {
     componentDidMount() {
         console.log("Component did mount!");
         // load displays
-        this.fillCurrentObject("display", "POST", {company: "demoCompany", store: "demoStore2"});
+        this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: "demoStore2"});
         // load QR media
-        this.fillCurrentObject("display/media", "POST", {company: "demoCompany", store: "demoStore2", display: "display1"});
+        this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: "demoStore2", display: "display1"});
         // load baseMedia
-        this.fillCurrentObject("display/media/basemedia", "POST", {company: "demoCompany", 
+        this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: "demoStore2", 
                         display: "display1"});
         this.mediaListen2();
@@ -244,6 +245,9 @@ class Homepage extends Component {
     }
 
     componentWillUnmount() {
+        this.setState({
+            unmounted: true
+        })
         console.log("Component is unmounting!");
     }
 
@@ -260,6 +264,7 @@ class Homepage extends Component {
                         <div id="dropContainer">
 							<p>Currently showing store: demoStore, display: {this.state.currentObj.displays[this.state.selectedDisplay].display}</p>
                             <select onChange={this.setDisplay}>
+                                {console.log(this.state.currentObj)}
                                 {this.state.currentObj.displays.map((val,key) => {
                                     return (
                                         <option name={val.display} value={key} key={key}>{val.display}</option>
@@ -274,7 +279,7 @@ class Homepage extends Component {
                                 {this.state.currentObj.displays[0].media.map((val, key) => {
                                     return (
                                             <Draggable key={key}>
-                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company=demoCompany&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
+                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
                                             </Draggable>
                                     )
                                 })}
