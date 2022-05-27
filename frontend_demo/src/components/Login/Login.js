@@ -318,7 +318,7 @@ export default class Page extends React.Component {
 
 									<input
 										name="companyBox"
-										type="email"
+										type="text"
 										className="form-control emailInput"
 										id="companyInput"
 										aria-describedby="emailHelp"
@@ -331,7 +331,7 @@ export default class Page extends React.Component {
 									{ !this.state.companyAccount && <>
 									<input style={{marginTop:"10px"}}
 										name="usernameBox"
-										type="email"
+										type="text"
 										className="form-control emailInput"
 										id="usernameInput"
 										aria-describedby="emailHelp"
