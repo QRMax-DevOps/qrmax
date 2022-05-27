@@ -29,7 +29,7 @@ function isInt(value) {
 export function getApiURL(localhost) {
 	//If localhost enabled
 	if(localhost != null && localhost !== false && localhost !== 'false' && localhost !== 'False') {
-		return 'http://localhost:80/';
+		return 'https://api.qrmax.app/';
 	}
 	//If localhost not enabled
 	else {
