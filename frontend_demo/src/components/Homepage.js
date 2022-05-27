@@ -22,7 +22,8 @@ class Homepage extends Component {
         super(props);
         this.state = {
             items: null,
-            picture: null,
+            prevPicture: null,
+            newPicture: null,
             listenObj: null,
             baseMedia: {baseMedia: "", baseMediaFile: ""},
             selectedDisplay: 0,
@@ -37,7 +38,7 @@ class Homepage extends Component {
     }
 
     mediaListen2() {
-        var url = "http://localhost:80/";
+        var url = "http://localhost:4200/";
         var data = {company: "demoCompany", store: "demoStore2", display: "display1"};
         
         var response = [null, null];
@@ -79,7 +80,7 @@ class Homepage extends Component {
     // Makes a fetch request to the API to set the current object the screen will work with
     fillCurrentObject(target, type, data) {
         //var url = "https://api.qrmax.app/";
-        var url = "http://localhost:80/";
+        var url = "http://localhost:4200/";
         //var data = {company: "demoCompany", store: "demoStore2"};
 
         let request = null;
@@ -110,7 +111,8 @@ class Homepage extends Component {
                             break;
                         case "display/media/basemedia":
                             me.setState({
-                                baseMedia: json
+                                prevPicture: this.state.newPicture,
+                                newPicture: json.baseMediaFile
                             });
                             break;
                         case "display/media":
@@ -246,7 +248,6 @@ class Homepage extends Component {
     }
 
     render() {
-        
         return (
             <div className="background">
                 <div>

@@ -19,6 +19,7 @@ class DisplayMngr extends Component {
         this.changeCurrentDisplayInput = this.changeCurrentDisplayInput.bind(this);
         this.changeLat = this.changeLat.bind(this);
         this.changeLon = this.changeLon.bind(this);
+        this.changeTTL = this.changeTTL.bind(this);
         this.changeDisplayType = this.changeDisplayType.bind(this);
         this.changeCurrentBaseMediaNameInput = this.changeCurrentBaseMediaNameInput.bind(this);
         this.updateDsiplay = this.updateDsiplay.bind(this);
@@ -37,12 +38,13 @@ class DisplayMngr extends Component {
         selectedDisplay: 0,
         selectedStore: 0,
         displayInput: 'default',
+        ttlInput: null,
         createNewDisplayName: null,
         addressInput: null,
         open: false,
         lat: null,
         lon: null,
-        baseMediaNameInout: null,
+        baseMediaNameInput: null,
         displayType: null,
         baseMedia: null,
         selectedFile: null,
@@ -83,13 +85,13 @@ class DisplayMngr extends Component {
 
      changeCurrentBaseMediaNameInput(e) {
          this.setState({
-            baseMediaNameInput: e.target.vlaue
+            baseMediaNameInput: e.target.value
          });
      }
 
      changeTTL(e) {
         this.setState({
-            ttlInput: e.target.vlaue
+            ttlInput: e.target.value
          });
      }
 
@@ -150,7 +152,7 @@ class DisplayMngr extends Component {
      }
 
      getTTL(){
-         return this.state.TTL;
+         return this.state.ttlInput;
      }
 
      async setLatAndLong(){
@@ -165,7 +167,9 @@ class DisplayMngr extends Component {
      async createDisplay() {
         let newName = this.getNewName();
         let newBaseMediaName = this.getNewBaseMediaName();
+        console.log(newBaseMediaName);
         let newTTL = this.getTTL();
+        console.log(newTTL);
         let newLat = this.getLat();
         let newLon = this.getLon();
         let newDisplayType = this.getDisplayType();
@@ -180,25 +184,41 @@ class DisplayMngr extends Component {
         console.log(data);
             //baseMedia: newBaseMediaName,
             //baseMediaFile: this.state.imgString};
-        await this.fetchDisplays("CREATE", data);
+        let completed = await this.fetchDisplays("display", "CREATE", data);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        //this.fetchDisplays("GETLIST", data);
-       /* data.baseMedia = newBaseMediaName;
-        data.baseMediaFile = this.state.imgString;
-        data.TTL = newTTL;
-        this.fetchDisplays("CREATE", data);*/
+        data = {
+            company: sessionStorage.companyName, 
+            store: this.state.storesObj.stores[this.state.selectedStore].store, 
+            display: newName,
+            lat: newLat,
+            lon: newLon,
+            baseMedia: this.state.baseMediaNameInput,
+            baseMediaFile: this.state.imgString,
+            TTL: this.state.ttlInput
+        };
+        var loops = 0;
+        while ( completed != true) {
+            loops++;
+            console.log(loops + " " +completed);
+            if(loops = 10000) {
+                completed = true;
+            }
+        }
+        console.log(data);
+        completed = await this.fetchDisplays("display/media/basemedia","PUT", data);
+        await new Promise(resolve => setTimeout(resolve, 1000));
      }
 
      deleteDisplay() {
          var data = {company: sessionStorage.companyName, 
          store: this.state.storesObj.stores[this.state.selectedStore].store, 
-         displayName: this.state.currentObj.displays[this.state.selectedDisplay].displayName
+         display: this.state.currentObj.displays[this.state.selectedDisplay].displayName
         };
-         this.fetchDisplays("DELETE", data);
+         this.fetchDisplays("display", "DELETE", data);
      }
 
      async fetchStores(isCompany, username, companyName) {
-        var url = "http://localhost:80/";
+        var url = "http://localhost:4200/";
         let request = null;
         let response = [null, null];
 
@@ -238,10 +258,9 @@ class DisplayMngr extends Component {
         return completed;
      }
 
-     async fetchDisplays(type, data) {
+     async fetchDisplays(target, type, data) {
         //var url = "https://api.qrmax.app/";
-        var url = "http://localhost:80/";
-        var target = "display";
+        var url = "http://localhost:4200/";
 
         let request = null;
         let response = [null,null];
@@ -269,6 +288,12 @@ class DisplayMngr extends Component {
                     if(type == "GETLIST"){
                         completed = true;
                         me.setState({currentObj: json});
+                    }
+
+                    if(target == "display/media/basemedia"){
+                        if(type == "PUT") {
+                            completed = true;
+                        }
                     }
                     console.log("Object notNull check: "+me.state.currentObj);
                 }
@@ -305,7 +330,7 @@ class DisplayMngr extends Component {
          console.log(data);
          let auth = await this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
          await new Promise(resolve => {setTimeout(resolve, 10000);});
-         let auth2 = await this.fetchDisplays("GETLIST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+         let auth2 = await this.fetchDisplays("display", "GETLIST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
          console.log("did mount");
      }
 
@@ -363,7 +388,7 @@ class DisplayMngr extends Component {
                         <input id="lon-field" type="text" placeholder='Longitude' onChange={this.changeLon}></input>
                         <input id="displayType-field" type="text" placeholder='Display Type' onChange={this.changeDisplayType}></input>
                         <input id="mediaName-field" type="text" placeholder='Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
-                        <input id="mediaLength-field" type="text" placeholder='Media Length' onChange={this.changeDisplayType}></input>
+                        <input id="mediaLength-field" type="text" placeholder='Media Length' onChange={this.changeTTL}></input>
                         <input type="file" onChange={this.setSelectedFile}/>
                     </div>
                     <button 
