@@ -45,7 +45,7 @@ class DisplayMngr extends Component {
         lat: null,
         lon: null,
         baseMediaNameInput: null,
-        displayType: null,
+        displayType: "static",
         baseMedia: null,
         selectedFile: null,
         imgString: null,
@@ -129,6 +129,14 @@ class DisplayMngr extends Component {
             displayName: this.state.displayInput};
         this.fetchDisplays("UPDATE", data);
         console.log("inside updateDisplay");
+     }
+
+     isRadioSelected(e) {
+        if(e.target.value != this.state.displayType) {
+            return "";
+        } else {
+            return "checked";
+        }
      }
 
      getNewName() {
@@ -386,7 +394,12 @@ class DisplayMngr extends Component {
                         <input id="name-field" type="text" placeholder='Display Name' onChange={this.changeCurrentDisplayInput}></input>
                         <input id="lat-field" type="text" placeholder='Lattitude' onChange={this.changeLat}></input>
                         <input id="lon-field" type="text" placeholder='Longitude' onChange={this.changeLon}></input>
-                        <input id="displayType-field" type="text" placeholder='Display Type' onChange={this.changeDisplayType}></input>
+                        <br/>
+                        <label htmlFor='displayType-field' >Display Type:</label>
+                        <br/>
+                        <input id="displayType-field" type="radio" checked={this.state.displayType === "static"} value="static" onChange={this.changeDisplayType}/>Static
+                        <input id="displayType-field" type="radio" checked={this.state.displayType === "dynamic"} value="dynamic" onChange={this.changeDisplayType}/>Dynamic
+                        <br/>
                         <input id="mediaName-field" type="text" placeholder='Base Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
                         <input id="mediaLength-field" type="text" placeholder='Base Media Length' onChange={this.changeTTL}></input>
                         <input type="file" onChange={this.setSelectedFile}/>
