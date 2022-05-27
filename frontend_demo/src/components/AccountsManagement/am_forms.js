@@ -98,9 +98,9 @@ function HandleAccount(type, global, data) {
 	
 	switch(type.toLowerCase()) {
 		case 'create': 
-			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response);
+			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response1);
 			break;
-		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
+		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response1); break;
 		case 'modify': 
 			if(IsJsonString(data.newAccount.stores)) {
 				data.newAccount.stores = JSON.parse(data.newAccount.stores);
@@ -252,6 +252,8 @@ export function ModifyAccountForm(props) {
 	const global = props.global;
 	const companyStoresList = props.companyStoresList;
 	const oldAccount = {company:global.userID, username:props.account.username, stores:JSON.stringify(props.account.stores)}
+	
+	console.log("companyStoresList===",companyStoresList);
 	
 	const handleSubmission = (e) =>
 		{ HandleAccount('modify', global, {oldAccount, newAccount:{company:oldAccount.company, username, stores, password}}); }

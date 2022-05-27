@@ -74,6 +74,9 @@ function getHeadersString(headers, shortenToken) {
 
 //The workhorse of the middleware. The function used to send requests to the API.
 export async function fetchAPI(address, requestOptions) {
+	console.log("DEALING DATA: ");
+	console.log(address, requestOptions);
+	
 	if(isUnassigned(requestOptions.body) || isUnassigned(requestOptions.method)) {
 		logWarn(requestOptions.method+" to API : Forced rejection of request. Request will not be performed.\n    > The request \'method\' and/or \'body\' is unassigned.");
 		return [false, 'An unexpected error has occured. Please check the console.'];
