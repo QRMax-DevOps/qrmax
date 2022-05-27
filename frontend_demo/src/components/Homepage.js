@@ -60,7 +60,7 @@ class Homepage extends Component {
     mediaListen2() {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
-        var data = {company: sessionStorage.companyName, store: "demoStore2", display: "display1"};
+        var data = {company: sessionStorage.companyName, store: "demoStore1", display: "display1"};
         
         var response = [null, null];
         var request = null;
@@ -82,7 +82,7 @@ class Homepage extends Component {
                     json = JSON.parse(response[1]);                   
                     
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
-                        store: "demoStore2",
+                        store: "demoStore1",
                         display: "display1",
                         mediaName: json.display});
                     
@@ -104,7 +104,7 @@ class Homepage extends Component {
     fillCurrentObject(target, type, data) {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
-        //var data = {company: sessionStorage.companyName, store: "demoStore2"};
+        //var data = {company: sessionStorage.companyName, store: "demoStore1"};
 
         let request = null;
         let response = [null, null];
@@ -234,7 +234,7 @@ class Homepage extends Component {
     
         var _data = {
             company: sessionStorage.companyName,
-            store: "demoStore2",
+            store: "demoStore1",
             display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
         }
 
@@ -243,7 +243,7 @@ class Homepage extends Component {
         if(this.state.listenObj != null) {
             _data = {
                 company: sessionStorage.companyName,
-                store: "demoStore2",
+                store: "demoStore1",
                 display: "display1",//this.state.currentObj.displays[this.state.selectedDisplay].display,
                 mediaName: this.state.listenObj.display
             }
@@ -263,12 +263,12 @@ class Homepage extends Component {
     componentDidMount() {
         console.log("Component did mount!");
         // load displays
-        this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: "demoStore2"});
+        this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: "demoStore1"});
         // load QR media
-        this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: "demoStore2", display: "display1"});
+        this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: "demoStore1", display: "display1"});
         // load baseMedia
         this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
-                        store: "demoStore2", 
+                        store: "demoStore1", 
                         display: "display1"});
         //this.getDisplayImage();
         this.mediaListen2();
@@ -317,7 +317,7 @@ class Homepage extends Component {
                                 {this.state.currentObj.displays[0].media.map((val, key) => {
                                     return (
                                             <Draggable key={key} >
-                                                    <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
+                                                    <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore1&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
                                             </Draggable>
                                     )
                                 })}
