@@ -19,7 +19,7 @@ body {
 }
 
 #background {
-	background: url('graphics/background_updated.jpg');
+	background-color: #E5E5E5;
     height:100vh;
 	width:100hw;
     background-size: cover;
