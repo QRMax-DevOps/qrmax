@@ -15,9 +15,9 @@ body{
 	/*font-family: SSV,Tahoma,sans-serif;*/
 	font-family: Arial, sans-serif;
 	margin-top:10px;
-	margin-bottom:10px;
-
 }
+
+
 
 hr.bright {
 	border: solid 1px white;
@@ -288,13 +288,15 @@ hr.bright {
 
 #footer button {
 	cursor:pointer;
+	margin-top:10px;
+	margin-bottom:10px;
 	margin-right: 10px;
 	border: none;
 	background-color: rgba(255,255,255,0);
-	
 }
 
 #footer a {
+	margin:0;
 	cursor:default;
 }
 
