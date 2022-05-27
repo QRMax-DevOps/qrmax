@@ -36,7 +36,8 @@ class Homepage extends Component {
             imageString: null,
             qrStyle: "qr",
             imageStyle: "image",
-            draggableStyle: "drag"
+            draggableStyle: "drag",
+            listenCounter: 0
         }
         this.setDisplay = this.setDisplay.bind(this);
         this.getDisplayImage = this.getDisplayImage.bind(this);
@@ -50,6 +51,10 @@ class Homepage extends Component {
             imageStyle: "fullscreen-image",
             draggableStyle: "fullscreen-drag"
         })
+    }
+
+    incrementListenCount() {
+
     }
 
     mediaListen2() {
@@ -89,7 +94,7 @@ class Homepage extends Component {
                 //me.setState({loading:false});
                 clearInterval(interval);
             }
-        }, 5000);
+        }, 500);
     }
 
     
@@ -138,9 +143,10 @@ class Homepage extends Component {
                             });
                             break;
                         case "display/media/file":
-                            me.setState({
-                                baseMedia: json
-                            });
+                            me.setState((prevState, props) => ({
+                                //listenCounter: prevState.listenCounter + 1,
+                                baseMedia: json.mediaFile
+                            })); 
                             break;
                         default:
                             break;
@@ -154,7 +160,7 @@ class Homepage extends Component {
                 //me.setState({loading:false});
                 clearInterval(interval);
             }
-        }, 2500);
+        }, 500);
     }
 
     // Fetch request that returns the image linked to the highest voted media
@@ -269,6 +275,9 @@ class Homepage extends Component {
 
     componentDidUpdate(){
         console.log("Something is causing a re-render!");
+        /*if(this.state.listenCounter > 0 && this.state.listenCounter % 2 == 0 ) {
+            this.mediaListen2();
+        }*/
     }
 
     componentWillUnmount() {

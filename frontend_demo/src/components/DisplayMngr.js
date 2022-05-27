@@ -226,7 +226,8 @@ class DisplayMngr extends Component {
      }
 
      async fetchStores(isCompany, username, companyName) {
-        var url = "http://localhost:4200/";
+        var url = "https://api.qrmax.app/";
+        //var url = "http://localhost:4200/";
         let request = null;
         let response = [null, null];
 
@@ -267,8 +268,8 @@ class DisplayMngr extends Component {
      }
 
      async fetchDisplays(target, type, data) {
-        //var url = "https://api.qrmax.app/";
-        var url = "http://localhost:4200/";
+        var url = "https://api.qrmax.app/";
+        //var url = "http://localhost:4200/";
 
         let request = null;
         let response = [null,null];
