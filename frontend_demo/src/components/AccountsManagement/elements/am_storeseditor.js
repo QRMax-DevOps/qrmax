@@ -22,11 +22,6 @@ class StoreRecord extends Component {
 		
 		var stores_raw = this.props.stores_raw;
 		
-		
-		//Get variables
-		//Get validity
-		//Choose which icon to show
-		
 		var toUse = tick_icon;
 		var cl = "StoreRecordData"
 		var toAdd = ["removeButton RedButton", minus_icon];
@@ -185,7 +180,8 @@ function getStores(mode, companyAcc_stores, storeAcc_stores) {
 
 
 
-//Take a specific store record and compare against an array of stores, picking out any duplicates (E.g., stores with matching IDs)
+/* Take a specific store record and compare against an array of stores,
+ * picking out any duplicates (E.g., stores with matching IDs)*/
 function checkForDuplicates(sourceIn, targetIn) {
 	var data = {
 		dupesFound: false,
@@ -204,7 +200,8 @@ function checkForDuplicates(sourceIn, targetIn) {
 }
 
 
-
+/* Checking whether two given stores (source and target) are similar enough
+ * to be considered the same */
 function storesMatch(sourceIn,targetIn,idOnly) {
 	var id = { source:sourceIn.ID,  target:targetIn.ID};
 	var name = { source:sourceIn.store, target:targetIn.store };

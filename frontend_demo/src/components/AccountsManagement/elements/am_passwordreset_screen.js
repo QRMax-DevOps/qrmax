@@ -107,27 +107,3 @@ class PasswordResetScreen extends Component {
 	}
 }
 export default PasswordResetScreen;
-
-
-/*
-
-/*
-
-		<div className="FormHeader">
-			<div className="FormTitle"><b>CREATE</b> -> Store Record</div>
-		</div>
-		<div className="FormInputContainer" style={{justifyContent:"flex-start"}}>
-			<div style={{width:"875px"}}>
-				<LockedInputField title="Company" setErrorPresent={setCompanyError} inputValue={company}/>
-				<ResponsiveInputField title="Store name"	setErrorPresent={setStoreNameError}  maxChars="64" minChars="4" inputValue={store} setFormValue={setStoreName}/>
-			</div>
-			
-		</div>
-		
-		<div className="FormButtonsContainer">
-			<button type="button" className="EditorMainButton GreenButton" disabled={submissionDisabled} onClick={(e)=>handleSubmission(e)}>Submit</button>
-			<button type="button" className="EditorMainButton GreyButton" onClick={() => props.setParentState('currentForm', null)}>Close</button>
-		</div>
-
-*/
-

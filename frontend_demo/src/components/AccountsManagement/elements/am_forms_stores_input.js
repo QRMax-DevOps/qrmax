@@ -157,5 +157,3 @@ class StoresInputField extends Component {
 	}
 }
 export default StoresInputField;
-
-//<div className="inputElement" style={{color:this.state.fieldErrorPreview[1], textAlign:"right", fontSize:"17px", width:"200px"}}>{this.state.fieldErrorPreview[0]}</div>
