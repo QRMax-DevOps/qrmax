@@ -99,7 +99,7 @@ export async function fetchAPI(address, requestOptions) {
 			.then((response) => response.json())
 			.then((res) => {
 				
-				console.log("Response flag 1: "+res);
+				console.log("Response flag 1: ", res);
 				
 				if (res.error || (res.status && (res.status === "failure" || res.status === "fail"))) {
 					if(typeof res === 'string') {

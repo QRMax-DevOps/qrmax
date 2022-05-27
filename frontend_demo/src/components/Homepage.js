@@ -32,10 +32,24 @@ class Homepage extends Component {
             selectedMediaArray: [],
             displayMedia: {display: '', media: [{QRID: ""}]},
             currentObj: {displays: [{display: '', media: [], baseMedia: ''}]}, // set default empty values allowing screen loading before fetch
-			media: null
+			media: null,
+            imageString: null,
+            qrStyle: "qr",
+            imageStyle: "image",
+            draggableStyle: "drag"
         }
         this.setDisplay = this.setDisplay.bind(this);
+        this.getDisplayImage = this.getDisplayImage.bind(this);
+        this.goFullscreen = this.goFullscreen.bind(this);
 		//this.getMedia();
+    }
+
+    goFullscreen() {
+        this.setState({
+            qrStyle: "fullscreen-qr",
+            imageStyle: "fullscreen-image",
+            draggableStyle: "fullscreen-drag"
+        })
     }
 
     mediaListen2() {
@@ -60,9 +74,11 @@ class Homepage extends Component {
                 if(response[0] === true){
                     
                     json = JSON.parse(response[1]);                   
-                    me.setState({
-                        listenObj: json,
-                    });
+                    
+                    me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
+                        store: "demoStore2",
+                        display: "display1",
+                        mediaName: json.display});
                     
                 }
             }
@@ -120,6 +136,12 @@ class Homepage extends Component {
                             me.setState({
                                 displayMedia: json
                             });
+                            break;
+                        case "display/media/file":
+                            me.setState({
+                                baseMedia: json
+                            });
+                            break;
                         default:
                             break;
                     }
@@ -136,7 +158,7 @@ class Homepage extends Component {
     }
 
     // Fetch request that returns the image linked to the highest voted media
-	async getMedia(type, _data) {
+	getMedia(type, _data) {
 
 		//I am no longer supplying the parameters through URL params. They're stored in "Session Storage" now.
 		var companynameParam = sessionStorage.companyName;
@@ -177,6 +199,9 @@ class Homepage extends Component {
 					
                     json = JSON.parse(response[1]);
                     console.log("getMedia: ", json);
+                    this.setState({
+                        imageString: json
+                    })
 				}
 				
 			}
@@ -197,7 +222,7 @@ class Homepage extends Component {
         })
     }
 
-    async getDisplayImage() {
+    getDisplayImage() {
         var image_string = ""
     
         var _data = {
@@ -216,15 +241,16 @@ class Homepage extends Component {
                 mediaName: this.state.listenObj.display
             }
             console.log("_data:"+_data);
-            image_string = this.getMedia("GETMEDIAFILE", _data);
+            image_string = this.fillCurrentObject("display/media/file", "POST", _data);
             //await new Promise(resolve => setTimeout(resolve, 1000));
             
         } else {
-            image_string = this.state.baseMedia.baseMediaFile;
+            this.setState({
+                imageString: this.state.baseMedia.baseMediaFile
+            }); 
         }
         console.log("Inside getMedia()");
         
-        return image_string;
     }
 
     componentDidMount() {
@@ -237,6 +263,7 @@ class Homepage extends Component {
         this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: "demoStore2", 
                         display: "display1"});
+        //this.getDisplayImage();
         this.mediaListen2();
     }
 
@@ -272,14 +299,15 @@ class Homepage extends Component {
                                 })}
                                 
                             </select>
+                            <input type="button" value="Full Screen" onClick={this.goFullscreen}/>
                         </div>
 
                         <div>
                             {console.log(this.state.displayMedia.media[0].QRID)}
                                 {this.state.currentObj.displays[0].media.map((val, key) => {
                                     return (
-                                            <Draggable key={key}>
-                                                    <QRCode className="qr" value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
+                                            <Draggable key={key} >
+                                                    <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore2&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
                                             </Draggable>
                                     )
                                 })}
@@ -290,8 +318,8 @@ class Homepage extends Component {
                             {/* display media source inside this div */}
                             <div id="media-source-container">
                                 <br/>
-                                {console.log("Before calling the image")}
-                                <img className="image" src={this.getDisplayImage()}/> 
+                                {console.log("The render image: " + this.state.imageString)}
+                                <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
                                 {console.log("After calling the image")}
                             </div>
                         </div>                        
@@ -304,9 +332,5 @@ class Homepage extends Component {
     
 
 }
-
-const Child = ({data}) => (
-    <img className='image' src={data.picture} />
-);
 
 export default Homepage;
