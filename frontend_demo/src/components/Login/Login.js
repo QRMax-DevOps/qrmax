@@ -140,9 +140,6 @@ export default class Page extends React.Component {
 		else {
 			sessionStorage.setItem("username",this.state.usernameBox);
 		}
-		else {
-			sessionStorage.setItem("username",this.state.usernameBox);
-		}
 		
 		sessionStorage.setItem("isLocalhost",false);
 		if(this.state.localhost===true) { 

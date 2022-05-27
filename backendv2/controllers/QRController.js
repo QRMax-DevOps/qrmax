@@ -74,7 +74,7 @@ const postUserInput = asyncHandler(async (req, res) => {
       }
     }
     else {
-      if (d>20) {
+      if (d>1000) {
         res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
