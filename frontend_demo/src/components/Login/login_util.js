@@ -11,7 +11,7 @@ export function getNiceError(input) {
 		var json = JSON.parse(input);
 	}
 	catch(err) {
-		return input;
+		return "A backend error may have occured. Please check the console.";
 	}
 	
 	if(json.cause) {

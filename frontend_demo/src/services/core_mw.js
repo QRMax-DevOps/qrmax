@@ -95,8 +95,6 @@ export async function fetchAPI(address, requestOptions) {
 			,"\n ");
 		
 		//Doing the actual request
-		console.log(requestOptions.body);
-		console.log(address);
 		return fetch(address, requestOptions)
 			.then((response) => response.json())
 			.then((res) => {
@@ -123,10 +121,7 @@ export async function fetchAPI(address, requestOptions) {
 				}
 			})
 			.catch(res => {
-				logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")"
-					+"\n    > This usually denotes a front-end bug or an interrupted connection between the front-end and the API!"
-					+"\n    > Nonetheless, please take a screenshot of your whole window and send it to the QRMAX development team "
-					+"with a description of what you were doing leading up to this error.");
+				logWarn(requestOptions.method+" to API : Unhandled rejection! (response: "+res+")");
 				return [false,res];
 			});
 	}
