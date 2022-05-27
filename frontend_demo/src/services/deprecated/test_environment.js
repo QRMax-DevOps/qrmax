@@ -1,5 +1,20 @@
+/* This file and all contained code was developed by:
+ * 
+ * Developer information:
+ *  - Full name: Marcus Hickey
+ *  - Student ID: 6344380 */
+ 
+ /* DEPRECATED!
+  * This is a deprecated source code file and will be 
+  * kept on record for legacy purposes
+  */
+  
+ /* TESTING/DEBUG EXCLUSIVE CODE
+  * This code is exclusively for debug and testing purposes.
+  */
+
 import React from "react";
-import {handleDisplay} from './middleware/display_mw';
+import {handleDisplay} from '../middleware/display_mw';
 
 var param = {url:"stuffhere",live:true};
 
