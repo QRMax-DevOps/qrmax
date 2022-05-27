@@ -18,7 +18,7 @@ class ResponseGood extends React.Component {
 		var _display = new URLSearchParams(useLocation.search).get("display");
 		var _QRID = this.props.qrid;
 
-		var url = "http://localhost:4200/";
+		var url = "https://api.qrmax.app/";
         var data = {company: "displayCompany", store: "displayStore", display: _display, QRID: _QRID};
         let request = null;
         let response = [null,null];

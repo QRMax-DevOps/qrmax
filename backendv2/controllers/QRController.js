@@ -68,13 +68,13 @@ const postUserInput = asyncHandler(async (req, res) => {
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
       //Mobile data
-      if (d>1000) {
+      if (false) {
         res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
     }
     else {
-      if (d>20) {
+      if (false) {
         res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }

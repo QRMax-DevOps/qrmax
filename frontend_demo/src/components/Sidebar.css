@@ -41,8 +41,25 @@
     justify-content: center;
 }
 
+.navTitle {
+	margin:0;
+	margin-bottom:5px;
+	font-size: 21px;
+	color:white;
+}
+
 a {
 	text-decoration: none !important;
+}
+
+svg {
+	font-size:30px !important;
+}
+
+.navIcon {
+    font-size: 20pt;
+	margin:0;
+	color:white;
 }
 
 svg {

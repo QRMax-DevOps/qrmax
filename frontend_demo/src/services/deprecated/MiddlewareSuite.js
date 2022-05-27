@@ -21,10 +21,10 @@ export function log(message) {
 
 export function getApiURL(localhost) {
 	if(localhost !== null) {
-		return 'http://localhost:'+localhost+'/';
+		return 'https://api.qrmax.app/';
 	}
 	else {
-		return 'http://3.25.134.204/';
+		return 'https://api.qrmax.app/';
 	}
 }
 
@@ -68,7 +68,7 @@ export async function fetchAPI(address, requestOptions) {
 
 export async function RunFetch(username, passCode, global) {
 
-		const url = 'http://localhost:80/api/v1/Company/Account';
+		const url = 'http://api.qrmax.app/api/v2/Company/Account';
 		
 		const requestOptions = {
 			method: 'POST',
@@ -89,7 +89,7 @@ export async function RunFetch(username, passCode, global) {
 
 export async function RunFetch2(code, global) {
 
-		const url = 'http://localhost:80/api/v1/QR/';
+		const url = 'https://api.qrmax.app/api/v2/QR/';
 		
 		const requestOptions = {
 			method: 'POST',

@@ -49,7 +49,7 @@ class TestEnv extends React.Component {
 		var valuesx = ["updatedValue1","updatedValue2"];
 		//value1_updatedbymarcus
 		var data = {company:companyx, store:storex, display:displayx, mediaName:mediaName, mediaFile:'testData', fields:fieldsx, values:valuesx };
-		var url = "http://localhost:80/";
+		var url = "https://api.qrmax.app/";
 		
 		//Where our response data is held!
 		var global = new Array(2);

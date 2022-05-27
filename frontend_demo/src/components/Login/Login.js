@@ -19,8 +19,6 @@ import "./login_style.css";
 import LoadingGif from "../../graphics/loading_login.gif";
 
 
-
-
 /*Used to store networking information (I.e., responses from the server)
  *Simply stored here for easy access*/
 var GLOBAL = [null,null];
@@ -80,10 +78,6 @@ export default class Page extends React.Component {
 		}
 		if(recalled_companyChecked != null) {
 			this.state.companyAccount = true;
-			this.state.rememberMeCheck = true;
-		}
-		if(recalled_localhostChecked != null) {
-			this.state.localhost = true;
 			this.state.rememberMeCheck = true;
 		}
 		
@@ -152,9 +146,6 @@ export default class Page extends React.Component {
 		else {
 			sessionStorage.setItem("username",this.state.usernameBox);
 		}
-		/*else {
-			sessionStorage.setItem('username',this.state.usernameBox);
-		}*/
 		
 		sessionStorage.setItem("isLocalhost",false);
 		if(this.state.localhost===true) { 
@@ -319,10 +310,6 @@ export default class Page extends React.Component {
 									<div id="RememberMe_Container" className="form-check">
 										<input name="companyAccount" type="checkbox" className="form-check-input" id="CompanyAccountCheck" checked={this.state.companyAccount} onChange={e => this.handleChange(e, true)}/>
 										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Company Account</label>
-									</div>
-									<div id="RememberMe_Container" className="form-check">
-										<input name="localhost" type="checkbox" className="form-check-input" id="LocalHostCheck" checked={this.state.localhost} onChange={e => this.handleChange(e, true)}/>
-										<label style={{color:'white', marginLeft:'10px', marginTop:'8px'}}>Localhost</label>
 									</div>
 								</div>
 							  
