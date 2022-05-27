@@ -38,8 +38,8 @@ app.use("/api/v2/Display", require('./routes/displayRoutes'));
 app.use("*", (req, res) => res.status(404).json({ error: "endpoint not found" }));
 
 //start cron jobs
-refreshAllQR();
-deleteAllUserInput();
+//refreshAllQR();
+//deleteAllUserInput();
 //clearDB();
 
 app.listen(port, () => console.log(`Server started on port ${port}`))
