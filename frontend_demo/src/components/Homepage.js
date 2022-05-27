@@ -22,6 +22,7 @@ class Homepage extends Component {
         super(props);
         this.state = {
             items: null,
+            fullscreen: false,
             unmounted: false,
             prevPicture: "",
             newPicture: "",
@@ -49,7 +50,7 @@ class Homepage extends Component {
         this.setState({
             qrStyle: "fullscreen-qr",
             imageStyle: "fullscreen-image",
-            draggableStyle: "fullscreen-drag"
+            fullscreen: true
         })
     }
 
@@ -289,8 +290,10 @@ class Homepage extends Component {
     }
 
     render() {
-        return (
-            <div className="background">
+        if(this.state.fullscreen == false) {
+
+            return (
+                <div className="background">
                 <div>
                     <Sidebar/>   
                 </div>
@@ -316,9 +319,9 @@ class Homepage extends Component {
                             {console.log(this.state.displayMedia.media[0].QRID)}
                                 {this.state.currentObj.displays[0].media.map((val, key) => {
                                     return (
-                                            <Draggable key={key} >
-                                                    <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore1&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
-                                            </Draggable>
+                                        <Draggable key={key} >
+                                            <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore1&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
+                                        </Draggable>
                                     )
                                 })}
                             
@@ -335,8 +338,31 @@ class Homepage extends Component {
                         </div>                        
                     </div>
                 </div>
-            </div>
-        );
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <div>
+                        {console.log(this.state.displayMedia.media[0].QRID)}
+                            {this.state.currentObj.displays[0].media.map((val, key) => {
+                                return (
+                                    <Draggable key={key} >
+                                        <QRCode className={this.state.qrStyle} value={"http://localhost:3000/inputresponse?company="+sessionStorage.companyName+"&store=demoStore1&display=display1&qrid=" + this.state.displayMedia.media[0].QRID}/>
+                                    </Draggable>
+                                    )
+                                })}
+                            
+                    </div>
+                    <div id="media-source-container">
+                            <br/>
+                            {console.log("The render image: " + this.state.imageString)}
+                            <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
+                            {console.log("After calling the image")}
+                    </div>
+                </div>
+            );
+        }
     }
     
     
