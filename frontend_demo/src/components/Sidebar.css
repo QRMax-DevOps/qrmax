@@ -1,3 +1,12 @@
+/*
+    Contributing Authors:
+        Name:           Trent Russell
+        Student No.:    5454244
+
+        Name:           Marcus Hickey
+        Student No.:    
+*/
+
 .sidebar {
     background-color: #003B75;
     display: inline-block;
@@ -32,13 +41,6 @@
     justify-content: center;
 }
 
-.navTitle {
-	margin:0;
-	margin-bottom:5px;
-	font-size: 21px;
-	color:white;
-}
-
 a {
 	text-decoration: none !important;
 }
@@ -47,11 +49,7 @@ svg {
 	font-size:30px !important;
 }
 
-.navIcon {
-    font-size: 20pt;
-	margin:0;
-	color:white;
-}
+
 
 .SidebarList {
     display: list-item;
@@ -68,7 +66,18 @@ svg {
 	margin-bottom:10px;
 }
 
-.SidebarList #row:hover {
+.SidebarList #row:disabled {
+	width: auto;
+    text-align: center;
+	
+    
+	border: solid 1px rgba(255,255,255,0.2);
+	border-radius: 7px;
+	
+	margin-bottom:10px;
+}
+
+.SidebarList #row:hover:not([disabled]) {
     cursor: pointer;
 	
 	background-color: rgba(255,255,255,0.1);
@@ -76,10 +85,36 @@ svg {
 	border: solid 1px white;
 }
 
-.SidebarList #row:active {
+.SidebarList #row:active:not([disabled]) {
     cursor: pointer;
     
 	background-color: transparent;
+}
+
+.navTitle {
+	margin:0;
+	margin-bottom:5px;
+	font-size: 21px;
+	color:white;
+}
+
+.navIcon {
+    font-size: 20pt;
+	margin:0;
+	color:white;
+}
+
+.navTitle_disabled {
+	margin:0;
+	margin-bottom:5px;
+	font-size: 21px;
+	color:rgba(255,255,255,0.2);
+}
+
+.navIcon_disabled {
+    font-size: 20pt;
+	margin:0;
+	color:rgba(255,255,255,0.2);
 }
 
 

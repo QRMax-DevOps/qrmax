@@ -17,7 +17,9 @@ export function prepDisplayCall(target, type, url, data, global) {
 						company		: data.company,
 						store		: data.store,
 						display		: data.display,
-						location	: data.location,
+						//location	: data.location,
+						lat			: data.lat,
+						lon			: data.lon,
 						displayType	: data.displayType
 					});
 					break;
@@ -88,14 +90,26 @@ export function prepDisplayCall(target, type, url, data, global) {
 						values	: arrayToString('BASIC',data.values)
 					});
 					break;
-					
 				default:
 					global[0] = false;
 					global[1] = getUnsupportedMethodMessage(type, endpointGen);
 					break;
 			}
 			break;
-		
+		case 'display/media/baseMedia':
+			endpointGen = url+'api/v2/display/media/baseMedia';
+			case 'PUT':
+				methodGen = 'PUT';
+				inputGen = JSON.stringify({
+					company: data.company,
+					store: data.store,
+					display: data.display,
+					baseMedia: data.baseMedia,
+					baseMediaFile: data.baseMediaFile,
+					TTL: data.TTL
+				});
+				break;
+			break;
 		default:
 			global[0] = false;
 			global[1] = "Forced rejection of request:\n      > In function --> \"handleDisplay()\" --> \"prepDisplayCall()\": Unrecognised \"target\" ("+target+")";	

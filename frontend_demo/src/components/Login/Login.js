@@ -2,7 +2,7 @@ import React from "react";
 
 import {log, getApiURL} from "../../services/core_mw";
 import {RunFetch_Login} from "../../services/middleware/login_mw";
-import {saveLoginToken} from "../../services/utilities/auth_util";
+import {saveLoginToken, clearSessionData} from "../../services/utilities/auth_util";
 import {getNiceError} from "./login_util";
 
 import Img1 from "../../graphics/updated_logo.PNG";
@@ -46,7 +46,8 @@ export default class Page extends React.Component {
     constructor(props) {
         super(props);
         
-        
+        clearSessionData();
+		
         this.state = {
             loading : false, //When loading==true, show "LoadingScreen"
             passwordBox : '',
@@ -160,7 +161,13 @@ export default class Page extends React.Component {
 
 		saveLoginToken(JSON.parse(GLOBAL[1]).token);
 		
-		window.location.href = window.location.protocol + "//" + window.location.host + "/homepage";
+		if(this.state.companyAccount) {
+			window.location.href = window.location.protocol + "//" + window.location.host + "/accounts";
+		}
+		else {
+			window.location.href = window.location.protocol + "//" + window.location.host + "/homepage";
+		}
+		
 	}
 	
 	//On component update, update "remembered" values.
@@ -279,9 +286,9 @@ export default class Page extends React.Component {
 						<div id="innerbox_left">
 							<img style={{marginBottom:"20px"}} id="logo" src={Img1} alt=""/>
 							<p id="subtitle">
-								Helping businesses build<br/>
-								contactless kiosks since 2022!<br/><br/>
-								<i>(Alpha-build 0.1)</i>
+								Proudly helping businesses<br/>
+								build contactless media<br/>displays since 2022!<br/><br/>
+								<i>(Release build 1.0)</i>
 							</p>
 						</div>
 					</div>

@@ -10,7 +10,8 @@ import { ImageToBase64 } from '../services/utilities/base64_util'; //importing p
 
 import Sidebar from './Sidebar'; //including the navigation sidebar
 import { handleDisplay } from '../services/middleware/display_mw'; //including the middleware to send requests and recieve data
-import { Dropdown, DropdownButton } from 'react-bootstrap'; //includinf package for dropdown button
+import { RunFetch_GetStores } from '../services/middleware/accounts_mw'; //including the middleware to send requests and recieve data
+import { Dropdown, DropdownButton, ButtonGroup } from 'react-bootstrap'; //includinf package for dropdown button
 
 class MediaMngr extends Component {
     //initializing a constructor
@@ -25,27 +26,45 @@ class MediaMngr extends Component {
         this.setSelectedFile = this.setSelectedFile.bind(this);
         this.fetchMedia = this.fetchMedia.bind(this);
         this.selectDisplay = this.selectDisplay.bind(this);
+        this.selectStore = this.selectStore.bind(this);
     }
     state = { //initializing the state
+        currentStore: "None Selected",
         currentDisplay: "None Selected",
         currentObj: {media: [{mediaName: ''},{TTL: '0'}]}, 
         currentObjDisplay: {displays: [{displayName: ""}]},
+        currentObjStore: {stores: [{store: ""}]},
         selectedMedia: 0,
         mediaInput: '',
         mediaUpdate: 'default',
         mediaLength: '',
         open: false,
         imgString: null,
-        mediaCount: 0
+        mediaCount: 0,
+        refreshBoolean: false
     }
-    //retrieveing currentDisplay
+    //retrieving currentStore
+    getCurrentStore(){
+        return this.state.currentStore;
+    }
+    //retrieving currentDisplay
     getCurrentDisplayObj(){
         return this.state.currentDisplay;
     }
-    //retrieveing selectedMedia
+    //retrieving selectedMedia
     getSelectedMedia(){
         return this.state.currentObj.media[this.state.selectedMedia];
     }
+
+    selectStore(e){
+        this.setState({
+            currentStore: e.target.innerHTML,
+            currentDisplay: "None Selected",
+            currentObj: {media: [{mediaName: ''},{TTL: '0'}]}
+        });
+        this.getDisplay(e);
+    }
+
     //changing selected display to that selected from the list
     selectDisplay(e){
         this.setState({
@@ -61,6 +80,12 @@ class MediaMngr extends Component {
             mediaUpdate: e.target.innerHTML,
         }); 
     }
+
+    getDisplay(e){
+        var data;
+        this.fetchMedia("post", data = {company: this.state.currentCompany, store: e.target.innerHTML}, 0);
+    }
+
     //fetching media once a display has been chosen
     getMedia(e){
         var data;
@@ -92,12 +117,8 @@ class MediaMngr extends Component {
         var newName = this.getNewName();
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaUpdate, fields: ["mediaName", "mediaFile", "TTL"], values: [newName, this.state.imgString, this.state.mediaLength]};
         this.fetchMedia("patch", data, 1);
-        console.log("inside updateMedia");
-        console.log(data);
-        window.location.reload();
         }else{
             //ensuring the user can't update a non existent media 
-            console.log("can't update new media")
             alert("You can't update +New Media")
         }
     }
@@ -110,23 +131,53 @@ class MediaMngr extends Component {
         let newName = this.getNewName();
         var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: newName, mediaFile: this.state.imgString, TTL: this.state.mediaLength};
         this.fetchMedia("put", data, 1);
-        window.location.reload();
     }
     //sending a request to delete a selected media
     deleteMedia() {
         if(this.state.selectedMedia < this.state.mediaCount){
             var data = {company: this.state.currentCompany, store: this.state.currentStore, display: this.state.currentDisplay, mediaName: this.state.mediaInput};
             this.fetchMedia("delete", data, 1);
-            window.location.reload();
         }else{
-          console.log("can't delete null media")
           alert("You can't delete +New Media")
         }
     }
 
     //function to handle requests to the api and retrieve responses
+    fetchStores() {
+        var url = "https://api.qrmax.app/";
+
+        let request = null;
+        let response = [null,null];
+
+        var me = this;
+        var timer = {elapsed: 0};
+
+        request = RunFetch_GetStores(false, url, sessionStorage.getItem("username"), sessionStorage.getItem("companyName"), response); 
+        
+
+        var interval = setInterval(function(){
+            timer.elapsed++;
+
+            if(response[0] !== null){
+                clearInterval(interval);
+                me.setState({loading:false});
+                if(response[0] === true){
+                    var json = JSON.parse(response[1]);
+                    //fetching the displays of the appropriate store
+                    me.setState({currentObjStore: json});
+                }
+            }
+            if(timer.elapsed == 24) {
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+        }, 500);
+    }
+
+
+    //function to handle requests to the api and retrieve responses
     fetchMedia(type, data, objectCount) {
-        var url = "http://localhost:80/";
+        var url = "https://api.qrmax.app/";
 
         if(objectCount == 1)
         var target = "display/media";
@@ -151,23 +202,27 @@ class MediaMngr extends Component {
                 if(response[0] === true){
                     var json = JSON.parse(response[1]);
                     //fetching the displays of the appropriate store
+                    //will refresh if changes have been made to the media list to prevent errors from occuring
+                    if(type != 'post')
+                        window.location.reload();
+                    }
                     if(objectCount == 1){
                     me.setState({currentObj: json});
                     }
                     //fetching media for a selected display
                     else{
                     me.setState({currentObjDisplay: json});
-                    }
                 
                 }
             }
             if(timer.elapsed == 24) {
-                console.log("Fetch-loop timeout!");
                 me.setState({loading:false});
                 clearInterval(interval);
             }
         }, 500);
     }
+
+
     //converting an entered file into a string which is easier to store
     getBase64(file) {
         return new Promise(function(resolve, reject){
@@ -183,11 +238,9 @@ class MediaMngr extends Component {
             }
         });
     }
-    //an initial request made to fetch displats
+    //an initial request made to fetch displays
     componentDidMount() {
-        var data;
-        this.fetchMedia("post", data = {company: this.state.currentCompany, store: this.state.currentStore}, 0);
-        console.log("did mount");
+        this.fetchStores();
     }
 
 
@@ -199,9 +252,18 @@ class MediaMngr extends Component {
                 </div>
                 <div className="main-container">
                     <div className='ViewerTitle'>Media Management</div> {/* main title */}
+                    <h5 id='selected-display-header'>Showing Store: {this.getCurrentStore()}</h5>
                     <h5 id='selected-display-header'>Showing Display: {this.getCurrentDisplayObj()}</h5> {/* shows selected display */}
 
-                    <DropdownButton id="displayDrop" title="Display"> {/* A dropdown box that allows the user to select a display */}
+                    <DropdownButton className="storeDrop" title="Store" as={ButtonGroup}> {/* A dropdown box that allows the user to select a display */}
+                            {this.state.currentObjStore.stores.map((val, key) => {
+                                return (
+                                    <Dropdown.Item key={key} value={key} onClick={this.selectStore}>{val.store}</Dropdown.Item>
+                                );
+                            })}
+                    </DropdownButton>
+
+                    <DropdownButton className="displayDrop" title="Display" as={ButtonGroup}> {/* A dropdown box that allows the user to select a display */}
                             {this.state.currentObjDisplay.displays.map((val, key) => {
                                 return (
                                     <Dropdown.Item key={key} value={key} onClick={this.selectDisplay}>{val.displayName}</Dropdown.Item>

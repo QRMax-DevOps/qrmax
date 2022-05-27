@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 import { Route , withRouter} from 'react-router-dom';
 
-import {log, fetchAPI, getApiURL} from './middleware_core';
+import {log, fetchAPI, getApiURL} from '../core_mw';
 
 /* This API listener is an example.
  *

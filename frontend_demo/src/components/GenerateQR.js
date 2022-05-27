@@ -13,9 +13,9 @@ class GenerateQR extends Component {
         this.state = {
 			link: null
         };
-        //this.setCodeList = this.setCodeList.bind(this);
-       // this.selectCode = this.selectCode.bind(this);
-        //this.getObject = this.getObject.bind(this);
+        // this.setCodeList = this.setCodeList.bind(this);
+        // this.selectCode = this.selectCode.bind(this);
+        // this.getObject = this.getObject.bind(this);
 		
 		
 		this.genQR();

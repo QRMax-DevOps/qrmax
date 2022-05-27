@@ -21,6 +21,7 @@ import DisplayMngr from './components/DisplayMngr';
 import AccountsManagement from './components/AccountsManagement/am_base';
 import MediaMngr from './components/MediaMngr';
 import TestEnv from './services/test_environment';
+//import MarketingWebsite from './components/MarketingWebsite/mw_base';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -43,6 +44,9 @@ function App() {
 			<Route path="/accounts" element={<AccountsManagement key={1}/>}/>
 			<Route path="/testenv" element={<TestEnv/>}/>
 			<Route path="/media_mngr" element={<MediaMngr/>}/>
+			
+			
+			{/*<Route path="/marketing" element={<MarketingWebsite/>}/>*/}
  		</Routes>
 	)
 }
