@@ -60,11 +60,13 @@ const postStoreAccount = asyncHandler(async (req, res) => {
   // Check for user
 
   const findCompany = await companyAccount.findOne({ company });
+  if(!findCompany){
+    res.status(400).json({status:"fail", cause:"Company does not exist"});
+    throw new Error('Company does not exists');
+  }
   
   const storeAcct = await storeAccount.findOne({ username:username, company:findCompany._id});
   
- 
-
   if (storeAcct && (await pbkdf2(password, storeAcct.salt, 80000, 32).toString('hex')) == storeAcct.password) {
     res.json({
       status:"success",
