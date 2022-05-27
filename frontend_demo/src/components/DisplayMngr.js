@@ -387,8 +387,8 @@ class DisplayMngr extends Component {
                         <input id="lat-field" type="text" placeholder='Lattitude' onChange={this.changeLat}></input>
                         <input id="lon-field" type="text" placeholder='Longitude' onChange={this.changeLon}></input>
                         <input id="displayType-field" type="text" placeholder='Display Type' onChange={this.changeDisplayType}></input>
-                        <input id="mediaName-field" type="text" placeholder='Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
-                        <input id="mediaLength-field" type="text" placeholder='Media Length' onChange={this.changeTTL}></input>
+                        <input id="mediaName-field" type="text" placeholder='Base Media Name' onChange={this.changeCurrentBaseMediaNameInput}></input>
+                        <input id="mediaLength-field" type="text" placeholder='Base Media Length' onChange={this.changeTTL}></input>
                         <input type="file" onChange={this.setSelectedFile}/>
                     </div>
                     <button 
