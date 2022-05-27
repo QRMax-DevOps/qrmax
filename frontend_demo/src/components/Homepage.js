@@ -58,7 +58,8 @@ class Homepage extends Component {
     }
 
     mediaListen2() {
-        var url = "http://localhost:4200/";
+        var url = "https://api.qrmax.app/";
+        //var url = "http://localhost:4200/";
         var data = {company: sessionStorage.companyName, store: "demoStore2", display: "display1"};
         
         var response = [null, null];
@@ -101,8 +102,8 @@ class Homepage extends Component {
 
     // Makes a fetch request to the API to set the current object the screen will work with
     fillCurrentObject(target, type, data) {
-        //var url = "https://api.qrmax.app/";
-        var url = "http://localhost:4200/";
+        var url = "https://api.qrmax.app/";
+        //var url = "http://localhost:4200/";
         //var data = {company: sessionStorage.companyName, store: "demoStore2"};
 
         let request = null;
