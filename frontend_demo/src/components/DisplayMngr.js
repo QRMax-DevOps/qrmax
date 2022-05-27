@@ -1,6 +1,6 @@
 /*
     Contributing Authors:
-        Name:               Trent Ruseell
+        Name:               Trent Russell
         Student No.:        5454244
 */
 
@@ -26,7 +26,7 @@ class DisplayMngr extends Component {
         this.deleteDisplay = this.deleteDisplay.bind(this);
         this.setSelectedFile = this.setSelectedFile.bind(this);
 
-        var company = sessionStorage.company;
+        var company = sessionStorage.companyName;
         var user = sessionStorage.username;
         
     
@@ -38,6 +38,7 @@ class DisplayMngr extends Component {
         selectedStore: 0,
         displayInput: 'default',
         createNewDisplayName: null,
+        addressInput: null,
         open: false,
         lat: null,
         lon: null,
@@ -45,7 +46,14 @@ class DisplayMngr extends Component {
         displayType: null,
         baseMedia: null,
         selectedFile: null,
-        imgString: null
+        imgString: null,
+        API_KEY: "AIzaSyDEmUfbp_5C6GgMRIFIY8kPRaX37bPb06g"
+     }
+
+     setStore(e) {
+         this.setState({
+             selectedStore: e.target.value
+         });
      }
 
      getDsiplayList() {
@@ -114,8 +122,8 @@ class DisplayMngr extends Component {
      updateDsiplay(){
         var data = {
             id: "", 
-            company: "demoCompany", 
-            store: "demoStore", 
+            company: sessionStorage.companyName, 
+            store: this.state.storesObj.stores[this.state.selectedStore].store, 
             displayName: this.state.displayInput};
         this.fetchDisplays("UPDATE", data);
         console.log("inside updateDisplay");
@@ -145,7 +153,16 @@ class DisplayMngr extends Component {
          return this.state.TTL;
      }
 
-     createDisplay() {
+     async setLatAndLong(){
+        return fetch("https://maps.googleapis.com/maps/api/geocode/json?address="+this.state.addressInput+'&key='+this.state.API_KEY)
+        .then(response => response.json())
+        .then(data => {
+          const latitude = data.results[0].geometry.location.lat;
+          const longitude = data.results[0].geometry.location.lng;
+        });
+     }
+
+     async createDisplay() {
         let newName = this.getNewName();
         let newBaseMediaName = this.getNewBaseMediaName();
         let newTTL = this.getTTL();
@@ -153,8 +170,8 @@ class DisplayMngr extends Component {
         let newLon = this.getLon();
         let newDisplayType = this.getDisplayType();
         var data = {
-            company: "demoCompany", 
-            store: "demoStore2", 
+            company: sessionStorage.companyName, 
+            store: this.state.storesObj.stores[this.state.selectedStore].store, 
             display: newName,
             lat: newLat,
             lon: newLon,
@@ -163,7 +180,8 @@ class DisplayMngr extends Component {
         console.log(data);
             //baseMedia: newBaseMediaName,
             //baseMediaFile: this.state.imgString};
-        this.fetchDisplays("CREATE", data);
+        await this.fetchDisplays("CREATE", data);
+        await new Promise(resolve => setTimeout(resolve, 1000));
         //this.fetchDisplays("GETLIST", data);
        /* data.baseMedia = newBaseMediaName;
         data.baseMediaFile = this.state.imgString;
@@ -172,14 +190,14 @@ class DisplayMngr extends Component {
      }
 
      deleteDisplay() {
-         var data = {company: "demoCompany", 
-         store: "demoStore", 
+         var data = {company: sessionStorage.companyName, 
+         store: this.state.storesObj.stores[this.state.selectedStore].store, 
          displayName: this.state.currentObj.displays[this.state.selectedDisplay].displayName
         };
          this.fetchDisplays("DELETE", data);
      }
 
-     fetchStores(isCompany, username, companyName) {
+     async fetchStores(isCompany, username, companyName) {
         var url = "http://localhost:80/";
         let request = null;
         let response = [null, null];
@@ -188,6 +206,8 @@ class DisplayMngr extends Component {
         let me = this;
 
         request = RunFetch_GetStores(isCompany, url, username, companyName, response);
+
+        var completed = false;
 
         var interval = setInterval(function() {
             timer++;
@@ -203,6 +223,7 @@ class DisplayMngr extends Component {
                     console.log("Check response NOTNULL "+response[1]);
                     var json = JSON.parse(response[1]);
                     
+                    completed = true;
                     me.setState({storesObj: json});
                 }
             }
@@ -214,10 +235,10 @@ class DisplayMngr extends Component {
                 clearInterval(interval);
             }
         }, 500);
-
+        return completed;
      }
 
-     fetchDisplays(type, data) {
+     async fetchDisplays(type, data) {
         //var url = "https://api.qrmax.app/";
         var url = "http://localhost:80/";
         var target = "display";
@@ -230,7 +251,7 @@ class DisplayMngr extends Component {
 
         request = handleDisplay(target, type, url, data, response);
         
-
+        var completed = false;
         var interval = setInterval(function() {
             timer.elapsed++;
             
@@ -246,6 +267,7 @@ class DisplayMngr extends Component {
                     var json = JSON.parse(response[1]);
                     
                     if(type == "GETLIST"){
+                        completed = true;
                         me.setState({currentObj: json});
                     }
                     console.log("Object notNull check: "+me.state.currentObj);
@@ -259,6 +281,7 @@ class DisplayMngr extends Component {
                 clearInterval(interval);
             }
         }, 500);
+        return completed;
      }
 
      getBase64(file) {
@@ -276,10 +299,13 @@ class DisplayMngr extends Component {
          });
      }
 
-     componentDidMount() {
-         var data;
-         this.fetchStores(true, sessionStorage.company, sessionStorage.username);
-         this.fetchDisplays("GETLIST",  data = {company: sessionStorage.company, store: this.state.storesObj.stores[this.state.selectedStore].store});
+     async componentDidMount() {
+         var data = {myname: "Trent"};
+         data.lastname = "russell";
+         console.log(data);
+         let auth = await this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+         await new Promise(resolve => {setTimeout(resolve, 10000);});
+         let auth2 = await this.fetchDisplays("GETLIST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
          console.log("did mount");
      }
 
@@ -295,7 +321,7 @@ class DisplayMngr extends Component {
         ) {
           this.fetchDisplays(
             "GETLIST",
-            (data = { company: "demoCompany", store: "demoStore" })
+            (data = { company: "sessionStorage.companyName", store: this.state.storesObj.stores[this.state.selectedStore].store })
           );
           console.log("did update");
         }
@@ -312,7 +338,11 @@ class DisplayMngr extends Component {
                 <h4 id="selected-store-header">Showing store: {this.getCurrentStoreObj()}</h4>
                 <div>
                     <select onChange={this.setStore}>
-
+                        {this.state.storesObj.stores.map((val,key) => {
+                                    return (
+                                        <option name={val.store} value={key} key={key}>{val.store}</option>
+                                    );
+                        })}
                     </select>
                 </div>
                 <div id="styled-container">
@@ -364,16 +394,6 @@ class DisplayMngr extends Component {
                         Delete Display
                     </button>
                     <br/>
-                    <button 
-                        type="button" 
-                        id="check-button" 
-                        className='buttons'
-                        onClick={this.uploadImage}
-                        
-                    >
-                        Check Image
-                    </button>
-                    {console.log("image string " + this.state.imgString)}
                 </div>
             </div>
 			</div>
