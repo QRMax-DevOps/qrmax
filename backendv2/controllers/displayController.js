@@ -275,7 +275,6 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   let mediaName = req.body.mediaName;
   const {store, fields, values } = req.body;
-  
   const sFields = fields.split(',');
   const sValues = values.split(',');
   

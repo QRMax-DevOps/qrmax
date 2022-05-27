@@ -18,7 +18,6 @@ import LoadingGif from "../../graphics/loading_login.gif";
 var GLOBAL = [null,null];
 function resetGlobal() { GLOBAL = [null,null]; }
 
-
 function checkDetails(isCompany, companyName, userName, passCode) {
     let valid = true;
     
@@ -54,12 +53,14 @@ export default class Page extends React.Component {
             usernameBox : '',
             rememberMeCheck : false,
             companyAccount : false,
+            localhost : false,
             loginError : '',
         };
 		
 		var recalled_username = localStorage.getItem("login_recall_username");
 		var recalled_company = localStorage.getItem("login_recall_company");
 		var recalled_companyChecked = localStorage.getItem("login_recall_companyChecked");
+		var recalled_localhostChecked = localStorage.getItem("login_recall_localhostChecked");
 		
 		if(recalled_username != null && recalled_username.length > 0) {
 			this.state.usernameBox = recalled_username;
@@ -114,12 +115,20 @@ export default class Page extends React.Component {
 		else {
 			localStorage.removeItem("login_recall_companyChecked");
 		}
+		
+		if(this.state.localhost === true) {
+			localStorage.setItem("login_recall_localhostChecked", true);
+		}
+		else {
+			localStorage.removeItem("login_recall_localhostChecked");
+		}
 	}
 	
 	clearRememberedValues() {
 		localStorage.removeItem("login_recall_username");
 		localStorage.removeItem("login_recall_company");
 		localStorage.removeItem("login_recall_companyChecked");
+		localStorage.removeItem("login_recall_localhostChecked");
 	}
 	
 	navigateToHome() {
@@ -131,6 +140,14 @@ export default class Page extends React.Component {
 		else {
 			sessionStorage.setItem("username",this.state.usernameBox);
 		}
+		else {
+			sessionStorage.setItem("username",this.state.usernameBox);
+		}
+		
+		sessionStorage.setItem("isLocalhost",false);
+		if(this.state.localhost===true) { 
+			sessionStorage.setItem("isLocalhost",true);
+		}
 		sessionStorage.setItem("isCompanyAccount",this.state.companyAccount);
 		if(this.state.companyAccount===true) { 
 			sessionStorage.setItem("isCompanyAccount",this.state.companyAccount);
@@ -138,7 +155,13 @@ export default class Page extends React.Component {
 
 		saveLoginToken(JSON.parse(GLOBAL[1]).token);
 		
-		window.location.href = window.location.protocol + "//" + window.location.host + "/homepage";
+		if(this.state.companyAccount) {
+			window.location.href = window.location.protocol + "//" + window.location.host + "/accounts";
+		}
+		else {
+			window.location.href = window.location.protocol + "//" + window.location.host + "/homepage";
+		}
+		
 	}
 	
 	//On component update, update "remembered" values.
@@ -165,6 +188,15 @@ export default class Page extends React.Component {
 				}
 				else {
 					localStorage.removeItem("login_recall_companyChecked");
+				}
+			}
+			
+			if(target.name === "localhost") {
+				if(target.checked === true && this.state.rememberMeCheck === true) {
+					localStorage.setItem("login_recall_localhostChecked", true);
+				}
+				else {
+					localStorage.removeItem("login_recall_localhostChecked");
 				}
 			}
 		}
@@ -202,7 +234,7 @@ export default class Page extends React.Component {
 					
 					//Attempt login
 					RunFetch_Login(
-						getApiURL(false),
+						getApiURL(me.state.localhost),
 						me.state.companyAccount,
 						data,
 						GLOBAL
@@ -248,9 +280,9 @@ export default class Page extends React.Component {
 						<div id="innerbox_left">
 							<img style={{marginBottom:"20px"}} id="logo" src={Img1} alt=""/>
 							<p id="subtitle">
-								Helping businesses build<br/>
-								contactless kiosks since 2022!<br/><br/>
-								<i>(Alpha-build 0.1)</i>
+								Proudly helping businesses<br/>
+								build contactless media<br/>displays since 2022!<br/><br/>
+								<i>(Release build 1.0)</i>
 							</p>
 						</div>
 					</div>

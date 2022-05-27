@@ -20,7 +20,9 @@ class CompanyAccountController {
                 hash = pbkdf2 (req.body.password, salt, 80000, 32).toString('hex');
             }
             //send hashed password to DAO to check if correct
-            res.json(await CompanyAccountDao.checkLogin(company, hash));
+            const rjson = await CompanyAccountDao.checkLogin(company, hash);
+            res.json(rjson);
+            //res.json(await CompanyAccountDao.checkLogin(company, hash));
         }
         catch(e){
             res.json({status:"failure", cause:e})

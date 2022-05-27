@@ -141,7 +141,6 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
       const hash = pbkdf2 (password, salt, 80000, 32).toString('hex');
       //set password
       await storeAccount.updateOne({username:username, company:companyCheck._id}, {$set:{password:hash, salt:salt}})
-
       res.status(200).json({status:"success"});
     }
     else if (field =='stores'){

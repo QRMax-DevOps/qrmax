@@ -101,46 +101,127 @@ function HandleAccount(type, global, data) {
 	switch(type.toLowerCase()) {
 		case 'create': 
 			RunFetch_CreateStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, data.stores, data.password, response);
-			
 			//loop until response
 			
-			
 			var stopwatch = {eclapsed: 0};
-			var me = this;
+			var storeAccountCreated = false;
+			var patchRequestSent = false;
 			
-			var interval = setInterval(function() {
+			var round = 0;
+			
+			var interval1 = setInterval(function() {
 				stopwatch.eclapsed++;
 				
 				if(response[0] !== null) {
-					clearInterval(interval);
+					clearInterval(interval1);
 					
 					//Good response (account created)
 					if(response[0] === true) {
-						const oldAccount = {company:global.userID, username:data.username, stores:null};
-						const newAccount = {company:global.userID, username:data.username, stores:data.stores, password:data.password};
-						
-						//Updating the stores field, as the account creation request (due to backend limitations) does not create the stores list.
-						RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, oldAccount, newAccount, response);
+						storeAccountCreated = true;
+						console.log("store account (initial) created");
+					}
+					if(response[0] !== true) {
+						alert("An error occured while attempting to create store account (initial).\nAPI response: "+response[1]);
 					}
 				}
 				//timeout after 12 seconds
 				if(stopwatch.eclapsed === 64) {
-					console.log("While waiting for account creation response: Fetch-loop timeout!");
-					clearInterval(interval);
+					console.log("While waiting for account creation (initial) response: Fetch-loop timeout!");
+					clearInterval(interval1);
 				}
 			}, 500);
 			
+			var interval2 = setInterval(function() {
+				if(storeAccountCreated) {
+					stopwatch.eclapsed++;
+					
+					if(!patchRequestSent) {
+						patchRequestSent = true;
+						response = [null,null];
+						const oldAccount = {company:global.userID, username:data.username, stores:null};
+						const newAccount = {company:global.userID, username:data.username, stores:data.stores, password:data.password};
+						//Updating the stores field, as the account creation request (due to backend limitations) does not create the stores list.
+						RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, oldAccount, newAccount, response);
+					}
+					
+					if(response[0] !== null) {
+						clearInterval(interval2);
+						
+						//Good response (account created)
+						if(response[0] !== true) {
+							alert("An error occured while attempting to create store account (storeslist).\nAPI response: "+response[1]);
+						}
+						
+						window.location.reload(false);
+					}
+					//timeout after 12 seconds
+					if(stopwatch.eclapsed === 64) {
+						console.log("While waiting for account creation (storeslist) response: Fetch-loop timeout!");
+						clearInterval(interval2);
+					}
+				}
+			}, 500);
 			break;
-		case 'delete': RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response); break;
+			
+		case 'delete': 
+			RunFetch_DeleteStoreAccount(global.apiURL, global.isCompany, global.userID, data.company, data.username, response);
+			
+			var stopwatch = {eclapsed: 0};
+			var interval1 = setInterval(function() {
+				stopwatch.eclapsed++;
+				
+				if(response[0] !== null) {
+					clearInterval(interval1);
+					
+					//Good response (account created)
+					if(response[0] === true) {
+						window.location.reload(false);
+					}
+					if(response[0] !== true) {
+						alert("An error occured while attempting to delete the store account.\nAPI response: "+response[1]);
+					}
+				}
+				//timeout after 12 seconds
+				if(stopwatch.eclapsed === 64) {
+					console.log("While waiting for account deletion response: Fetch-loop timeout!");
+					clearInterval(interval1);
+				}
+			}, 500);
+			break;
+			
 		case 'modify': 
 			if(IsJsonString(data.newAccount.stores)) {
 				data.newAccount.stores = JSON.parse(data.newAccount.stores);
 				RunFetch_UpdateStoreAccount(global.apiURL, global.isCompany, global.userID, data.oldAccount, data.newAccount, response);
+			
+				var stopwatch = {eclapsed: 0};
+				var interval1 = setInterval(function() {
+					stopwatch.eclapsed++;
+					
+					if(response[0] !== null) {
+						clearInterval(interval1);
+						
+						//Good response (account created)
+						if(response[0] === true) {
+							window.location.reload(false);
+						}
+						if(response[0] !== true) {
+							alert("An error occured while attempting to modify the store account.\nAPI response: "+response[1]);
+						}
+					}
+					//timeout after 12 seconds
+					if(stopwatch.eclapsed === 64) {
+						clearInterval(interval1);
+						console.log("While waiting for account modification response: Fetch-loop timeout!");
+					}
+				}, 500);
+				break;
 			}
 			else {
 				alert("Modify account request rejected! \"Store/s\" field does not contain valid json.");
 			}
 			break;
+			
 		default: 
 			console.log("Error. In function Handle Account - Switch case defaulted due to unrecognised \"type\" ");
 			break;
@@ -169,8 +250,59 @@ function doErrorCheck(arr) {
 function HandleStore(type, global, data) {
 	var response = [null,null];
 	switch(type.toLowerCase()) {
-		case 'create': RunFetch_CreateStore(global.apiURL, global.isCompany, global.userID, data, response); break;
-		case 'delete': RunFetch_DeleteStore(global.apiURL, global.isCompany, global.userID, data, response); break;
+		case 'create':
+			RunFetch_CreateStore(global.apiURL, global.isCompany, global.userID, data, response);
+			
+			var stopwatch = {eclapsed: 0};
+			var interval1 = setInterval(function() {
+				stopwatch.eclapsed++;
+				
+				if(response[0] !== null) {
+					clearInterval(interval1);
+					
+					//Good response (account created)
+					if(response[0] === true) {
+						window.location.reload(false);
+					}
+					if(response[0] !== true) {
+						
+						alert("An error occured while attempting to create the store.\nAPI response: "+response[1]);
+					}
+				}
+				//timeout after 12 seconds
+				if(stopwatch.eclapsed === 64) {
+					console.log("While waiting for store creation: Fetch-loop timeout!");
+					clearInterval(interval1);
+				}
+			}, 500);
+			break;
+			
+		case 'delete':
+			RunFetch_DeleteStore(global.apiURL, global.isCompany, global.userID, data, response);
+			
+			var stopwatch = {eclapsed: 0};
+			var interval1 = setInterval(function() {
+				stopwatch.eclapsed++;
+				
+				if(response[0] !== null) {
+					clearInterval(interval1);
+					
+					//Good response (account created)
+					if(response[0] === true) {
+						window.location.reload(false);
+					}
+					if(response[0] !== true) {
+						alert("An error occured while attempting to deletion the store.\nAPI response: "+response[1]);
+					}
+				}
+				//timeout after 12 seconds
+				if(stopwatch.eclapsed === 64) {
+					console.log("While waiting for store deletion: Fetch-loop timeout!");
+					clearInterval(interval1);
+				}
+			}, 500);
+			break;
+			
 		case 'modify':
 			//RunFetch_UpdateStore(global.apiURL, global.isCompany, global.userID, data.oldStore, data.newStore, response);
 			alert("Rejection: Store modification is currently unsupported by the API.\n\nInstead, please delete the store and re-create it with the desired data.");

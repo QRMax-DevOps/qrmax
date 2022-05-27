@@ -29,14 +29,9 @@ const postUserInput = asyncHandler(async (req, res) => {
 
     const dirtyQRID = req.body.QRID;
     const QRID = DOMPurify.sanitize(dirtyQRID);
-    
-    /*Need More Validation Here*/
+  
 
-    //let apiURL = "https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=" + cleanIdentifier;
-    //WIFI TEST
-    let apiURL = 'https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=101.183.54.116'
-    //MOBILE DATA TEST
-    //let apiURL = 'https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=1.145.60.15'
+    let apiURL = "https://api.ipgeolocation.io/ipgeo?apiKey=ebda205e53cf4d409fc755628aa9b19a&ip=" + cleanIdentifier;
     let responseLat;
     let responseLon;
     await axios.get(apiURL)
@@ -58,8 +53,6 @@ const postUserInput = asyncHandler(async (req, res) => {
       res.status(400).json({status:"fail", cause:"Could not find display"});
       throw new Error('Could not find display');
     }
-    //-37.80981, 144.96984 - success
-    //-37.835030, 144.953620 - fail
     let testLat = findDisplay.lat;
     let testLon = findDisplay.lon;
     
@@ -72,7 +65,6 @@ const postUserInput = asyncHandler(async (req, res) => {
     // eslint-disable-next-line no-unused-vars
     var d = R * c; // Distance in km
     
-    /*
     mobileDataCheck = cleanIdentifier.split(".")
     if (mobileDataCheck[0] < 100) {
       //Mobile data
@@ -82,12 +74,11 @@ const postUserInput = asyncHandler(async (req, res) => {
       }
     }
     else {
-      if (d>1) {
+      if (d>20) {
         res.status(400).json({status:"fail", cause:"Out of range"});
         throw new Error('Out of range');
       }
     }
-    */
 	
 	const previousInputs = await UserInput.find({UserIdentifier:cleanIdentifier});
 	const currentDate = new Date(Date.now());
