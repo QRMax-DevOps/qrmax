@@ -366,7 +366,7 @@ class Homepage extends Component {
                                 {console.log(this.state.currentObj)}
                                 {this.state.currentObj.displays.map((val,key) => {
                                     return (
-                                        <option name={val.display} value={key} key={key}>{val.display}</option>
+                                        <option name={val.displayName} value={key} key={key}>{val.displayName}</option>
                                     );
                                 })}
                                 
