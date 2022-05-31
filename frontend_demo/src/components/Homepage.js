@@ -111,7 +111,7 @@ class Homepage extends Component {
     mediaListen2() {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
-        var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].display};
+        var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName};
         
         var response = [null, null];
         var request = null;
@@ -134,7 +134,7 @@ class Homepage extends Component {
                     
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
                         store: this.state.storesObj.stores[this.state.selectedStore].store,
-                        display: this.state.currentObj.displays[this.state.selectedDisplay].display,
+                        display: this.state.currentObj.displays[this.state.selectedDisplay].displayName,
                         mediaName: json.display});
                     
                 }
@@ -314,9 +314,10 @@ class Homepage extends Component {
     componentDidMount() {
         console.log("Component did mount!");
         //load stores
-        this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+        let fesh = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+        await new Promise(resolve => setTimeout(resolve, 10000));
         // load displays
-        this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+        let fesh2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
         // load QR media
         this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].display});
         // load baseMedia

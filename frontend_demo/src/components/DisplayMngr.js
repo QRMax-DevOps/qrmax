@@ -334,9 +334,6 @@ class DisplayMngr extends Component {
      }
 
      async componentDidMount() {
-         var data = {myname: "Trent"};
-         data.lastname = "russell";
-         console.log(data);
          let auth = await this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
          await new Promise(resolve => {setTimeout(resolve, 10000);});
          let auth2 = await this.fetchDisplays("display", "GETLIST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
