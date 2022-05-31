@@ -152,7 +152,7 @@ class Homepage extends Component {
     
 
     // Makes a fetch request to the API to set the current object the screen will work with
-    fillCurrentObject(target, type, data) {
+    async fillCurrentObject(target, type, data) {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
         //var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store};
@@ -311,8 +311,9 @@ class Homepage extends Component {
         
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         console.log("Component did mount!");
+        console.log("Server has restarted 1");
         //load stores
         let fesh = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
         await new Promise(resolve => setTimeout(resolve, 10000));
