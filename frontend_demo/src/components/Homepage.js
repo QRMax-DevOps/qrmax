@@ -315,14 +315,15 @@ class Homepage extends Component {
         console.log("Component did mount!");
         console.log("Server has restarted 1");
         //load stores
-        let fesh = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+        await new Promise(resolve => setTimeout(resolve, 500));
         // load displays
-        let fesh2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+        let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+        await new Promise(resolve => setTimeout(resolve, 500));
         // load QR media
-        this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].display});
+        let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].display});
         // load baseMedia
-        this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
+        let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: this.state.storesObj.stores[this.state.selectedStore].store, 
                         display: this.state.currentObj.displays[this.state.selectedDisplay].display});
         //this.getDisplayImage();
