@@ -321,11 +321,11 @@ class Homepage extends Component {
         let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
         await new Promise(resolve => setTimeout(resolve, 500));
         // load QR media
-        let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].display});
+        let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
         // load baseMedia
         let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: this.state.storesObj.stores[this.state.selectedStore].store, 
-                        display: this.state.currentObj.displays[this.state.selectedDisplay].display});
+                        display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
         //this.getDisplayImage();
         this.mediaListen2();
     }
@@ -357,7 +357,7 @@ class Homepage extends Component {
                         <h2 className="page-header">Display Preivew</h2>
                         
                         <div id="dropContainer">
-							<p>Currently showing store: demoStore, display: {this.state.currentObj.displays[this.state.selectedDisplay].display}</p>
+							<p>Currently showing store: demoStore, display: {this.state.currentObj.displays[this.state.selectedDisplay].displayName}</p>
                             <select onChange={this.setStore}>
                                 {this.state.storesObj.stores.map((val, key) => {
                                     return (
