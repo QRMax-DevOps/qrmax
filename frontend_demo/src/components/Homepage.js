@@ -324,7 +324,7 @@ class Homepage extends Component {
         console.log("Server has restarted 1");
         //load stores
         let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 250));
         if(this.state.storesObj.stores !=0) {
             // load displays
             let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
@@ -348,9 +348,9 @@ class Homepage extends Component {
         console.log("Something is causing a re-render!");
     }
 
-    componentWillUnmount() {
+    /*componentWillUnmount() {
         console.log("Component is unmounting!", this.state.currentObj);
-    }
+    }*/
 
     render() {
         if(this.state.fullscreen == false) {
