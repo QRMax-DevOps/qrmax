@@ -165,7 +165,7 @@ const patchStoreAccount = asyncHandler(async (req, res) => {
         //add all stores to storeAccount
         await storeAccount.updateOne({company:req.company.id, username:req.body.username}, {$addToSet:{stores:s._id}});
         //find store object and add storeAccount to the store
-        let storeAcct = storeAccount.findOne({company:req.company.id, username:req.body.username});
+        let storeAcct = await storeAccount.findOne({company:req.company.id, username:req.body.username});
         let storeAcctID = storeAcct._id;
         await store.updateOne({company:req.company.id, store:s.store}, {$addToSet:{accounts:storeAcctID}});
       }
