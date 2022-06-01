@@ -148,7 +148,7 @@ class Homepage extends Component {
                             break;
                         case "display/media":
                             completed = true;
-                            me.setState({displayMedia: json});
+                            me.setState({displayMedia: json, baseMedia: json.currentMedia});
                             break;
                         case "display/media/basemedia":
                             completed = true;
@@ -320,7 +320,7 @@ class Homepage extends Component {
                 // load baseMedia
                 let fech4 = this.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName, 
                             store: this.state.storesObj.stores[this.state.selectedStore].store, 
-                            display: this.state.currentObj[this.state.selectedDisplay].displayName});
+                            display: this.state.currentObj[this.state.selectedDisplay].displayName, mediaName: this.state.baseMedia});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // listen for user interaction
                 this.mediaListen2();
