@@ -324,26 +324,14 @@ class Homepage extends Component {
         console.log("Component did mount!");
         console.log("Server has restarted 1");
         //load stores
-        try
-        {let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
-        await new Promise(resolve => setTimeout(resolve, 1000));}
-        catch(e) {
-            console.log("Store fetch broke", e);
-        }
+        let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // load displays
-        try
-        {let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
-        await new Promise(resolve => setTimeout(resolve, 1000));}
-        catch(e) {
-            console.log("display fetch broke", e);
-        }
+        let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // load QR media
-        try
-        {let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
-        await new Promise(resolve => setTimeout(resolve, 1000));}
-        catch(e) {
-            console.log("Media fetch broke", e);
-        }
+        let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // load baseMedia
         let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: this.state.storesObj.stores[this.state.selectedStore].store, 
@@ -369,7 +357,6 @@ class Homepage extends Component {
 
     render() {
         if(this.state.fullscreen == false) {
-            try{
 
                 return (
                     <div className="background">
@@ -425,10 +412,6 @@ class Homepage extends Component {
                 </div>
                 </div>
             );
-        }
-        catch {
-            console.log("render 1 broke");
-        }
         } else {
             return (
                 <div onClick={this.goFullscreen}>
