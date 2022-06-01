@@ -289,65 +289,6 @@ class Homepage extends Component {
         return completed;
     }
 
-    // Fetch request that returns the image linked to the highest voted media
-	getMedia(type, _data) {
-
-		//I am no longer supplying the parameters through URL params. They're stored in "Session Storage" now.
-		var companynameParam = sessionStorage.companyName;
-		var usernameParam = sessionStorage.username;
-		
-		var isLocalhostParam = false;
-		if(sessionStorage.isLocalhost==='true' || sessionStorage.isLocalhost===true)
-		{ isLocalhostParam = true; }
-		
-		var isCompanyParam = false;
-		if(sessionStorage.isCompanyAccount==='true' || sessionStorage.isCompanyAccount===true)
-		{ isCompanyParam = true; }
-	
-	
-		var url = getApiURL(isLocalhostParam);
-		let data = {
-			company: _data.company,
-			store: _data.store,
-			display: _data.display,
-			mediaName: _data.mediaName
-		};
-
-        let request = null
-		let response = [null, null];
-		request = HandleMedia(type, url, data, response);
-		
-		var timer = { eclapsed: 0 };
-		var me = this;
-        var json = null;
-		
-		var interval = setInterval(function() {
-			timer.eclapsed++;
-			
-			if(response[0] !== null) {
-				clearInterval(interval);
-                
-				if(response[0] === true){
-					
-                    json = JSON.parse(response[1]);
-                    console.log("getMedia: ", json);
-                    this.setState({
-                        imageString: json
-                    })
-				}
-				
-			}
-            
-			//timeout after 3 seconds
-			if(timer.eclapsed == 24) {
-                console.log("Fetch-loop timeout!");
-				//me.setState({loading:false});
-				clearInterval(interval);
-			}
-		}, 5000);
-        return json;
-	}
-
     setDisplay(e) {
         this.setState({
             selectedDisplay: e.target.value
@@ -360,37 +301,6 @@ class Homepage extends Component {
         } else {
             return "https://qrmax.app/inputresponse?company=company&store=store&display=display&qrid= + this.state.displayMedia.media[key].QRID";
         }
-    }
-
-    getDisplayImage() {
-        var image_string = ""
-    
-        var _data = {
-            company: sessionStorage.companyName,
-            store: this.state.storesObj.stores[this.state.selectedStore].store,
-            display: this.state.currentObj[this.state.selectedDisplay].display,//this.state.currentObj[this.state.selectedDisplay].display,
-        }
-
-        console.log("Checking Listen status: " +this.state.listenObj);
-
-        if(this.state.listenObj != null) {
-            _data = {
-                company: sessionStorage.companyName,
-                store: this.state.storesObj.stores[this.state.selectedStore].store,
-                display: this.state.currentObj[this.state.selectedDisplay].display,//this.state.currentObj[this.state.selectedDisplay].display,
-                mediaName: this.state.listenObj.display
-            }
-            console.log("_data:"+_data);
-            image_string = this.fillCurrentObject("display/media/file", "POST", _data);
-            //await new Promise(resolve => setTimeout(resolve, 1000));
-            
-        } else {
-            this.setState({
-                imageString: this.state.baseMedia.baseMediaFile
-            }); 
-        }
-        console.log("Inside getMedia()");
-        
     }
 
     async componentDidMount() {
