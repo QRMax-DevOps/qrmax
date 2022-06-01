@@ -16,13 +16,16 @@ connectDB()
 
 const app = express()
 
-app.use(express.json())
+app.use(express.json({limit: '200mb'}));
+app.use(express.urlencoded({limit: '200mb'}));
+//app.use(express.json({limit:'200mb'}));
+//app.use
 //app.use(cors({
 //  origin: '*'
 //}));
-const bodyParser = require('body-parser')
-app.use(bodyParser.json({ limit: '200mb' }));
-app.use(bodyParser.urlencoded({ limit: '200mb', extended: true, parameterLimit:50000 }));
+//const bodyParser = require('body-parser')
+//app.use(bodyParser.json({ limit: '200mb' }));
+//app.use(bodyParser.urlencoded({ limit: '200mb', extended: true, parameterLimit:50000 }));
 
 //User input
 app.use("/api/v2/QR", require('./routes/QRRoutes'));
