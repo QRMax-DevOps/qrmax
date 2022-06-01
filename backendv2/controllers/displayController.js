@@ -61,7 +61,11 @@ const putDisplay = asyncHandler(async (req, res) => {
 // @access  Private
 // @review  Complete
 const postDisplay = asyncHandler(async (req, res) => {
-  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   
   //Check if display exists
