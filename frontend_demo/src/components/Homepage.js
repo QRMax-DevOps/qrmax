@@ -354,12 +354,12 @@ class Homepage extends Component {
     }
 
     render() {
-        //if(this.state.fullscreen == false) {
+        if(this.state.fullscreen == false) {
 
                 return (
                     <div className="background">
                 <div>
-                    <Sidebar/>   
+                    
                 </div>
                 <div className="MainContainer">
                     <div className="DisplayContainer">
@@ -410,7 +410,7 @@ class Homepage extends Component {
                 </div>
                 </div>
             );
-        /* } else {
+        } else {
             return (
                 <div onClick={this.goFullscreen}>
                     <div>
@@ -431,7 +431,7 @@ class Homepage extends Component {
                     </div>
                 </div>
             );
-        }*/
+        }
     }
     
     

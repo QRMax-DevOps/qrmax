@@ -335,7 +335,7 @@ class DisplayMngr extends Component {
 
      async componentDidMount() {
          let auth = await this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
-         await new Promise(resolve => {setTimeout(resolve, 10000);});
+         await new Promise(resolve => {setTimeout(resolve, 500);});
          let auth2 = await this.fetchDisplays("display", "GETLIST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
          console.log("did mount");
      }
