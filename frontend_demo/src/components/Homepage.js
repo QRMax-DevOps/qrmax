@@ -354,6 +354,14 @@ class Homepage extends Component {
         })
     }
 
+    getQRID(index) {
+        if(this.state.displayMedia.display != '') {
+            return "https://qrmax.app/inputresponse?company=company&store=store&display=display&qrid=" + this.state.displayMedia.media[index].QRID;
+        } else {
+            return "https://qrmax.app/inputresponse?company=company&store=store&display=display&qrid= + this.state.displayMedia.media[key].QRID";
+        }
+    }
+
     getDisplayImage() {
         var image_string = ""
     
@@ -454,7 +462,7 @@ class Homepage extends Component {
                                 {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
                                         <Draggable key={key} >
-                                            <QRCode className={this.state.qrStyle} value={"https://qrmax.app/inputresponse?company=company&store=store&display=display&qrid= + this.state.displayMedia.media[key].QRID"}/>
+                                            <QRCode className={this.state.qrStyle} value={this.getQRID(key)}/>
                                         </Draggable>
                                     )
                                 })}
