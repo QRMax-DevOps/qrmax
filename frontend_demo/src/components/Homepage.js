@@ -191,7 +191,7 @@ class Homepage extends Component {
                         case "display":
                             console.log("Before set currentObj", json);
                             me.setState({
-                                currentObj: json
+                                currentObj: json.displays
                             });
                             console.log("Before after set currentObj");
                             break;
