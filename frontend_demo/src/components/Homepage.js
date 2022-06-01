@@ -378,7 +378,6 @@ class Homepage extends Component {
                                     })}
                             </select>
                             <select onChange={this.setDisplay}>
-                                {console.log(this.state.currentObj)}
                                 {this.state.currentObj.displays.map((val,key) => {
                                     return (
                                         <option name={val.displayName} value={key} key={key}>{val.displayName}</option>
