@@ -14,7 +14,11 @@ const storeModel = require('../models/storeModel');
 const putDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   const {lat, lon} = req.body;
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   //Check if display exists
   const displayExists = await displayModel.findOne({store:storeID, displayName:displayName });
@@ -91,7 +95,11 @@ const postDisplay = asyncHandler(async (req, res) => {
 // @review  Complete
 const deleteDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   //Check if display exists
   const displayExists = await displayModel.findOne({store:storeID, displayName:displayName});
@@ -119,7 +127,11 @@ const deleteDisplay = asyncHandler(async (req, res) => {
 const patchDisplay = asyncHandler(async (req, res) => {
   const displayName = req.body.display;
   const { fields, values} = req.body;
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
 
   if(!(fields&&values&&displayName)){
@@ -177,7 +189,11 @@ const putDisplayMedia = asyncHandler(async (req, res) => {
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   //generate a clean QRID
   const QRID = uuidv4();
@@ -251,7 +267,11 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
     res.status(400).json({status:"fail", cause:"Missing display"});
     throw new Error('Missing display'); 
   }
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
 
   //get all media id from display
@@ -287,7 +307,11 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
     res.status(400).json({status:"fail", cause:"Missing patch information"});
     throw new Error('Missing patch information') 
   }
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
 
   let foundDisplay = await displayModel.findOne({displayName:displayName, store:storeID})
@@ -379,7 +403,11 @@ const deleteDisplayMedia = asyncHandler(async (req, res) => {
     throw new Error('Missing media information') 
   }
 
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   
   let foundDisplay = await displayModel.findOne({displayName:display, store:storeID})
@@ -430,7 +458,11 @@ const postDisplayMediaFile = asyncHandler(async (req, res)=>{
     throw new Error('Missing media information') 
   }
   
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   
   let foundDisplay = await displayModel.findOne({displayName:display, store:storeID})
@@ -465,7 +497,11 @@ const postDisplayMediaFile = asyncHandler(async (req, res)=>{
 const postDisplaySettings = asyncHandler(async (req, res)=>{ 
   const { display} = req.body;
 
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
 
   const settings = await displayModel.findOne({store:storeID, displayName:display}, {_id:0, settings:1});
@@ -484,7 +520,11 @@ const postDisplaySettings = asyncHandler(async (req, res)=>{
 // @review  Complete
 const patchDisplaySettings = asyncHandler(async (req, res)=>{ 
   const {display} = req.body;
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   const updatedAccount = displayModel.findOne({store:storeID, displayName:display});
   
@@ -511,7 +551,11 @@ const patchDisplaySettings = asyncHandler(async (req, res)=>{
 const postDisplayMediaRefresh = asyncHandler(async (req, res)=>{
   const {display, mediaName} = req.body;
 
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   
   //update single media
@@ -613,7 +657,11 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
     res.status(400).json({status:"fail", cause:"Missing media information"});
     throw new Error('Missing media information') 
   }
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   //generate a clean QRID
   const QRID = uuidv4();
@@ -691,7 +739,11 @@ const postDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
     res.status(400).json({status:"fail", cause:"Missing information"});
     throw new Error('Missing information'); 
   }
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   //get all media id from display
   let baseMediaDisplay = await displayModel.findOne({displayName:display, store:storeID});
@@ -722,7 +774,11 @@ const postDisplayMediaListen = asyncHandler(async (req, res)=>{
     throw new Error('Missing information'); 
   }
 
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   if(!storeID){
     res.status(400).json({status:"fail", cause:"No store found"});
     throw new Error('No store found'); 
@@ -882,7 +938,11 @@ const postDisplayInteractions = asyncHandler(async (req, res)=>{
     res.status(400).json({status:"fail", cause:"Missing information"});
     throw new Error('Missing information') 
   }
-  let storeID = await storeModel.findOne({store:req.body.store, stores:{$elemMatch:req.store.id}});
+  let storeID = await storeModel.findOne({store:req.body.store, accounts:{$elemMatch:{$eq:req.store.id}}});
+  if(!storeID){
+    res.status(400).json({status:"fail",cause:'No store found'});
+    throw new Error('No store found');
+  }
   storeID = storeID._id;
   let result = await displayModel.findOne({store:storeID, displayName:display});
   let votes = [];
