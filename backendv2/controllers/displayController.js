@@ -86,8 +86,8 @@ const postDisplay = asyncHandler(async (req, res) => {
       displays[i].media[j] = displays[i].media[j].mediaName;
     }
     displays[i].currentContent = displays[i].currentContent.media;
-    displays[i].currentContent = await mediaModel.findById(currentMediaID);
-    displays[i].currentContent = currentMedia.mediaName
+    displays[i].currentContent = await mediaModel.findById(displays[i].currentContent);
+    displays[i].currentContent = displays[i].currentContent.mediaName
 	
   }
   res.status(200).json({status:"success",displays});
