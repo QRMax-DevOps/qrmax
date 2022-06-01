@@ -200,8 +200,8 @@ class Homepage extends Component {
                     json = JSON.parse(response[1]);                   
                     
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
-                        store: this.state.storesObj.stores[this.state.selectedStore].store,
-                        display: this.state.currentObj[this.state.selectedDisplay].displayName,
+                        store: me.state.storesObj.stores[me.state.selectedStore].store,
+                        display: me.state.currentObj[me.state.selectedDisplay].displayName,
                         mediaName: json.display});
                     
                 }
