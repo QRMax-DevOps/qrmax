@@ -436,7 +436,7 @@ class Homepage extends Component {
                             {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
                                     <Draggable key={key} >
-                                        <QRCode className={this.state.qrStyle} value={"https://qrmax.app/inputresponse?company="+sessionStorage.companyName+"&store=demoStore1&display=display1&qrid=" + this.state.displayMedia.media[key].QRID}/>
+                                        <QRCode className={this.state.qrStyle} value={"https://qrmax.app/inputresponse?company="+sessionStorage.companyName+"&store="+this.state.storesObj.stores[this.state.selectedStore].store+"&display="+this.state.currentObj.displays[this.state.selectedDisplay].displayName+"&qrid=" + this.state.displayMedia.media[key].QRID}/>
                                     </Draggable>
                                     )
                                 })}
