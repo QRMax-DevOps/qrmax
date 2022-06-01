@@ -37,12 +37,13 @@ class Homepage extends Component {
             imageString: null,
             qrStyle: "qr",
             imageStyle: "image",
-            draggableStyle: "drag",
-            listenCounter: 0
+            draggableStyle: "drag"
         }
         this.setDisplay = this.setDisplay.bind(this);
         this.goFullscreen = this.goFullscreen.bind(this);
-		//this.getMedia();
+        this.setStore = this.setStore.bind(this);
+        var listenCounter = 0;
+        var prevCount = 0;
     }
 
     goFullscreen() {
@@ -199,6 +200,9 @@ class Homepage extends Component {
                     
                     json = JSON.parse(response[1]);                   
                     
+                    me.prevCount = me.listenCounter;
+                    me.listenCounter++;
+
                     console.log("flag1");
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
                         store: me.state.storesObj.stores[me.state.selectedStore].store,
@@ -331,6 +335,11 @@ class Homepage extends Component {
 
     componentDidUpdate(){
         console.log("Something is causing a re-render!");
+
+        if(this.prevCount < this.listenCounter) {
+            this.mediaListen2();
+        }
+
     }
 
     /*componentWillUnmount() {
