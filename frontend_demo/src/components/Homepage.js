@@ -34,7 +34,7 @@ class Homepage extends Component {
             selectedStore: 0,
             selectedMediaArray: [],
             displayMedia: {display: '', media: [{QRID: ""}]},
-            currentObj: {displays: [{display: '', media: [], baseMedia: ''}]}, // set default empty values allowing screen loading before fetch
+            currentObj: [{display: '', media: [], baseMedia: ''}], // set default empty values allowing screen loading before fetch
 			media: null,
             imageString: null,
             qrStyle: "qr",
@@ -120,7 +120,7 @@ class Homepage extends Component {
     mediaListen2() {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
-        var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName};
+        var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName};
         
         var response = [null, null];
         var request = null;
@@ -143,7 +143,7 @@ class Homepage extends Component {
                     
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
                         store: this.state.storesObj.stores[this.state.selectedStore].store,
-                        display: this.state.currentObj.displays[this.state.selectedDisplay].displayName,
+                        display: this.state.currentObj[this.state.selectedDisplay].displayName,
                         mediaName: json.display});
                     
                 }
@@ -298,7 +298,7 @@ class Homepage extends Component {
         var _data = {
             company: sessionStorage.companyName,
             store: this.state.storesObj.stores[this.state.selectedStore].store,
-            display: this.state.currentObj.displays[this.state.selectedDisplay].display,//this.state.currentObj.displays[this.state.selectedDisplay].display,
+            display: this.state.currentObj[this.state.selectedDisplay].display,//this.state.currentObj[this.state.selectedDisplay].display,
         }
 
         console.log("Checking Listen status: " +this.state.listenObj);
@@ -307,7 +307,7 @@ class Homepage extends Component {
             _data = {
                 company: sessionStorage.companyName,
                 store: this.state.storesObj.stores[this.state.selectedStore].store,
-                display: this.state.currentObj.displays[this.state.selectedDisplay].display,//this.state.currentObj.displays[this.state.selectedDisplay].display,
+                display: this.state.currentObj[this.state.selectedDisplay].display,//this.state.currentObj[this.state.selectedDisplay].display,
                 mediaName: this.state.listenObj.display
             }
             console.log("_data:"+_data);
@@ -333,14 +333,14 @@ class Homepage extends Component {
             // load displays
             let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
             //await new Promise(resolve => setTimeout(resolve, 500));
-            if(this.state.storesObj.stores.length != 0 && this.state.currentObj.displays.length != 0) {
+            if(this.state.storesObj.stores.length != 0 && this.state.currentObj.length != 0) {
                 // load QR media
-                let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
+                let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // load baseMedia
                 let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                             store: this.state.storesObj.stores[this.state.selectedStore].store, 
-                            display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
+                            display: this.state.currentObj[this.state.selectedDisplay].displayName});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // listen for user interaction
                 this.mediaListen2();
@@ -369,7 +369,7 @@ class Homepage extends Component {
                         <h2 className="page-header">Display Preivew</h2>
                         
                         <div id="dropContainer">
-							<p>Currently showing store: demoStore, display: {this.state.currentObj.displays[this.state.selectedDisplay].displayName}</p>
+							<p>Currently showing store: demoStore, display: {this.state.currentObj[this.state.selectedDisplay].displayName}</p>
                             <select onChange={this.setStore}>
                                 {this.state.storesObj.stores.map((val, key) => {
                                     return (
@@ -378,7 +378,7 @@ class Homepage extends Component {
                                     })}
                             </select>
                             <select onChange={this.setDisplay}>
-                                {this.state.currentObj.displays.map((val,key) => {
+                                {this.state.currentObj.map((val,key) => {
                                     return (
                                         <option name={val.displayName} value={key} key={key}>{val.displayName}</option>
                                         );
@@ -389,7 +389,7 @@ class Homepage extends Component {
                         </div>
 
                         <div>
-                                {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
+                                {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
                                         <Draggable key={key} >
                                             <QRCode className={this.state.qrStyle} value={"https://qrmax.app/inputresponse?company=company&store=store&display=display&qrid=" + this.state.displayMedia.media[key].QRID}/>
@@ -416,7 +416,7 @@ class Homepage extends Component {
             return (
                 <div onClick={this.goFullscreen}>
                     <div>
-                            {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
+                            {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
                                     <Draggable key={key} >
                                         <QRCode className={this.state.qrStyle} value={"https://qrmax.app/inputresponse?company=company&store=store&display=display&qrid=" + this.state.displayMedia.media[key].QRID}/>
