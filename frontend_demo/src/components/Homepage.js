@@ -189,7 +189,7 @@ class Homepage extends Component {
                     console.log("Before switch");
                     switch(target) {
                         case "display":
-                            console.log("Before set currentObj");
+                            console.log("Before set currentObj", json);
                             me.setState({
                                 currentObj: json
                             });
