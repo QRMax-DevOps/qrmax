@@ -353,7 +353,7 @@ class Homepage extends Component {
     }
 
     componentWillUnmount() {
-        console.log("Component is unmounting!");
+        console.log("Component is unmounting!", this.state.currentObj);
     }
 
     render() {
