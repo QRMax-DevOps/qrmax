@@ -328,7 +328,7 @@ class Homepage extends Component {
         await new Promise(resolve => setTimeout(resolve, 1000));
         // load displays
         let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 10000));
         // load QR media
         let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -351,7 +351,7 @@ class Homepage extends Component {
     componentWillUnmount() {
         this.setState({
             unmounted: true
-        })
+        });
         console.log("Component is unmounting!");
     }
 
