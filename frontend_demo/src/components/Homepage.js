@@ -169,7 +169,7 @@ class Homepage extends Component {
 
         var me = this;
         var timer = {elapsed: 0};
-        var json;
+        var completed = false;
 
         request = handleDisplay(target, type, url, data, response);
 
@@ -182,28 +182,32 @@ class Homepage extends Component {
 
                 if(response[0] === true){
                     console.log("Before json def");
-                    json = JSON.parse(response[1]);
+                    var json = JSON.parse(response[1]);
                     
                     console.log("Before switch");
                     switch(target) {
                         case "display":
                             console.log("Before set currentObj", json);
-                            this.setState({
+                            completed = true;
+                            me.setState({
                                 currentObj: json.displays,
                             });
                             console.log("after set currentObj");
                             break;
                         case "display/media/basemedia":
+                            completed = true;
                             me.setState({
                                 baseMedia: json.baseMediaFile,
                             });
                             break;
                         case "display/media":
+                            completed = true;
                             me.setState({
                                 displayMedia: json
                             });
                             break;
                         case "display/media/file":
+                            completed = true;
                             me.setState((prevState, props) => ({
                                 baseMedia: json.mediaFile
                             })); 
@@ -221,6 +225,7 @@ class Homepage extends Component {
                 clearInterval(interval);
             }
         }, 500);
+        return completed;
     }
 
     // Fetch request that returns the image linked to the highest voted media
