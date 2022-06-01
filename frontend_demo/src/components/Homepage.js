@@ -199,11 +199,12 @@ class Homepage extends Component {
                     
                     json = JSON.parse(response[1]);                   
                     
+                    console.log("flag1");
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
                         store: me.state.storesObj.stores[me.state.selectedStore].store,
                         display: me.state.currentObj[me.state.selectedDisplay].displayName,
                         mediaName: me.state.baseMedia});
-                    
+                    console.log("flag 2");
                 }
             }
 
