@@ -322,11 +322,13 @@ class Homepage extends Component {
         await new Promise(resolve => setTimeout(resolve, 500));
         // load QR media
         let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
+        await new Promise(resolve => setTimeout(resolve, 500));
         // load baseMedia
         let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: this.state.storesObj.stores[this.state.selectedStore].store, 
                         display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
-        //this.getDisplayImage();
+        await new Promise(resolve => setTimeout(resolve, 500));
+        // listen for user interaction
         this.mediaListen2();
     }
 
@@ -378,7 +380,6 @@ class Homepage extends Component {
                         </div>
 
                         <div>
-                            {console.log(this.state.displayMedia.media[0].QRID)}
                                 {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
                                         <Draggable key={key} >
