@@ -326,20 +326,22 @@ class Homepage extends Component {
         //load stores
         let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        // load displays
-        let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        // load QR media
-        let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // load baseMedia
-        let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
-                        store: this.state.storesObj.stores[this.state.selectedStore].store, 
-                        display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // listen for user interaction
-        if(this.state.storesObj.stores.length != 0 && this.state.currentObj.displays.length != 0) {
-            this.mediaListen2();
+        if(this.state.storesObj.stores !=0) {
+            // load displays
+            let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            if(this.state.storesObj.stores.length != 0 && this.state.currentObj.displays.length != 0) {
+                // load QR media
+                let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                // load baseMedia
+                let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
+                            store: this.state.storesObj.stores[this.state.selectedStore].store, 
+                            display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                // listen for user interaction
+                this.mediaListen2();
+            }
         }
     }
 
@@ -351,9 +353,6 @@ class Homepage extends Component {
     }
 
     componentWillUnmount() {
-        this.setState({
-            unmounted: true
-        });
         console.log("Component is unmounting!");
     }
 
