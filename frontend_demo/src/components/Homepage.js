@@ -318,10 +318,10 @@ class Homepage extends Component {
                 let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // load baseMedia
-                /*let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
+                let fech4 = this.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName, 
                             store: this.state.storesObj.stores[this.state.selectedStore].store, 
                             display: this.state.currentObj[this.state.selectedDisplay].displayName});
-                await new Promise(resolve => setTimeout(resolve, 500));*/
+                await new Promise(resolve => setTimeout(resolve, 500));
                 // listen for user interaction
                 this.mediaListen2();
             }
