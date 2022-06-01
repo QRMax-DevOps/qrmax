@@ -394,7 +394,6 @@ class Homepage extends Component {
         } else {
             return (
                 <div onClick={this.goFullscreen}>
-                    <div>
                             {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
                                     <Draggable key={key} >
@@ -402,8 +401,6 @@ class Homepage extends Component {
                                     </Draggable>
                                     )
                                 })}
-                            
-                    </div>
                     <div id="media-source-container">
                             <br/>
                             {console.log("The render image: " + this.state.imageString)}
