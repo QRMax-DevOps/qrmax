@@ -188,9 +188,9 @@ class Homepage extends Component {
                     switch(target) {
                         case "display":
                             console.log("Before set currentObj", json);
-                            me.setState({
+                            /*me.setState({
                                 currentObj: json.displays,
-                            });
+                            });*/
                             console.log("after set currentObj");
                             break;
                         case "display/media/basemedia":
