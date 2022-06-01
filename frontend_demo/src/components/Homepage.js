@@ -166,7 +166,7 @@ class Homepage extends Component {
             }
 
             //timeout after 3 seconds
-            if(timer == 120) {
+            if(timer == 24) {
                 console.log("Fetch-loop timeout!");
                 me.setState({loading:false});
                 clearInterval(interval);
@@ -209,7 +209,7 @@ class Homepage extends Component {
             }
 
             //timeout after 3 seconds
-            if(timer == 24) {
+            if(timer == 120) {
                 console.log("Fetch-loop timeout!");
                 //me.setState({loading:false});
                 clearInterval(interval);
@@ -384,7 +384,6 @@ class Homepage extends Component {
                             {/* display media source inside this div */}
                             <div id="media-source-container">
                                 <br/>
-                                {console.log("The render image: " + this.state.imageString)}
                                 <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
                                 {console.log("After calling the image")}
                             </div>
@@ -406,7 +405,6 @@ class Homepage extends Component {
                                 })}
                     <div id="media-source-container">
                             <br/>
-                            {console.log("The render image: " + this.state.imageString)}
                             <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
                             {console.log("After calling the image")}
                     </div>
