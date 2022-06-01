@@ -320,7 +320,7 @@ class Homepage extends Component {
         
     }
 
-    async componentWillMount() {
+    async componentDidMount() {
         console.log("Component did mount!");
         console.log("Server has restarted 1");
         //load stores
@@ -347,9 +347,6 @@ class Homepage extends Component {
 
     componentDidUpdate(){
         console.log("Something is causing a re-render!");
-        /*if(this.state.listenCounter > 0 && this.state.listenCounter % 2 == 0 ) {
-            this.mediaListen2();
-        }*/
     }
 
     componentWillUnmount() {
