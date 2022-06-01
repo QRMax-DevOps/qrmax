@@ -320,7 +320,7 @@ class Homepage extends Component {
         
     }
 
-    async componentDidMount() {
+    async componentWillMount() {
         console.log("Component did mount!");
         console.log("Server has restarted 1");
         //load stores
