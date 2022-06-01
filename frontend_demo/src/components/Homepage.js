@@ -332,7 +332,7 @@ class Homepage extends Component {
         if(this.state.storesObj.stores !=0) {
             // load displays
             let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
-            //await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 500));
             if(this.state.storesObj.stores.length != 0 && this.state.currentObj.length != 0) {
                 // load QR media
                 let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
