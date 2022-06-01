@@ -73,7 +73,7 @@ const postDisplay = asyncHandler(async (req, res) => {
   storeID = storeID._id;
   
   //Check if display exists
-  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1});
+  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1,currentContent:1});
 	
   if (!displays) {
     res.status(400).json({status:"success",cause:"No displays for store"});
@@ -85,8 +85,12 @@ const postDisplay = asyncHandler(async (req, res) => {
       displays[i].media[j] = await mediaModel.findById(displays[i].media[j]);
       displays[i].media[j] = displays[i].media[j].mediaName;
     }
+    displays[i].currentContent = displays[i].currentContent.media;
+    displays[i].currentContent = await mediaModel.findById(currentMediaID);
+    displays[i].currentContent = currentMedia.mediaName
+	
   }
-	res.status(200).json({status:"success",displays});
+  res.status(200).json({status:"success",displays});
 });
 
 // @desc    Delete display
@@ -286,13 +290,9 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
   for (let i=0; i<displays.media.length; i++){
     displays.media[i] = await mediaModel.findById(displays.media[i], {_id:0, QR_History:0, mediaFileChunks:0, lifetimeVotes:0, __v:0});
   }
-
-  let currentMediaID = displays.currentContent.media;
-  let currentMedia = await mediaModel.findById(currentMediaID);
-  currentMedia = currentMedia.mediaName
   
   //for each media list QRID, TTL, mediaName, voteCount, currentMedia
-  res.status(200).json({status:"success", media:displays.media, currentMedia:"test"});
+  res.status(200).json({status:"success", media:displays.media});
 });
 
 // @desc    Patch media
