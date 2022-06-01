@@ -41,7 +41,6 @@ class Homepage extends Component {
             listenCounter: 0
         }
         this.setDisplay = this.setDisplay.bind(this);
-        this.getDisplayImage = this.getDisplayImage.bind(this);
         this.goFullscreen = this.goFullscreen.bind(this);
 		//this.getMedia();
     }
