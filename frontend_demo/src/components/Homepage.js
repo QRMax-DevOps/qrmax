@@ -336,6 +336,7 @@ class Homepage extends Component {
     componentDidUpdate(){
         console.log("Something is causing a re-render!");
 
+        console.log(this.prevCount + " " + this.listenCounter);
         if(this.prevCount < this.listenCounter) {
             this.mediaListen2();
         }
