@@ -73,7 +73,7 @@ const postDisplay = asyncHandler(async (req, res) => {
   storeID = storeID._id;
   
   //Check if display exists
-  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1,"currentContent.media":1});
+  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1});
 	
   if (!displays) {
     res.status(400).json({status:"success",cause:"No displays for store"});
@@ -85,13 +85,6 @@ const postDisplay = asyncHandler(async (req, res) => {
       displays[i].media[j] = await mediaModel.findById(displays[i].media[j]);
       displays[i].media[j] = displays[i].media[j].mediaName;
     }
-    let currentContent = displays[i].currentContent;
-    console.log("currentContent - "+currentContent);
-    let temp = await mediaModel.findById(currentContent.media, {mediaName:1});
-    console.log("temp - "+temp.mediaName);
-    displays[i].currentContent.media = temp.mediaName;
-    console.log("displays - "+displays[i].currentContent.media);
-
   }
   res.status(200).json({status:"success",displays});
 });
@@ -282,7 +275,7 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
   storeID = storeID._id;
 
   //get all media id from display
-  let displays = await displayModel.findOne({displayName:display, store:storeID}, {_id:0, displayName:1, media:1});
+  let displays = await displayModel.findOne({displayName:display, store:storeID}, {_id:0, currentContent:1, displayName:1, media:1});
 
   //check if display exists
   if(!(displays)){
