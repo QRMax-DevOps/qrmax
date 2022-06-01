@@ -32,10 +32,8 @@ class Homepage extends Component {
             selectedDisplay: 0,
             selectedMedia: 0,
             selectedStore: 0,
-            selectedMediaArray: [],
             displayMedia: {display: '', media: [{QRID: ""}]},
             currentObj: [{displayName: '', media: []}], // set default empty values allowing screen loading before fetch
-			media: null,
             imageString: null,
             qrStyle: "qr",
             imageStyle: "image",
@@ -191,14 +189,13 @@ class Homepage extends Component {
                         case "display":
                             console.log("Before set currentObj", json);
                             me.setState({
-                                currentObj: json.displays
+                                currentObj: json.displays,
                             });
-                            console.log("Before after set currentObj");
+                            console.log("after set currentObj");
                             break;
                         case "display/media/basemedia":
                             me.setState({
                                 baseMedia: json.baseMediaFile,
-                                //prevPicture: this.state.newPicture
                             });
                             break;
                         case "display/media":
@@ -208,7 +205,6 @@ class Homepage extends Component {
                             break;
                         case "display/media/file":
                             me.setState((prevState, props) => ({
-                                //listenCounter: prevState.listenCounter + 1,
                                 baseMedia: json.mediaFile
                             })); 
                             break;
