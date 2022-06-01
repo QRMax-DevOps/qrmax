@@ -208,7 +208,7 @@ class Homepage extends Component {
             }
 
             //timeout after 3 seconds
-            if(timer == 24) {
+            if(timer == 60) {
                 console.log("Fetch-loop timeout!");
                 //me.setState({loading:false});
                 clearInterval(interval);
