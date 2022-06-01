@@ -183,14 +183,17 @@ class Homepage extends Component {
                 clearInterval(interval);
 
                 if(response[0] === true){
-                    
+                    console.log("Before json def");
                     json = JSON.parse(response[1]);
                     
+                    console.log("Before switch");
                     switch(target) {
                         case "display":
+                            console.log("Before set currentObj");
                             me.setState({
                                 currentObj: json
                             });
+                            console.log("Before after set currentObj");
                             break;
                         case "display/media/basemedia":
                             me.setState({
