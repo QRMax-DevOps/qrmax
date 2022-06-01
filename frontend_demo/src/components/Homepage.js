@@ -34,7 +34,7 @@ class Homepage extends Component {
             selectedStore: 0,
             selectedMediaArray: [],
             displayMedia: {display: '', media: [{QRID: ""}]},
-            currentObj: [{display: '', media: [], baseMedia: ''}], // set default empty values allowing screen loading before fetch
+            currentObj: [{displayName: '', media: [], baseMedia: ''}], // set default empty values allowing screen loading before fetch
 			media: null,
             imageString: null,
             qrStyle: "qr",
