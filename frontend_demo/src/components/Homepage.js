@@ -202,7 +202,7 @@ class Homepage extends Component {
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
                         store: me.state.storesObj.stores[me.state.selectedStore].store,
                         display: me.state.currentObj[me.state.selectedDisplay].displayName,
-                        mediaName: json.display});
+                        mediaName: me.state.baseMedia});
                     
                 }
             }
