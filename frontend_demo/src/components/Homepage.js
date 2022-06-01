@@ -338,7 +338,9 @@ class Homepage extends Component {
                         display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
         await new Promise(resolve => setTimeout(resolve, 1000));
         // listen for user interaction
-        this.mediaListen2();
+        if(this.state.storesObj.stores.length != 0 && this.state.currentObj.displays.length != 0) {
+            this.mediaListen2();
+        }
     }
 
     componentDidUpdate(){
