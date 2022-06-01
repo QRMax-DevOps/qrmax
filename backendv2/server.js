@@ -18,7 +18,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors({
-  origin: 'https://qrmax.app'
+  origin: '*'
 }));
 const bodyParser = require('body-parser')
 app.use(bodyParser.json({ limit: '50mb' }));
