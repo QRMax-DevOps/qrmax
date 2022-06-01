@@ -292,7 +292,7 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
   currentMedia = currentMedia.mediaName
   
   //for each media list QRID, TTL, mediaName, voteCount, currentMedia
-  res.status(200).json({status:"success", media:displays.media, currentMedia:currentMedia});
+  res.status(200).json({status:"success", media:displays.media, currentMedia:"test"});
 });
 
 // @desc    Patch media
