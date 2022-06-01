@@ -21,8 +21,8 @@ app.use(express.json())
 //  origin: '*'
 //}));
 const bodyParser = require('body-parser')
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+app.use(bodyParser.json({ limit: '200mb' }));
+app.use(bodyParser.urlencoded({ limit: '200mb', extended: true, parameterLimit:50000 }));
 
 //User input
 app.use("/api/v2/QR", require('./routes/QRRoutes'));
