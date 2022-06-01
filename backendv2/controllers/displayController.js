@@ -73,7 +73,7 @@ const postDisplay = asyncHandler(async (req, res) => {
   storeID = storeID._id;
   
   //Check if display exists
-  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1,currentContent:1});
+  const displays = await displayModel.find({store:storeID}, {_id:0,displayName:1,media:1,QRID:1,"currentContent.media":1});
 	
   if (!displays) {
     res.status(400).json({status:"success",cause:"No displays for store"});
