@@ -49,11 +49,20 @@ class Homepage extends Component {
     }
 
     goFullscreen() {
-        this.setState({
-            qrStyle: "fullscreen-qr",
-            imageStyle: "fullscreen-image",
-            fullscreen: true
-        })
+        if(this.state.fullscreen == false) {
+
+            this.setState({
+                qrStyle: "fullscreen-qr",
+                imageStyle: "fullscreen-image",
+                fullscreen: true
+            })
+        } else {
+            this.setState({
+                qrStyle: "qr",
+                imageStyle: "image",
+                fullscreen: false
+            })
+        }
     }
 
     incrementListenCount() {
@@ -422,7 +431,7 @@ class Homepage extends Component {
         }
         } else {
             return (
-                <div>
+                <div onClick={this.goFullscreen}>
                     <div>
                             {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
