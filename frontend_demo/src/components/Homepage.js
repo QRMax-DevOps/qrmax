@@ -208,7 +208,7 @@ class Homepage extends Component {
             }
 
             //timeout after 3 seconds
-            if(timer == 60) {
+            if(timer == 24) {
                 console.log("Fetch-loop timeout!");
                 //me.setState({loading:false});
                 clearInterval(interval);
@@ -263,6 +263,7 @@ class Homepage extends Component {
                         case "display/media":
                             completed = true;
                             me.setState({
+                                baseMedia: json.currentMedia,
                                 displayMedia: json
                             });
                             break;
@@ -317,10 +318,10 @@ class Homepage extends Component {
                 let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // load baseMedia
-                let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
+                /*let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                             store: this.state.storesObj.stores[this.state.selectedStore].store, 
                             display: this.state.currentObj[this.state.selectedDisplay].displayName});
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 500));*/
                 // listen for user interaction
                 this.mediaListen2();
             }
