@@ -380,7 +380,6 @@ class Homepage extends Component {
                         </div>
 
                         <div>
-                            {console.log(this.state.displayMedia.media[0].QRID)}
                                 {this.state.currentObj.displays[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
                                         <Draggable key={key} >
