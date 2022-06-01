@@ -42,8 +42,8 @@ class Homepage extends Component {
         this.setDisplay = this.setDisplay.bind(this);
         this.goFullscreen = this.goFullscreen.bind(this);
         this.setStore = this.setStore.bind(this);
-        var listenCounter = 0;
-        var prevCount = 0;
+        this.listenCounter = 0;
+        this.prevCount = 0;
     }
 
     goFullscreen() {
@@ -64,7 +64,7 @@ class Homepage extends Component {
     }
 
     incrementListenCount() {
-
+        
     }
 
     setStore(e) {
@@ -196,12 +196,12 @@ class Homepage extends Component {
             if(response[0] !== null) {
                 clearInterval(interval);
 
+                me.prevCount = me.listenCounter;
+                me.listenCounter++;
+
                 if(response[0] === true){
                     
                     json = JSON.parse(response[1]);                   
-                    
-                    me.prevCount = me.listenCounter;
-                    me.listenCounter++;
 
                     console.log("flag1");
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
