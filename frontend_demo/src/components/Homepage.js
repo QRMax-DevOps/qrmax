@@ -316,18 +316,18 @@ class Homepage extends Component {
         console.log("Server has restarted 1");
         //load stores
         let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // load displays
         let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // load QR media
         let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // load baseMedia
         let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
                         store: this.state.storesObj.stores[this.state.selectedStore].store, 
                         display: this.state.currentObj.displays[this.state.selectedDisplay].displayName});
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         // listen for user interaction
         this.mediaListen2();
     }
