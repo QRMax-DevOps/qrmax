@@ -188,7 +188,7 @@ class Homepage extends Component {
                     switch(target) {
                         case "display":
                             console.log("Before set currentObj", json);
-                            globalThis.setState({
+                            this.setState({
                                 currentObj: json.displays,
                             });
                             console.log("after set currentObj");
