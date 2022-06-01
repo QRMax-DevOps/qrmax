@@ -115,6 +115,60 @@ class Homepage extends Component {
         return completed;
      }
 
+
+     async fillCurrentObject1(target, type, data) {
+        var url = "https://api.qrmax.app/";
+        //var url = "http://localhost:4200/";
+        let request = null;
+        let response = [null, null];
+
+        var timer = 0;
+        let me = this;
+
+        request = handleDisplay(target, type, url, data, response);
+
+        var completed = false;
+
+        var interval = setInterval(function() {
+            timer++;
+            
+            //console.log(timer)
+            
+            if(response[0] !== null) {
+                clearInterval(interval);
+                me.setState({loading:false});
+
+                if(response[0] === true){
+                    
+                    console.log("Check response NOTNULL "+response[1]);
+                    var json = JSON.parse(response[1]);
+                    switch(target) {
+                        case "display":
+                            completed = true;
+                            me.setState({currentObj: json.displays});
+                            break;
+                        case "display/media":
+                            completed = true;
+                            me.setState({displayMedia: json});
+                            break;
+                        case "display/media/basemedia":
+                            completed = true;
+                            me.setState({baseMedia: json.baseMediaFile});
+                    }
+                    
+                }
+            }
+
+            //timeout after 3 seconds
+            if(timer == 24) {
+                console.log("Fetch-loop timeout!");
+                me.setState({loading:false});
+                clearInterval(interval);
+            }
+        }, 500);
+        return completed;
+     }
+
     mediaListen2() {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
@@ -159,7 +213,7 @@ class Homepage extends Component {
     
 
     // Makes a fetch request to the API to set the current object the screen will work with
-    async fillCurrentObject(target, type, data) {
+    fillCurrentObject(target, type, data) {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
         //var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store};
