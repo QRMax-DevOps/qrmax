@@ -61,3 +61,7 @@
     transform: scale(2);
     z-index: 3;
 }
+
+.hidden { 
+    display: none;
+}

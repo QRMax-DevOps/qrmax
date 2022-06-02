@@ -44,6 +44,7 @@ class Homepage extends Component {
         this.setStore = this.setStore.bind(this);
         this.listenCounter = 0;
         this.prevCount = 0;
+        this.hidden = false;
     }
 
     goFullscreen() {
@@ -63,9 +64,7 @@ class Homepage extends Component {
         }
     }
 
-    incrementListenCount() {
-        
-    }
+
 
     setStore(e) {
         this.setState({
@@ -157,7 +156,11 @@ class Homepage extends Component {
                             break;
                         case "display/media/file":
                             completed = true;
-                            me.setState({baseMedia: json.mediaFile});
+                            if(me.hidden == false) {
+                                me.setState({baseMedia: json.mediaFile});
+                            } else {
+                                me.setState({baseMedia: json.mediaFile, qrStyle: "hidden"})
+                            }
                             break;
                         default:
                             break;
@@ -198,6 +201,7 @@ class Homepage extends Component {
 
                 me.prevCount = me.listenCounter;
                 me.listenCounter++;
+                me.hidden = !me.hidden;
 
                 if(response[0] === true){
                     
