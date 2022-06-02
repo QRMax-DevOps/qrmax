@@ -176,7 +176,7 @@ class Homepage extends Component {
         //return completed;
      }
 
-    mediaListen2() {
+    async mediaListen2() {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
         var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName};
@@ -188,13 +188,13 @@ class Homepage extends Component {
         var timer = 0;
         var json;
 
-        request = ListenFor("LISTEN", url, data, response);
+        request = await ListenFor("LISTEN", url, data, response);
 
-        var interval = setInterval(function() {
-            timer++;
+        //var interval = setInterval(function() {
+            //timer++;
 
             if(response[0] !== null) {
-                clearInterval(interval);
+                //clearInterval(interval);
 
                 me.prevCount = me.listenCounter;
                 me.listenCounter++;
@@ -215,9 +215,9 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer == 1000) {
                 console.log("Fetch-loop timeout!");
-                clearInterval(interval);
+                //clearInterval(interval);
             }
-        }, 500);
+        //}, 500);
     }
 
     
@@ -327,7 +327,7 @@ class Homepage extends Component {
                             display: this.state.currentObj[this.state.selectedDisplay].displayName, mediaName: this.state.baseMedia});
                 //await new Promise(resolve => setTimeout(resolve, 500));
                 // listen for user interaction
-                this.mediaListen2();
+                await this.mediaListen2();
             }
         }
     }
