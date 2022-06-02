@@ -215,7 +215,6 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer == 1000) {
                 console.log("Fetch-loop timeout!");
-                //me.setState({loading:false});
                 clearInterval(interval);
             }
         }, 500);
@@ -338,6 +337,8 @@ class Homepage extends Component {
 
         console.log(this.prevCount + " " + this.listenCounter);
         if(this.prevCount < this.listenCounter) {
+            this.listenCounter = 0;
+            this.prevCount = 0;
             this.mediaListen2();
         }
 
