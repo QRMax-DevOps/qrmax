@@ -37,14 +37,18 @@ class Homepage extends Component {
             imageString: null,
             qrStyle: "qr",
             imageStyle: "image",
-            draggableStyle: "drag"
+            draggableStyle: "drag",
+            x: 0,
+            y: 0
         }
         this.setDisplay = this.setDisplay.bind(this);
         this.goFullscreen = this.goFullscreen.bind(this);
         this.setStore = this.setStore.bind(this);
+        this.handleEvent = this.handleEvent.bind(this);
         this.listenCounter = 0;
         this.prevCount = 0;
         this.hidden = false;
+        this.myRef = React.createRef();
     }
 
     goFullscreen() {
@@ -64,7 +68,17 @@ class Homepage extends Component {
         }
     }
 
+    handleEvent(event) {
+        let elem = this.myRef.current;
+        let elemRect = elem.getBoundingClientRect();
 
+        if(event.type === "mouseup") {
+            this.setState({
+                x: elemRect.left,
+                y: elemRect.top
+            })
+        }
+    }
 
     setStore(e) {
         this.setState({
@@ -395,7 +409,7 @@ class Homepage extends Component {
                         <div>
                                 {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
-                                        <Draggable key={key} >
+                                        <Draggable onMouseUp={this.handleEvent} ref={this.myRef} id={key} key={key} >
                                             <QRCode className={this.state.qrStyle} id={key} value={this.getQRID(key)}/>
                                         </Draggable>
                                     )
@@ -423,9 +437,9 @@ class Homepage extends Component {
                         <br/>
                             {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
-                                    <Draggable key={key} >
+                                    <Draggable id={key} key={key} >
                                         <div>
-                                            <QRCode className={this.state.qrStyle} id={key} value={this.getQRID(key)}/>
+                                            <QRCode className={this.state.qrStyle} value={this.getQRID(key)}/>
                                             <p>{val.mediaName}</p>
                                         </div>
                                     </Draggable>
