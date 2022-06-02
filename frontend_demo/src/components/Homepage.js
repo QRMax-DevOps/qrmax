@@ -417,7 +417,8 @@ class Homepage extends Component {
             );
         } else {
             return (
-                <div onClick={this.goFullscreen}>
+                
+                    <div id="media-source-container">
                             {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
                                     <Draggable key={key} >
@@ -428,12 +429,11 @@ class Homepage extends Component {
                                     </Draggable>
                                     )
                                 })}
-                    <div id="media-source-container">
                             <br/>
-                            <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
+                            <img onClick={this.goFullscreen} className={this.state.imageStyle} src={this.state.baseMedia}/> 
                             {console.log("After calling the image")}
                     </div>
-                </div>
+                
             );
         }
     }
