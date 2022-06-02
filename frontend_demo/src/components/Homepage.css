@@ -51,6 +51,9 @@
     height: 100vh;
     width: 100vw;
     z-index: 2;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .fullscreen-qr {
@@ -68,4 +71,6 @@
 
 .media-source-container {
     position: relative;
+    top: 0;
+    left: 0;
 }
