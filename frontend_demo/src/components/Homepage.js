@@ -37,12 +37,13 @@ class Homepage extends Component {
             imageString: null,
             qrStyle: "qr",
             imageStyle: "image",
-            draggableStyle: "drag",
-            listenCounter: 0
+            draggableStyle: "drag"
         }
         this.setDisplay = this.setDisplay.bind(this);
         this.goFullscreen = this.goFullscreen.bind(this);
-		//this.getMedia();
+        this.setStore = this.setStore.bind(this);
+        this.listenCounter = 0;
+        this.prevCount = 0;
     }
 
     goFullscreen() {
@@ -63,7 +64,7 @@ class Homepage extends Component {
     }
 
     incrementListenCount() {
-
+        
     }
 
     setStore(e) {
@@ -148,7 +149,7 @@ class Homepage extends Component {
                             break;
                         case "display/media":
                             completed = true;
-                            me.setState({displayMedia: json});
+                            me.setState({displayMedia: json, baseMedia: json.currentMedia});
                             break;
                         case "display/media/basemedia":
                             completed = true;
@@ -195,22 +196,25 @@ class Homepage extends Component {
             if(response[0] !== null) {
                 clearInterval(interval);
 
+                me.prevCount = me.listenCounter;
+                me.listenCounter++;
+
                 if(response[0] === true){
                     
                     json = JSON.parse(response[1]);                   
-                    
+
+                    console.log("flag1");
                     me.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName,
                         store: me.state.storesObj.stores[me.state.selectedStore].store,
                         display: me.state.currentObj[me.state.selectedDisplay].displayName,
                         mediaName: json.display});
-                    
+                    console.log("flag 2");
                 }
             }
 
             //timeout after 3 seconds
-            if(timer == 60) {
+            if(timer == 1000) {
                 console.log("Fetch-loop timeout!");
-                //me.setState({loading:false});
                 clearInterval(interval);
             }
         }, 500);
@@ -263,6 +267,7 @@ class Homepage extends Component {
                         case "display/media":
                             completed = true;
                             me.setState({
+                                baseMedia: json.currentMedia,
                                 displayMedia: json
                             });
                             break;
@@ -317,9 +322,9 @@ class Homepage extends Component {
                 let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // load baseMedia
-                let fech4 = this.fillCurrentObject("display/media/basemedia", "POST", {company: sessionStorage.companyName, 
+                let fech4 = this.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName, 
                             store: this.state.storesObj.stores[this.state.selectedStore].store, 
-                            display: this.state.currentObj[this.state.selectedDisplay].displayName});
+                            display: this.state.currentObj[this.state.selectedDisplay].displayName, mediaName: this.state.baseMedia});
                 await new Promise(resolve => setTimeout(resolve, 500));
                 // listen for user interaction
                 this.mediaListen2();
@@ -329,6 +334,14 @@ class Homepage extends Component {
 
     componentDidUpdate(){
         console.log("Something is causing a re-render!");
+
+        console.log(this.prevCount + " " + this.listenCounter);
+        if(this.prevCount < this.listenCounter) {
+            this.listenCounter = 0;
+            this.prevCount = 0;
+            this.mediaListen2();
+        }
+
     }
 
     /*componentWillUnmount() {
@@ -382,7 +395,6 @@ class Homepage extends Component {
                             {/* display media source inside this div */}
                             <div id="media-source-container">
                                 <br/>
-                                {console.log("The render image: " + this.state.imageString)}
                                 <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
                                 {console.log("After calling the image")}
                             </div>
@@ -404,7 +416,6 @@ class Homepage extends Component {
                                 })}
                     <div id="media-source-container">
                             <br/>
-                            {console.log("The render image: " + this.state.imageString)}
                             <img className={this.state.imageStyle} src={this.state.baseMedia}/> 
                             {console.log("After calling the image")}
                     </div>
