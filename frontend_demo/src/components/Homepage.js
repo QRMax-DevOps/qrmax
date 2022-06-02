@@ -156,10 +156,18 @@ class Homepage extends Component {
                             break;
                         case "display/media/file":
                             completed = true;
-                            if(me.hidden == false) {
-                                me.setState({baseMedia: json.mediaFile});
+                            if(me.state.fullscreen == false) {
+                                if(me.hidden == false) {
+                                    me.setState({baseMedia: json.mediaFile, qrStyle: "qr"});
+                                } else {
+                                    me.setState({baseMedia: json.mediaFile, qrStyle: "hidden"})
+                                }
                             } else {
-                                me.setState({baseMedia: json.mediaFile, qrStyle: "hidden"})
+                                if(me.hidden == false) {
+                                    me.setState({baseMedia: json.mediaFile, qrStyle: "fullscreen-qr"});
+                                } else {
+                                    me.setState({baseMedia: json.mediaFile, qrStyle: "hidden"})
+                                }
                             }
                             break;
                         default:
