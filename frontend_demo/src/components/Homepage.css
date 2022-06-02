@@ -65,3 +65,7 @@
 .hidden { 
     display: none;
 }
+
+.media-source-container {
+    position: relative;
+}
