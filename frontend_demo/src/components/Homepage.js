@@ -73,7 +73,7 @@ class Homepage extends Component {
         })
     }
 
-    fetchStores(isCompany, username, companyName) {
+    async fetchStores(isCompany, username, companyName) {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
         let request = null;
@@ -82,17 +82,17 @@ class Homepage extends Component {
         var timer = 0;
         let me = this;
 
-        request = RunFetch_GetStores(isCompany, url, username, companyName, response);
+        request = await RunFetch_GetStores(isCompany, url, username, companyName, response);
 
         var completed = false;
 
-        var interval = setInterval(function() {
-            timer++;
+        //var interval = setInterval(function() {
+            //timer++;
             
             //console.log(timer)
             
             if(response[0] !== null) {
-                clearInterval(interval);
+                //clearInterval(interval);
                 me.setState({loading:false});
 
                 if(response[0] === true){
@@ -109,14 +109,14 @@ class Homepage extends Component {
             if(timer == 24) {
                 console.log("Fetch-loop timeout!");
                 me.setState({loading:false});
-                clearInterval(interval);
+                //clearInterval(interval);
             }
-        }, 500);
-        return completed;
+        //}, 500);
+        //return completed;
      }
 
 
-     fillCurrentObject(target, type, data) {
+    async fillCurrentObject(target, type, data) {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
         let request = null;
@@ -125,18 +125,18 @@ class Homepage extends Component {
         var timer = 0;
         let me = this;
 
-        request = handleDisplay(target, type, url, data, response);
+        request = await handleDisplay(target, type, url, data, response);
 
         var completed = false;
 
-        var interval = setInterval(function() {
-            timer++;
+        //var interval = setInterval(function() {
+            //timer++;
             
             //console.log(timer)
             
             if(response[0] !== null) {
-                clearInterval(interval);
-                me.setState({loading:false});
+                //clearInterval(interval);
+                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -169,14 +169,14 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer == 24) {
                 console.log("Fetch-loop timeout!");
-                me.setState({loading:false});
-                clearInterval(interval);
+                //me.setState({loading:false});
+                //clearInterval(interval);
             }
-        }, 500);
-        return completed;
+        //}, 500);
+        //return completed;
      }
 
-    mediaListen2() {
+    async mediaListen2() {
         var url = "https://api.qrmax.app/";
         //var url = "http://localhost:4200/";
         var data = {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName};
@@ -188,13 +188,13 @@ class Homepage extends Component {
         var timer = 0;
         var json;
 
-        request = ListenFor("LISTEN", url, data, response);
+        request = await ListenFor("LISTEN", url, data, response);
 
-        var interval = setInterval(function() {
-            timer++;
+        //var interval = setInterval(function() {
+            //timer++;
 
             if(response[0] !== null) {
-                clearInterval(interval);
+                //clearInterval(interval);
 
                 me.prevCount = me.listenCounter;
                 me.listenCounter++;
@@ -215,9 +215,9 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer == 1000) {
                 console.log("Fetch-loop timeout!");
-                clearInterval(interval);
+                //clearInterval(interval);
             }
-        }, 500);
+        //}, 500);
     }
 
     
@@ -311,23 +311,23 @@ class Homepage extends Component {
         console.log("Component did mount!");
         console.log("Server has restarted 1");
         //load stores
-        let fech = this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await this.fetchStores(false, sessionStorage.username, sessionStorage.companyName);
+        //await new Promise(resolve => setTimeout(resolve, 500));
         if(this.state.storesObj.stores !=0) {
             // load displays
-            let fech2 = this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await this.fillCurrentObject("display", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store});
+            //await new Promise(resolve => setTimeout(resolve, 500));
             if(this.state.storesObj.stores.length != 0 && this.state.currentObj.length != 0) {
                 // load QR media
-                let fech3 = this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await this.fillCurrentObject("display/media", "POST", {company: sessionStorage.companyName, store: this.state.storesObj.stores[this.state.selectedStore].store, display: this.state.currentObj[this.state.selectedDisplay].displayName});
+                //await new Promise(resolve => setTimeout(resolve, 500));
                 // load baseMedia
-                let fech4 = this.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName, 
+                await this.fillCurrentObject("display/media/file", "POST", {company: sessionStorage.companyName, 
                             store: this.state.storesObj.stores[this.state.selectedStore].store, 
                             display: this.state.currentObj[this.state.selectedDisplay].displayName, mediaName: this.state.baseMedia});
-                await new Promise(resolve => setTimeout(resolve, 500));
+                //await new Promise(resolve => setTimeout(resolve, 500));
                 // listen for user interaction
-                this.mediaListen2();
+                await this.mediaListen2();
             }
         }
     }
