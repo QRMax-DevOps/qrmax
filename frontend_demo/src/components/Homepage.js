@@ -421,8 +421,10 @@ class Homepage extends Component {
                             {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                 return (
                                     <Draggable key={key} >
-                                        <label htmlFor={key}>{val.mediaName}</label>
-                                        <QRCode className={this.state.qrStyle} id={key} value={this.getQRID(key)}/>
+                                        <div>
+                                            <label htmlFor={key}>{val.mediaName}</label>
+                                            <QRCode className={this.state.qrStyle} id={key} value={this.getQRID(key)}/>
+                                        </div>
                                     </Draggable>
                                     )
                                 })}
