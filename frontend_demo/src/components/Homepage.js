@@ -423,8 +423,8 @@ class Homepage extends Component {
                                 return (
                                     <Draggable key={key} >
                                         <div>
-                                            <label htmlFor={key}>{val.mediaName}</label>
                                             <QRCode className={this.state.qrStyle} id={key} value={this.getQRID(key)}/>
+                                            <p>{val.mediaName}</p>
                                         </div>
                                     </Draggable>
                                     )
