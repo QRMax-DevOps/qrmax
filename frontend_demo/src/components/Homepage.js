@@ -38,8 +38,7 @@ class Homepage extends Component {
             qrStyle: "qr",
             imageStyle: "image",
             draggableStyle: "drag",
-            x: 0,
-            y: 0
+            position: ""
         }
         this.setDisplay = this.setDisplay.bind(this);
         this.goFullscreen = this.goFullscreen.bind(this);
@@ -72,10 +71,14 @@ class Homepage extends Component {
         let elem = this.myRef.current;
         let elemRect = elem.getBoundingClientRect();
 
+        let mystyle = {
+            left: elemRect.left,
+            top: elemRect.top
+        };
+        
         if(event.type === "mouseup") {
             this.setState({
-                x: elemRect.left,
-                y: elemRect.top
+                position: mystyle
             })
         }
     }
@@ -409,7 +412,7 @@ class Homepage extends Component {
                         <div>
                                 {this.state.currentObj[this.state.selectedDisplay].media.map((val, key) => {
                                     return (
-                                        <Draggable onMouseUp={this.handleEvent} ref={this.myRef} id={key} key={key} >
+                                        <Draggable onMouseUp={this.handleEvent} ref={this.myRef} id={key} key={key} style={this.state.position} >
                                             <QRCode className={this.state.qrStyle} id={key} value={this.getQRID(key)}/>
                                         </Draggable>
                                     )
