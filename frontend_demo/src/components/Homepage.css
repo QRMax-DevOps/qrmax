@@ -74,3 +74,10 @@
     top: 0;
     left: 0;
 }
+
+.react-draggable{
+    position: relative;
+    top: 0px;
+    left: 0px;
+    z-index:10;
+}
