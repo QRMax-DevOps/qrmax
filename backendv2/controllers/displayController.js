@@ -287,9 +287,13 @@ const postDisplayMedia = asyncHandler(async (req, res) => {
     displays.media[i] = await mediaModel.findById(displays.media[i], {_id:0, QR_History:0, mediaFileChunks:0, lifetimeVotes:0, __v:0});
   }
 
-  let currentMedia = displays.currentContent.media;
-  currentMedia = await mediaModel.findById(currentMedia);
-  currentMedia = currentMedia.mediaName
+  let currentMedia = null;
+  if (displays.currentContent.media){
+    currentMedia = displays.currentContent.media;
+    currentMedia = await mediaModel.findById(currentMedia);
+    currentMedia = currentMedia.mediaName;
+  }
+  
   
   //for each media list QRID, TTL, mediaName, voteCount, currentMedia
   res.status(200).json({status:"success", media:displays.media, currentMedia:currentMedia});
