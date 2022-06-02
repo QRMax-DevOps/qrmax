@@ -206,11 +206,11 @@ const putDisplayMedia = asyncHandler(async (req, res) => {
   cleanQRID = cleanQRID.slice(0,20);
 
   //var mediaFileByteLength = Buffer.byteLength(mediaFile);
-  var mediaFileNumChunks = Math.ceil(mediaFile.length / 1024);
+  var mediaFileNumChunks = Math.ceil(mediaFile.length / 10240);
   var mediaFileChunks = new Array(mediaFileNumChunks);
 
-  for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
-    mediaFileChunks[i] = mediaFile.substr(o, 1024)
+  for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 10240) {
+    mediaFileChunks[i] = mediaFile.substr(o, 10240)
   }
 
   //check if display exists
@@ -371,11 +371,11 @@ const patchDisplayMedia = asyncHandler(async (req, res) => {
       //delete all old mediaFiles
       await mediaFileModel.deleteMany({mediaID:foundMedia._id});
       //create new ones
-      var mediaFileNumChunks = Math.ceil(mediaFileValue.length / 1024);
+      var mediaFileNumChunks = Math.ceil(mediaFileValue.length / 10240);
       var mediaFileChunks = new Array(mediaFileNumChunks);
       
-      for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
-        mediaFileChunks[i] = mediaFileValue.substr(o, 1024)
+      for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 10240) {
+        mediaFileChunks[i] = mediaFileValue.substr(o, 10240)
       }
 
       mediaFileChunks.forEach((chunk, i)=>{
@@ -678,11 +678,11 @@ const putDisplayMediaBaseMedia = asyncHandler(async (req, res)=>{
   cleanQRID = cleanQRID.slice(0,20);
 
   //var mediaFileByteLength = Buffer.byteLength(mediaFile);
-  var mediaFileNumChunks = Math.ceil(baseMediaFile.length / 1024);
+  var mediaFileNumChunks = Math.ceil(baseMediaFile.length / 10240);
   var mediaFileChunks = new Array(mediaFileNumChunks);
 
-  for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 1024) {
-    mediaFileChunks[i] = baseMediaFile.substr(o, 1024)
+  for (let i = 0, o = 0; i < mediaFileNumChunks; ++i, o += 10240) {
+    mediaFileChunks[i] = baseMediaFile.substr(o, 10240)
   }
 
   //check if display exists
