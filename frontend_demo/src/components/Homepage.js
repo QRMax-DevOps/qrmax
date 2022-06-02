@@ -92,7 +92,7 @@ class Homepage extends Component {
             //console.log(timer)
             
             if(response[0] !== null) {
-                clearInterval(interval);
+                //clearInterval(interval);
                 me.setState({loading:false});
 
                 if(response[0] === true){
@@ -109,7 +109,7 @@ class Homepage extends Component {
             if(timer == 24) {
                 console.log("Fetch-loop timeout!");
                 me.setState({loading:false});
-                clearInterval(interval);
+                //clearInterval(interval);
             }
         //}, 500);
         //return completed;
@@ -135,8 +135,8 @@ class Homepage extends Component {
             //console.log(timer)
             
             if(response[0] !== null) {
-                clearInterval(interval);
-                me.setState({loading:false});
+                //clearInterval(interval);
+                //me.setState({loading:false});
 
                 if(response[0] === true){
                     
@@ -169,8 +169,8 @@ class Homepage extends Component {
             //timeout after 3 seconds
             if(timer == 24) {
                 console.log("Fetch-loop timeout!");
-                me.setState({loading:false});
-                clearInterval(interval);
+                //me.setState({loading:false});
+                //clearInterval(interval);
             }
         //}, 500);
         //return completed;
